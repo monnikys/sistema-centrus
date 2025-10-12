@@ -1,7 +1,4 @@
-/* ========================================
-   ARQUIVO 2: src/styles/Header.css
-   ======================================== */
-
+/* src/styles/Header.css */
 
 .app-header {
   background: white;
@@ -11,7 +8,7 @@
   z-index: 1000;
 }
 
-.header-container {
+.header-container { 
   max-width: 1400px;
   margin: 0 auto;
   padding: 15px 20px;
