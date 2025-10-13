@@ -1,4 +1,3 @@
-// src/components/AlterarSenha.js
 import React, { useState } from 'react';
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle, Key } from 'lucide-react';
 import { AuthService, hashSenha, verificarSenha } from '../authDb';
@@ -47,25 +46,25 @@ const AlterarSenha = ({ usuario, onFechar }) => {  // Componente que recebe o us
       // Validações básicas antes de prosseguir
       if (!senhaAtual || !novaSenha || !confirmarSenha) {  // Verifica se todos os campos foram preenchidos
         mostrarMensagem('erro', 'Preencha todos os campos');  // Exibe erro se algum campo estiver vazio
-        setCarregando(false);
+        setCarregando(false); // Desativa o estado de carregamento
         return;
       }
 
       if (novaSenha !== confirmarSenha) {  // Verifica se a nova senha e a confirmação coincidem
         mostrarMensagem('erro', 'As senhas não coincidem');  // Exibe mensagem de erro
-        setCarregando(false);
+        setCarregando(false); // Desativa o estado de carregamento
         return;
       }
 
       if (novaSenha.length < 8) {  // Verifica se a senha tem pelo menos 8 caracteres
         mostrarMensagem('erro', 'A senha deve ter no mínimo 8 caracteres');
-        setCarregando(false);
+        setCarregando(false); // Desativa o estado de carregamento 
         return;
       }
 
       if (!senhaForte) {  // Confere se todos os requisitos de segurança foram atendidos
         mostrarMensagem('erro', 'A senha deve atender todos os requisitos de segurança');
-        setCarregando(false);
+        setCarregando(false); // Desativa o estado de carregamento
         return;
       }
 
@@ -73,8 +72,8 @@ const AlterarSenha = ({ usuario, onFechar }) => {  // Componente que recebe o us
       const usuarioDB = await authDb.usuarios.get(usuario.id);  // Obtém os dados do usuário pelo ID
       
       if (!usuarioDB) {  // Caso o usuário não seja encontrado
-        mostrarMensagem('erro', 'Usuário não encontrado');
-        setCarregando(false);
+        mostrarMensagem('erro', 'Usuário não encontrado'); // Exibe mensagem de erro
+        setCarregando(false); // Desativa o estado de carregamento
         return;
       }
 
@@ -82,7 +81,7 @@ const AlterarSenha = ({ usuario, onFechar }) => {  // Componente que recebe o us
       
       if (!senhaAtualValida) {  // Se a senha atual for incorreta
         mostrarMensagem('erro', 'Senha atual incorreta');
-        setCarregando(false);
+        setCarregando(false); // Desativa o estado de carregamento
         return;
       }
 
@@ -90,26 +89,26 @@ const AlterarSenha = ({ usuario, onFechar }) => {  // Componente que recebe o us
       const novaSenhaHash = await hashSenha(novaSenha);
 
       // Atualiza a senha do usuário no banco
-      await authDb.usuarios.update(usuario.id, {
-        senha: novaSenhaHash
+      await authDb.usuarios.update(usuario.id, { //
+        senha: novaSenhaHash // Hash da nova senha
       });
 
       mostrarMensagem('sucesso', 'Senha alterada com sucesso!');  // Exibe mensagem de sucesso
       
       // Após salvar, limpa os campos e fecha o modal após 2 segundos
-      setTimeout(() => {
-        setSenhaAtual('');
-        setNovaSenha('');
-        setConfirmarSenha('');
+      setTimeout(() => {  // Após 2 segundos
+        setSenhaAtual(''); // Limpa a senha atual
+        setNovaSenha(''); // Limpa a nova senha
+        setConfirmarSenha(''); // Limpa a confirmação da nova senha
         if (onFechar) {  // Se a função de fechar modal foi passada
           onFechar();  // Fecha o modal
         }
       }, 2000);
 
     } catch (error) {  // Caso ocorra algum erro inesperado
-      console.error('Erro ao alterar senha:', error);
+      console.error('Erro ao alterar senha:', error); // Imprime o erro no console
       mostrarMensagem('erro', 'Erro ao alterar senha. Tente novamente.');  // Mostra mensagem genérica de erro
-    } finally {
+    } finally { // Sempre executa
       setCarregando(false);  // Finaliza o estado de carregamento
     }
   };
@@ -128,7 +127,7 @@ const AlterarSenha = ({ usuario, onFechar }) => {  // Componente que recebe o us
         </div>
 
         {mensagem.texto && (  // Exibe mensagens de sucesso ou erro caso existam
-          <div className={`mensagem-senha mensagem-${mensagem.tipo}`}>
+          <div className={`mensagem-senha mensagem-${mensagem.tipo}`}> {/* Mensagem de sucesso ou erro */}
             {mensagem.tipo === 'sucesso' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}  {/* Ícone condicional */}
             <span>{mensagem.texto}</span>  {/* Texto da mensagem */}
           </div>
@@ -142,65 +141,65 @@ const AlterarSenha = ({ usuario, onFechar }) => {  // Componente que recebe o us
               <Lock size={16} />  {/* Ícone de cadeado */}
               Senha Atual
             </label>
-            <div className="input-senha-container">
+            <div className="input-senha-container"> {/* Container para a entrada de senha */}
               <input
                 type={mostrarSenhaAtual ? 'text' : 'password'}  // Alterna entre texto e senha
-                value={senhaAtual}
+                value={senhaAtual} // Valor digitado pelo usuário
                 onChange={(e) => setSenhaAtual(e.target.value)}  // Atualiza o estado conforme o usuário digita
-                placeholder="Digite sua senha atual"
-                disabled={carregando}
+                placeholder="Digite sua senha atual" // Texto de placeholder
+                disabled={carregando} // Desabilita a entrada de senha enquanto estiver carregando
               />
               <button
                 type="button"
-                className="toggle-senha-btn"
+                className="toggle-senha-btn" // Botão para alternar a visibilidade da senha
                 onClick={() => setMostrarSenhaAtual(!mostrarSenhaAtual)}  // Alterna a visibilidade da senha
-                tabIndex="-1"
+                tabIndex="-1" // Desabilita o foco do botão
               >
-                {mostrarSenhaAtual ? <EyeOff size={18} /> : <Eye size={18} />}  // Ícone olho aberto/fechado
+                {mostrarSenhaAtual ? <EyeOff size={18} /> : <Eye size={18} />} {/* Ícone de olho para alternar a visibilidade da senha */}
               </button>
             </div>
           </div>
 
           {/* Nova Senha */}
-          <div className="form-group-senha">
+          <div className="form-group-senha"> {/* Grupo de entrada de nova senha */}
             <label>
               <Lock size={16} />
               Nova Senha
             </label>
-            <div className="input-senha-container">
+            <div className="input-senha-container"> {/* Container para a entrada de nova senha */}
               <input
-                type={mostrarNovaSenha ? 'text' : 'password'}
-                value={novaSenha}
+                type={mostrarNovaSenha ? 'text' : 'password'} // Alterna entre texto e senha
+                value={novaSenha} // Valor digitado pelo usuário
                 onChange={(e) => setNovaSenha(e.target.value)}  // Captura a nova senha digitada
-                placeholder="Digite sua nova senha"
-                disabled={carregando}
+                placeholder="Digite sua nova senha" // Texto de placeholder
+                disabled={carregando} // Desabilita a entrada de senha enquanto estiver carregando
               />
               <button
                 type="button"
-                className="toggle-senha-btn"
+                className="toggle-senha-btn" // Botão para alternar a visibilidade da senha
                 onClick={() => setMostrarNovaSenha(!mostrarNovaSenha)}  // Alterna visibilidade
-                tabIndex="-1"
+                tabIndex="-1" // Desabilita o foco
               >
-                {mostrarNovaSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                {mostrarNovaSenha ? <EyeOff size={18} /> : <Eye size={18} />} {/* Ícone de olho para alternar a visibilidade da senha */}
               </button>
             </div>
           </div>
 
           {/* Requisitos de Senha */}
           {novaSenha && (  // Exibe os requisitos conforme o usuário digita
-            <div className="requisitos-senha">
-              <p className="requisitos-titulo">Requisitos de segurança:</p>
+            <div className="requisitos-senha">  {/* Requisitos de senha */}
+              <p className="requisitos-titulo">Requisitos de segurança:</p>  {/* Título dos requisitos */}
               <ul>
-                <li className={requisitos.tamanho ? 'requisito-ok' : 'requisito-pendente'}>
+                <li className={requisitos.tamanho ? 'requisito-ok' : 'requisito-pendente'}>  {/* Requisito de tamanho */}
                   {requisitos.tamanho ? '✓' : '○'} Mínimo de 8 caracteres
                 </li>
-                <li className={requisitos.maiuscula ? 'requisito-ok' : 'requisito-pendente'}>
+                <li className={requisitos.maiuscula ? 'requisito-ok' : 'requisito-pendente'}>  {/* Requisito de maiúscula */}
                   {requisitos.maiuscula ? '✓' : '○'} Pelo menos uma letra maiúscula
                 </li>
-                <li className={requisitos.minuscula ? 'requisito-ok' : 'requisito-pendente'}>
+                <li className={requisitos.minuscula ? 'requisito-ok' : 'requisito-pendente'}>    {/* Requisito de minúscula */}
                   {requisitos.minuscula ? '✓' : '○'} Pelo menos uma letra minúscula
                 </li>
-                <li className={requisitos.numero ? 'requisito-ok' : 'requisito-pendente'}>
+                <li className={requisitos.numero ? 'requisito-ok' : 'requisito-pendente'}>  {/* Requisito de número */}
                   {requisitos.numero ? '✓' : '○'} Pelo menos um número
                 </li>
               </ul>
@@ -208,51 +207,51 @@ const AlterarSenha = ({ usuario, onFechar }) => {  // Componente que recebe o us
           )}
 
           {/* Confirmar Senha */}
-          <div className="form-group-senha">
+          <div className="form-group-senha">  {/* Grupo de entrada de confirmação de senha */}
             <label>
               <Lock size={16} />
               Confirmar Nova Senha
             </label>
-            <div className="input-senha-container">
+            <div className="input-senha-container">  {/* Container para a entrada de confirmação de senha */}
               <input
-                type={mostrarConfirmar ? 'text' : 'password'}
-                value={confirmarSenha}
+                type={mostrarConfirmar ? 'text' : 'password'}  // Alterna entre texto e senha
+                value={confirmarSenha}  // Valor digitado pelo usuário
                 onChange={(e) => setConfirmarSenha(e.target.value)}  // Captura a confirmação da senha
-                placeholder="Confirme sua nova senha"
-                disabled={carregando}
+                placeholder="Confirme sua nova senha"  // Texto de placeholder
+                disabled={carregando}  // Desabilita a entrada de senha enquanto estiver carregando
               />
               <button
                 type="button"
-                className="toggle-senha-btn"
+                className="toggle-senha-btn"  // Botão para alternar a visibilidade da senha
                 onClick={() => setMostrarConfirmar(!mostrarConfirmar)}  // Alterna a visibilidade
-                tabIndex="-1"
+                tabIndex="-1"  // Desabilita o foco
               >
-                {mostrarConfirmar ? <EyeOff size={18} /> : <Eye size={18} />}
+                {mostrarConfirmar ? <EyeOff size={18} /> : <Eye size={18} />}  {/* Ícone de olho para alternar a visibilidade da senha */}
               </button>
             </div>
             {confirmarSenha && novaSenha !== confirmarSenha && (  // Exibe aviso se as senhas não coincidirem
-              <span className="erro-confirmacao">As senhas não coincidem</span>
+              <span className="erro-confirmacao">As senhas não coincidem</span>  // Mensagem de erro
             )}
           </div>
 
           {/* Botões */}
-          <div className="form-actions-senha">
+          <div className="form-actions-senha">  {/* Grupo de botoões */}
             <button
-              type="button"
-              className="btn-cancelar-senha"
+              type="button"  // Tipo de botão
+              className="btn-cancelar-senha"  // Botão de cancelar
               onClick={onFechar}  // Fecha o modal
-              disabled={carregando}
+              disabled={carregando}  // Desabilita o botão enquanto estiver carregando
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="btn-salvar-senha"
+            <button 
+              type="submit"  // Tipo de botão
+              className="btn-salvar-senha"  // Botão de salvar
               disabled={carregando || !senhaForte || novaSenha !== confirmarSenha}  // Desabilita se não estiver pronto para salvar
             >
               {carregando ? (  // Mostra o spinner enquanto salva
                 <>
-                  <span className="spinner-pequeno"></span>
+                  <span className="spinner-pequeno"></span> {/* Spinner pequeno */}
                   Salvando...
                 </>
               ) : (  // Caso contrário, mostra o botão normal
