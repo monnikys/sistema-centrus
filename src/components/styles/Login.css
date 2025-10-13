@@ -1,6 +1,6 @@
 /* src/styles/Login.css */
 
-.login-container {
+.login-container {  /* Container da página de login */
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -10,7 +10,7 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.login-background {
+.login-background {  /* Fundo da página de login */
   position: absolute;
   top: 0;
   left: 0;
@@ -19,20 +19,20 @@
   overflow: hidden;
 }
 
-.login-shapes {
+.login-shapes {  /* Formas de fundo da página de login */
   position: relative;
   width: 100%;
   height: 100%;
 }
 
-.shape {
+.shape {  /* Formas de fundo da página de login */
   position: absolute;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   animation: float 20s infinite ease-in-out;
 }
 
-.shape-1 {
+.shape-1 {  /* Forma 1 de fundo da página de login */
   width: 300px;
   height: 300px;
   top: -100px;
@@ -40,7 +40,7 @@
   animation-delay: 0s;
 }
 
-.shape-2 {
+.shape-2 {  /* Forma 2 de fundo da página de login */
   width: 200px;
   height: 200px;
   bottom: -50px;
@@ -48,7 +48,7 @@
   animation-delay: 2s;
 }
 
-.shape-3 {
+.shape-3 {  /* Forma 3 de fundo da página de login */
   width: 250px;
   height: 250px;
   top: 40%;
@@ -56,16 +56,16 @@
   animation-delay: 4s;
 }
 
-@keyframes float {
+@keyframes float {  /* Animação das formas de fundo da página de login */
   0%, 100% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0) rotate(0deg);  /* Inicial e final da animação */
   }
   50% {
-    transform: translateY(-30px) rotate(180deg);
+    transform: translateY(-30px) rotate(180deg);  /* Meio da animação */
   }
 }
 
-.login-card {
+.login-card {  /* Cartão da página de login */
   position: relative;
   z-index: 1;
   background: white;
@@ -77,23 +77,23 @@
   animation: slideUp 0.5s ease-out;
 }
 
-@keyframes slideUp {
-  from {
+@keyframes slideUp {  /* Animação de slide-up */
+  from {  /* Estado inicial */
     opacity: 0;
     transform: translateY(30px);
   }
-  to {
+  to {  /* Estado final */
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.login-header {
+.login-header {  /* Cabecalho da página de login */
   text-align: center;
   margin-bottom: 30px;
 }
 
-.login-logo {
+.login-logo {  /* Logo da página de login */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -106,24 +106,24 @@
   box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
 }
 
-.login-header h1 {
+.login-header h1 {  /* Título da página de login */
   font-size: 28px;
   color: #333;
   margin: 0 0 8px 0;
   font-weight: 700;
 }
 
-.login-header p {
+.login-header p {  /* Paragrafo da página de login */
   color: #666;
   margin: 0;
   font-size: 14px;
 }
 
-.login-form {
+.login-form {  /* Formulário da página de login */
   margin-bottom: 20px;
 }
 
-.login-erro {
+.login-erro {  /* Erro da página de login */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -137,17 +137,17 @@
   animation: shake 0.3s ease-in-out;
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+@keyframes shake {  /* Animação de tremer */
+  0%, 100% { transform: translateX(0); }  /* Estado inicial e final */
+  25% { transform: translateX(-5px); }  /* Estado intermediário */
+  75% { transform: translateX(5px); }  /* Estado intermediário */
 }
 
-.form-group {
+.form-group {  /* Grupo de campos do formulário */
   margin-bottom: 20px;
 }
 
-.form-group label {
+.form-group label {  /* Label dos campos do formulário */
   display: flex;
   align-items: center;
   gap: 8px;
@@ -157,7 +157,7 @@
   font-size: 14px;
 }
 
-.form-group input {
+.form-group input {  /* Input dos campos do formulário */
   width: 100%;
   padding: 12px 16px;
   border: 2px solid #e0e0e0;
@@ -167,28 +167,29 @@
   box-sizing: border-box;
 }
 
-.form-group input:focus {
+.form-group input:focus {  /* Input dos campos do formulário */
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.form-group input:disabled {
+.form-group input:disabled {  /* Input dos campos do formulário */
+  opacity: 0.6;
   background: #f5f5f5;
   cursor: not-allowed;
 }
 
-.senha-input-container {
+.senha-input-container {  /* Contêiner do input de senha */
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.senha-input-container input {
+.senha-input-container input {  /* Input de senha */
   padding-right: 45px;
 }
 
-.toggle-senha {
+.toggle-senha {  /* Botão para alternar a visibilidade da senha */
   position: absolute;
   right: 12px;
   background: none;
@@ -201,11 +202,11 @@
   transition: color 0.2s ease;
 }
 
-.toggle-senha:hover {
+.toggle-senha:hover {  /* Botão para alternar a visibilidade da senha */
   color: #667eea;
 }
 
-.btn-login {
+.btn-login {  /* Botão de login */
   width: 100%;
   padding: 14px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -223,21 +224,21 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.btn-login:hover:not(:disabled) {
+.btn-login:hover:not(:disabled) {  /* Efeito hover para o botão de login */
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
 }
 
-.btn-login:active:not(:disabled) {
+.btn-login:active:not(:disabled) {  /* Efeito de clique para o botão de login */
   transform: translateY(0);
 }
 
-.btn-login:disabled {
+.btn-login:disabled {  /* Estado desabilitado do botão de login */
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.spinner {
+.spinner {  /* Spinner de carregamento */
   width: 18px;
   height: 18px;
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -246,30 +247,30 @@
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes spin {  /* Animação de rotação */
+  to { transform: rotate(360deg); }  /* Estado final da rotação */
 }
 
-.login-footer {
+.login-footer {  /* Rodapé da tela de login */
   text-align: center;
   padding-top: 20px;
   border-top: 1px solid #e0e0e0;
 }
 
-.login-footer p {
+.login-footer p {  /* Parágrafo do rodapé da tela de login */
   color: #666;
   font-size: 12px;
   margin: 0;
   line-height: 1.6;
 }
 
-.login-footer strong {
+.login-footer strong {   /* Texto forte do rodapé da tela de login */
   color: #333;
   display: block;
   margin-bottom: 5px;
 }
 
-.carregando-app {
+.carregando-app {  /* Tela de carregamento */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -280,7 +281,7 @@
   color: white;
 }
 
-.spinner-app {
+.spinner-app {  /* Spinner de carregamento */
   width: 60px;
   height: 60px;
   border: 4px solid rgba(255, 255, 255, 0.3);
@@ -289,28 +290,28 @@
   animation: spin 1s linear infinite;
 }
 
-.carregando-app p {
+.carregando-app p {  /* Parágrafo da tela de carregamento */
   font-size: 18px;
   font-weight: 500;
 }
 
 /* Responsividade */
-@media (max-width: 480px) {
-  .login-card {
+@media (max-width: 480px) {  /* Estilos responsivos para telas menores */
+  .login-card {  /* Cartão da página de login */
     padding: 30px 20px;
     width: 95%;
   }
 
-  .login-header h1 {
+  .login-header h1 {  /* Título da página de login */
     font-size: 24px;
   }
 
-  .login-logo {
+  .login-logo {  /* Logo da página de login */
     width: 60px;
     height: 60px;
   }
 
-  .shape {
+  .shape {  /* Forma da página de login */
     display: none;
   }
 }
