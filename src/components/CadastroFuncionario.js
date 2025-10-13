@@ -13,7 +13,7 @@ function CadastroFuncionario({ funcionario, onVoltar }) {  // Componente que cad
   });
 
   useEffect(() => {  // Executa sempre que o prop "funcionario" mudar
-    if (funcionario) {  
+    if (funcionario) { 
       setFormData(funcionario);  // Se houver um funcionário, preenche o formulário para edição
     }
   }, [funcionario]);  // Dependência: será executado novamente se "funcionario" mudar
