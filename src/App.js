@@ -119,9 +119,9 @@ function App() { // Componente principal do aplicativo
         onMudarPagina={handleMudarPagina}
       />
 
-      <main className="app-main"> /* Área principal do aplicativo */
+      <main className="app-main"> {/* Área principal do aplicativo */}
         {paginaAtual === 'funcionarios' && ( // Se a página atual é de funcionários
-          <ProtectedRoute> // Rota protegida para usuários autenticados
+          <ProtectedRoute> {/*Rota protegida para usuários autenticados*/}
             {telaAtual === 'lista' && ( // Se a tela atual é a lista de funcionários
               <ListaFuncionarios // Renderiza a lista de funcionários
                 funcionarios={funcionarios || []} // Passa a lista de funcionários (ou array vazio se nulo)
@@ -169,8 +169,8 @@ function App() { // Componente principal do aplicativo
         )}
 
         {paginaAtual === 'usuarios' && (  // Se a página atual é de usuários (admin)
-          <ProtectedRoute requererAdmin={true}> // Rota protegida que requer permissão de admin
-            <GerenciarUsuarios usuarioAtual={usuario} />  // Renderiza o componente de gerenciamento de usuários
+          <ProtectedRoute requererAdmin={true}> {/*Rota protegida que requer permissão de admin*/}
+            <GerenciarUsuarios usuarioAtual={usuario} />  {/*Renderiza o componente de gerenciamento de usuários*/}
           </ProtectedRoute> 
         )}
       </main>
