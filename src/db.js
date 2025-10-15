@@ -20,6 +20,9 @@ export const CATEGORIAS = {
   ATESTADO_COMPARECIMENTO: 'Atestado de Comparecimento', // Chave para ATESTADO_COMPARECIMENTO
   FERIAS: 'Férias', // Chave para FERIAS
   AJUSTE_PONTO: 'Ajuste de Ponto', // Chave para AJUSTE_PONTO
+  LICENCA_MATERNIDADE_PATERNIDADE: 'Licença Maternidade/Paternidade', // Chave para LICENÇA_MATERNIDADE
+  LICENCA_NOJO: 'Licença Nojo', // Chave para LICENÇA_NOJO
+  LICENCA_GALA: 'Licença Gala' // Chave para LICENCA_GALA
 }
 
 export const CATEGORIAS_EMPRESA = {
