@@ -1830,3 +1830,118 @@ body {  /* Estilos globais do corpo */
 }
 
 /* ==================== FIM MUI DATE PICKERS ==================== */
+
+/* ==================== BOXES DE MOTIVO DE RECUSA) ==================== */
+
+/* Box de Motivo de Recusa */
+.motivo-recusa-box { /* Box de motivo de recusa */
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 2px solid #ef5350;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+  transition: all 0.3s ease;
+}
+
+.motivo-recusa-box:hover { /* Efeito hover no box */
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+  transform: translateY(-2px);
+}
+
+.motivo-recusa-box svg {  /* Ícone do motivo de recusa */
+  color: #c62828;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
+}
+
+.motivo-recusa-box > div { /* Container interno do texto */
+  flex: 1;
+}
+
+.motivo-recusa-box strong { /* Título do motivo de recusa */
+  display: block;
+  color: #b71c1c;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.motivo-recusa-box strong::before { /* Linha decorativa antes do título */
+  content: '';
+  width: 4px;
+  height: 18px;
+  background: #c62828;
+  border-radius: 2px;
+}
+
+.motivo-recusa-box p {  /* Texto do motivo de recusa */
+  color: #7f1d1d;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  border-left: 3px solid #e53935;
+  font-weight: 500;
+}
+
+/* Animações de entrada */
+@keyframes slideInBox {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+.observacao-box,
+.motivo-recusa-box {
+  animation: slideInBox 0.4s ease-out;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+
+  .observacao-box,
+  .motivo-recusa-box {
+    padding: 1rem;
+  }
+
+
+  .observacao-box strong,
+  .motivo-recusa-box strong {
+    font-size: 0.85rem;
+  }
+
+
+  .observacao-box p,
+  .motivo-recusa-box p {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+
+ 
+  .observacao-box svg,
+  .motivo-recusa-box svg {
+    padding: 0.4rem;
+  }
+}
+
+/* ==================== FIM BOXES DE INFORMAÇÃO ==================== */
