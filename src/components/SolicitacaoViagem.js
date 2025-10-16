@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, STATUS_VIAGEM } from '../db';
-import { ArrowLeft, PlaneTakeoff, Plus, Trash2, MapPin, Calendar, Clock, FileText, User, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, PlaneTakeoff, Plus, Trash2, MapPin, Calendar, Clock, FileText, User, CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -26,6 +26,11 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
   const [justificativa, setJustificativa] = useState(''); // Justificativa
   const [observacao, setObservacao] = useState(''); // Observação
   const [filtroStatus, setFiltroStatus] = useState('todos'); // Filtro de status
+  
+  // Estados para o modal de recusa
+  const [mostrarModalRecusa, setMostrarModalRecusa] = useState(false); // Controla a visibilidade do modal
+  const [solicitacaoParaRecusar, setSolicitacaoParaRecusar] = useState(null); // ID da solicitação a ser recusada
+  const [motivoRecusa, setMotivoRecusa] = useState(''); // Motivo da recusa
 
   const minDistance = 60; // Distância mínima de 2 horas (120 minutos)
 
@@ -41,9 +46,9 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
     setViajanteId('');
     setOrigem('');
     setDestino('');
-    setDataIda('');
+    setDataIda(null);
     setFaixaHorarioIda([480, 720]);
-    setDataVolta('');
+    setDataVolta(null);
     setFaixaHorarioVolta([1080, 1200]);
     setJustificativa('');
     setObservacao('');
@@ -122,12 +127,45 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
   };
 
   const handleAlterarStatus = async (id, novoStatus) => { // Função para lidar com alteração de status
+    if (novoStatus === 'RECUSADA') { // Se o novo status for RECUSADA
+      setSolicitacaoParaRecusar(id); // Define a solicitação a ser recusada
+      setMostrarModalRecusa(true); // Abre o modal de recusa
+      return; // Retorna para não executar o resto da função
+    }
+
     try { // Tenta atualizar o status
       await db.solicitacoesViagem.update(id, { status: novoStatus }); // Atualiza o status
       alert('Status atualizado com sucesso!');
     } catch (error) { // Caso ocorra algum erro
       alert('Erro ao atualizar status: ' + error.message);
     }
+  };
+
+  const handleConfirmarRecusa = async () => { // Função para confirmar a recusa
+    if (!motivoRecusa.trim()) { // Se o motivo estiver vazio
+      alert('Por favor, informe o motivo da recusa.');
+      return;
+    }
+
+    try {
+      await db.solicitacoesViagem.update(solicitacaoParaRecusar, { 
+        status: 'RECUSADA',
+        motivoRecusa: motivoRecusa
+      }); // Atualiza o status e adiciona o motivo da recusa
+      
+      alert('Solicitação recusada com sucesso!');
+      setMostrarModalRecusa(false); // Fecha o modal
+      setSolicitacaoParaRecusar(null); // Limpa a solicitação
+      setMotivoRecusa(''); // Limpa o motivo
+    } catch (error) {
+      alert('Erro ao recusar solicitação: ' + error.message);
+    }
+  };
+
+  const handleFecharModalRecusa = () => { // Função para fechar o modal de recusa
+    setMostrarModalRecusa(false);
+    setSolicitacaoParaRecusar(null);
+    setMotivoRecusa('');
   };
 
   const getNomeFuncionario = (id) => { // Função para obter o nome do funcionário
@@ -193,6 +231,58 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
           <p className="subtitulo">Gerencie as solicitações de viagem dos funcionários</p>
         </div>
       </div>
+
+      {/* Modal de Recusa */}
+      {mostrarModalRecusa && (
+        <div className="modal-overlay" onClick={handleFecharModalRecusa}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Motivo da Recusa</h3>
+              <button onClick={handleFecharModalRecusa} className="btn-fechar-modal">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="form-group">
+                <label>
+                  <FileText size={18} />
+                  Por que esta solicitação está sendo recusada? *
+                </label>
+                <textarea
+                  value={motivoRecusa}
+                  onChange={(e) => setMotivoRecusa(e.target.value)}
+                  placeholder="Ex: Orçamento insuficiente, viagem não justificada, data incompatível..."
+                  rows="4"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ced4da',
+                    borderRadius: '6px',
+                    fontSize: '1rem',
+                    fontFamily: 'inherit',
+                    resize: 'vertical'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={handleFecharModalRecusa} className="btn-cancelar">
+                Cancelar
+              </button>
+              <button 
+                onClick={handleConfirmarRecusa} 
+                className="btn-confirmar"
+                style={{ background: '#dc3545' }}
+              >
+                <XCircle size={18} />
+                Confirmar Recusa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!mostrarFormulario ? ( // Se não estiver mostrando o formulário
         <>
@@ -301,6 +391,17 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                       </div>
                     )}
 
+                    {/* Motivo da Recusa */}
+                    {sol.status === 'RECUSADA' && sol.motivoRecusa && (
+                      <div className="motivo-recusa-box"> {/* Box de motivo de recusa */}
+                        <XCircle size={16} />
+                        <div>
+                          <strong>Motivo da Recusa:</strong>
+                          <p>{sol.motivoRecusa}</p> {/* Motivo da recusa */}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="card-footer-solicitacao"> {/* Footer do card */}
                       <span className="data-solicitacao"> {/* Data de solicitação */}
                         Solicitado em: {formatarDataHora(sol.dataSolicitacao)} {/* Data e horário de solicitação */}
@@ -379,7 +480,7 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                 >
                   <option value="">Selecione a origem</option>
                   <option value="Rio de Janeiro - RJ">Rio de Janeiro - RJ</option>
-                  <option value="São Paulo - SP">São Paulo - SP</option>
+                  <option value="São Paulo - SP">São Paulo - SP</option>
                   <option value="Curitiba - PR">Curitiba - PR</option>
                   <option value="Belo Horizonte - MG">Belo Horizonte - MG</option>
                   <option value="Brasília - DF">Brasília - DF</option>
@@ -403,7 +504,7 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                 >
                   <option value="">Selecione o destino</option>
                   <option value="Rio de Janeiro - RJ">Rio de Janeiro - RJ</option>
-                  <option value="São Paulo - SP">São Paulo - SP</option>
+                  <option value="São Paulo - SP">São Paulo - SP</option>
                   <option value="Curitiba - PR">Curitiba - PR</option>
                   <option value="Belo Horizonte - MG">Belo Horizonte - MG</option>
                   <option value="Brasília - DF">Brasília - DF</option>

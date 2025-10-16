@@ -4,13 +4,13 @@ export const db = new Dexie('SistemaFuncionarios') // Nome do banco de dados
 
 db.version(6).stores({
   // Incrementar a versão do banco de dados
-  funcionarios: '++id, nome, cpf, cargo, departamento', // Adicionar campo 'departamento'
+  funcionarios: '++id, nome, cpf, cargo, departamento', 
   documentos:
-    '++id, funcionarioId, categoria, nomeArquivo, dataUpload, mes, ano, dataInicio, dataFim', // Adicionar campos 'dataInicio' e 'dataFim'
+    '++id, funcionarioId, categoria, nomeArquivo, dataUpload, mes, ano, dataInicio, dataFim',
   documentosEmpresa:
-    '++id, funcionarioId, categoriaEmpresa, nomeArquivo, dataUpload, mes, ano, fixado', // Adicionar campo 'fixado'
+    '++id, funcionarioId, categoriaEmpresa, nomeArquivo, dataUpload, mes, ano, fixado', 
   solicitacoesViagem:
-    '++id, solicitanteId, viajanteId, origem, destino, dataIda, horarioIda, dataVolta, horarioVolta, justificativa, observacao, status, dataSolicitacao', // Adicionar campo 'dataSolicitacao'
+    '++id, solicitanteId, viajanteId, origem, destino, dataIda, horarioIdaInicio, horarioIdaFim, dataVolta, horarioVoltaInicio, horarioVoltaFim, justificativa, observacao, status, dataSolicitacao, motivoRecusa',
 })
 
 export const CATEGORIAS = {
@@ -22,7 +22,9 @@ export const CATEGORIAS = {
   AJUSTE_PONTO: 'Ajuste de Ponto', // Chave para AJUSTE_PONTO
   LICENCA_MATERNIDADE_PATERNIDADE: 'Licença Maternidade/Paternidade', // Chave para LICENÇA_MATERNIDADE
   LICENCA_NOJO: 'Licença Nojo', // Chave para LICENÇA_NOJO
-  LICENCA_GALA: 'Licença Gala' // Chave para LICENCA_GALA
+  LICENCA_GALA: 'Licença Gala', // Chave para LICENCA_GALA
+  JUSTICA_ELEITORAL: 'Justica Eleitoral', // Chave para JUSTICA_ELEITORAL
+  DOACAO_SANGUE: 'Doação de Sangue', // Chave para DOACAO_SANGUE
 }
 
 export const CATEGORIAS_EMPRESA = {
@@ -32,6 +34,33 @@ export const CATEGORIAS_EMPRESA = {
   PASSAGENS_AEREAS: 'Passagens Aéreas', // Chave para PASSAGENS_AEREAS
 }
 
+export const DEPARTAMENTOS = [
+  'PRESI',
+  'DIRAP',
+  'DIBEN',
+  'GECAP',
+  'GECON',
+  'GEINF',
+  'GECOR',
+  'GEOPE',
+  'GETEC',
+  'GEFIN',
+  'GEBEN',
+  'GERIS',
+  'SELOG',
+  'SEFOP',
+  'SECON',
+  'SEBEN',
+  'SECAB',
+  'SECRE',
+  'SETES',
+  'SEMEF',
+  'SESUP',
+  'SEFIN',
+  'SEDES',
+  'AUDIT',
+  'COJUR',
+]
 export const DOCUMENTOS_EXEMPLO = {
   // Adicionar documentos de exemplo
   INCLUSAO_CONVENIO: [
