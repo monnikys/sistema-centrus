@@ -1,54 +1,93 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, STATUS_VIAGEM } from '../db';
-import { ArrowLeft, PlaneTakeoff, Plus, Trash2, MapPin, Calendar, Clock, FileText, User, CheckCircle, XCircle, AlertCircle, Briefcase } from 'lucide-react';
+import { ArrowLeft, PlaneTakeoff, Plus, Trash2, MapPin, Calendar, Clock, FileText, User, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
 
-function SolicitacaoViagem({ onVoltar }) {
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [viajanteId, setViajanteId] = useState('');
-  const [origem, setOrigem] = useState('');
-  const [destino, setDestino] = useState('');
-  const [dataIda, setDataIda] = useState('');
-  const [horarioIda, setHorarioIda] = useState('');
-  const [dataVolta, setDataVolta] = useState('');
-  const [horarioVolta, setHorarioVolta] = useState('');
-  const [justificativa, setJustificativa] = useState('');
-  const [observacao, setObservacao] = useState('');
-  const [filtroStatus, setFiltroStatus] = useState('todos');
+function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu principal
+  const [mostrarFormulario, setMostrarFormulario] = useState(false); // Estado para controlar a visibilidade do formulário
+  const [viajanteId, setViajanteId] = useState(''); // ID do viajante
+  const [origem, setOrigem] = useState(''); // Origem
+  const [destino, setDestino] = useState(''); // Destino
+  const [dataIda, setDataIda] = useState(''); // Data de ida
+  const [faixaHorarioIda, setFaixaHorarioIda] = useState([480, 720]); // 08:00 às 12:00 em minutos
+  const [dataVolta, setDataVolta] = useState(''); // Data de volta
+  const [faixaHorarioVolta, setFaixaHorarioVolta] = useState([1080, 1200]); // 18:00 às 20:00 em minutos
+  const [justificativa, setJustificativa] = useState(''); // Justificativa
+  const [observacao, setObservacao] = useState(''); // Observação
+  const [filtroStatus, setFiltroStatus] = useState('todos'); // Filtro de status
 
-  const funcionarios = useLiveQuery(() => db.funcionarios.toArray(), []);
-  const todasSolicitacoes = useLiveQuery(() => db.solicitacoesViagem.toArray(), []);
+  const minDistance = 60; // Distância mínima de 2 horas (120 minutos)
 
-  const solicitacoesFiltradas = todasSolicitacoes?.filter(sol => {
-    if (filtroStatus === 'todos') return true;
-    return sol.status === filtroStatus;
-  }).sort((a, b) => new Date(b.dataSolicitacao) - new Date(a.dataSolicitacao)) || [];
+  const funcionarios = useLiveQuery(() => db.funcionarios.toArray(), []); // Consulta todos os funcionários
+  const todasSolicitacoes = useLiveQuery(() => db.solicitacoesViagem.toArray(), []); // Consulta todas as solicitações
 
-  const limparFormulario = () => {
+  const solicitacoesFiltradas = todasSolicitacoes?.filter(sol => { // Filtra as solicitações conforme filtros aplicados
+    if (filtroStatus === 'todos') return true; // Sempre mostra todas as solicitações
+    return sol.status === filtroStatus; // Mostra apenas as solicitações com o status selecionado
+  }).sort((a, b) => new Date(b.dataSolicitacao) - new Date(a.dataSolicitacao)) || []; // Ordena as solicitações por data de solicitação (decrescente)
+
+  const limparFormulario = () => { // Função para limpar o formulário
     setViajanteId('');
     setOrigem('');
     setDestino('');
     setDataIda('');
-    setHorarioIda('');
+    setFaixaHorarioIda([480, 720]);
     setDataVolta('');
-    setHorarioVolta('');
+    setFaixaHorarioVolta([1080, 1200]);
     setJustificativa('');
     setObservacao('');
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Função para converter minutos em horário HH:mm
+  const minutosParaHorario = (minutos) => { 
+    const horas = Math.floor(minutos / 60); // Dividir por 60 para obter as horas
+    const mins = minutos % 60; // Obter os minutos
+    return `${String(horas).padStart(2, '0')}:${String(mins).padStart(2, '0')}`; // Retornar o horário formatado
+  };
 
-    try {
-      await db.solicitacoesViagem.add({
+  // Função para lidar com mudança de horário de ida com distância mínima
+  const handleChangeHorarioIda = (event, newValue, activeThumb) => { 
+    if (!Array.isArray(newValue)) { // Verificar se newValue é um array
+      return;
+    }
+
+    if (activeThumb === 0) { // Verificar se o thumb ativo é o primeiro
+      setFaixaHorarioIda([Math.min(newValue[0], faixaHorarioIda[1] - minDistance), faixaHorarioIda[1]]); // Atualizar faixaHorarioIda
+    } else { // Se o thumb ativo é o segundo
+      setFaixaHorarioIda([faixaHorarioIda[0], Math.max(newValue[1], faixaHorarioIda[0] + minDistance)]); // Atualizar faixaHorarioIda
+    }
+  };
+
+  // Função para lidar com mudança de horário de volta com distância mínima
+  const handleChangeHorarioVolta = (event, newValue, activeThumb) => { // Função para lidar com mudança de horário de volta
+    if (!Array.isArray(newValue)) { // Verificar se newValue é um array
+      return;
+    }
+
+    if (activeThumb === 0) { // Verificar se o thumb ativo é o primeiro
+      setFaixaHorarioVolta([Math.min(newValue[0], faixaHorarioVolta[1] - minDistance), faixaHorarioVolta[1]]); // Atualizar faixaHorarioVolta
+    } else { // Se o thumb ativo é o segundo  
+      setFaixaHorarioVolta([faixaHorarioVolta[0], Math.max(newValue[1], faixaHorarioVolta[0] + minDistance)]); // Atualizar faixaHorarioVolta
+    }
+  };
+
+  const handleSubmit = async (e) => { // Função para lidar com envio do formulário
+    e.preventDefault(); // Evitar o comportamento padrão do formulário
+
+    try { // Tenta criar a solicitação
+      await db.solicitacoesViagem.add({// Cria a solicitação
         solicitanteId: 1,
         viajanteId: parseInt(viajanteId),
         origem,
         destino,
         dataIda,
-        horarioIda,
+        horarioIdaInicio: minutosParaHorario(faixaHorarioIda[0]),
+        horarioIdaFim: minutosParaHorario(faixaHorarioIda[1]),
         dataVolta,
-        horarioVolta,
+        horarioVoltaInicio: minutosParaHorario(faixaHorarioVolta[0]),
+        horarioVoltaFim: minutosParaHorario(faixaHorarioVolta[1]),
         justificativa,
         observacao,
         status: 'PENDENTE',
@@ -58,47 +97,47 @@ function SolicitacaoViagem({ onVoltar }) {
       alert('Solicitação de viagem criada com sucesso!');
       limparFormulario();
       setMostrarFormulario(false);
-    } catch (error) {
+    } catch (error) { // Caso ocorra algum erro
       alert('Erro ao criar solicitação: ' + error.message);
     }
   };
 
-  const handleExcluir = async (id) => {
+  const handleExcluir = async (id) => { // Função para lidar com exclusão de solicitações
     if (window.confirm('Deseja excluir esta solicitação de viagem?')) {
       try {
-        await db.solicitacoesViagem.delete(id);
+        await db.solicitacoesViagem.delete(id); // Exclui a solicitação
         alert('Solicitação excluída com sucesso!');
-      } catch (error) {
+      } catch (error) { // Caso ocorra algum erro
         alert('Erro ao excluir solicitação: ' + error.message);
       }
     }
   };
 
-  const handleAlterarStatus = async (id, novoStatus) => {
-    try {
-      await db.solicitacoesViagem.update(id, { status: novoStatus });
+  const handleAlterarStatus = async (id, novoStatus) => { // Função para lidar com alteração de status
+    try { // Tenta atualizar o status
+      await db.solicitacoesViagem.update(id, { status: novoStatus }); // Atualiza o status
       alert('Status atualizado com sucesso!');
-    } catch (error) {
+    } catch (error) { // Caso ocorra algum erro
       alert('Erro ao atualizar status: ' + error.message);
     }
   };
 
-  const getNomeFuncionario = (id) => {
-    const func = funcionarios?.find(f => f.id === id);
-    return func ? func.nome : 'N/A';
+  const getNomeFuncionario = (id) => { // Função para obter o nome do funcionário
+    const func = funcionarios?.find(f => f.id === id); // Encontra
+    return func ? func.nome : 'N/A'; // Retorna
   };
 
-  const getDepartamentoFuncionario = (id) => {
-    const func = funcionarios?.find(f => f.id === id);
-    return func ? func.departamento : 'N/A';
+  const getDepartamentoFuncionario = (id) => { // Função para obter o departamento do funcionário
+    const func = funcionarios?.find(f => f.id === id); // Encontra
+    return func ? func.departamento : 'N/A'; // Retorna
   };
 
-  const formatarData = (dataString) => {
-    return new Date(dataString + 'T00:00:00').toLocaleDateString('pt-BR');
+  const formatarData = (dataString) => { // Função para formatar data
+    return new Date(dataString + 'T00:00:00').toLocaleDateString('pt-BR'); // Converte para pt-BR
   };
 
-  const formatarDataHora = (dataISO) => {
-    return new Date(dataISO).toLocaleDateString('pt-BR', {
+  const formatarDataHora = (dataISO) => { // Função para formatar data e hora
+    return new Date(dataISO).toLocaleDateString('pt-BR', { // Converte para pt-BR
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -107,13 +146,12 @@ function SolicitacaoViagem({ onVoltar }) {
     });
   };
 
-  const formatarHorario = (horario) => {
-    if (!horario) return 'N/A';
-    // Se vier no formato HH:mm, retorna direto
+  const formatarHorario = (horario) => { // Função para formatar horário
+    if (!horario) return 'N/A'; // Se horário estiver vazio, retorna "N/A"
     return horario;
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status) => { // Função para obter o icone do status
     switch (status) {
       case 'APROVADA':
         return <CheckCircle size={20} />;
@@ -124,7 +162,7 @@ function SolicitacaoViagem({ onVoltar }) {
     }
   };
 
-  const getStatusClass = (status) => {
+  const getStatusClass = (status) => { // Função para obter a classe do status
     switch (status) {
       case 'APROVADA':
         return 'status-aprovada';
@@ -136,8 +174,8 @@ function SolicitacaoViagem({ onVoltar }) {
   };
 
   return (
-    <div className="solicitacao-viagem-container">
-      <div className="documentos-header">
+    <div className="solicitacao-viagem-container"> {/* Container principal */}
+      <div className="documentos-header"> {/* Header */}
         <button onClick={onVoltar} className="btn-voltar">
           <ArrowLeft size={20} />
           Voltar
@@ -148,20 +186,20 @@ function SolicitacaoViagem({ onVoltar }) {
         </div>
       </div>
 
-      {!mostrarFormulario ? (
+      {!mostrarFormulario ? ( // Se não estiver mostrando o formulário
         <>
-          <div className="acoes-viagem-header">
+          <div className="acoes-viagem-header"> {/* Header de ações */}
             <button onClick={() => setMostrarFormulario(true)} className="btn-nova-solicitacao">
               <Plus size={20} />
               Nova Solicitação
             </button>
 
-            <div className="filtro-status-viagem">
+            <div className="filtro-status-viagem"> {/* Filtro de status */}
               <label>Filtrar por Status:</label>
               <select 
                 value={filtroStatus}
                 onChange={(e) => setFiltroStatus(e.target.value)}
-                className="select-filtro"
+                className="select-filtro" // Estilos do select
               >
                 <option value="todos">Todos</option>
                 <option value="PENDENTE">Pendentes</option>
@@ -171,9 +209,9 @@ function SolicitacaoViagem({ onVoltar }) {
             </div>
           </div>
 
-          <div className="lista-solicitacoes">
+          <div className="lista-solicitacoes"> {/* Lista de solicitações */}
             {solicitacoesFiltradas.length === 0 ? (
-              <div className="sem-documentos">
+              <div className="sem-documentos"> {/* Caso nenhuma solicitação seja encontrada */}
                 <PlaneTakeoff size={48} />
                 <p>
                   {filtroStatus === 'todos' 
@@ -182,92 +220,96 @@ function SolicitacaoViagem({ onVoltar }) {
                 </p>
               </div>
             ) : (
-              <div className="solicitacoes-grid">
-                {solicitacoesFiltradas.map(sol => (
-                  <div key={sol.id} className={`card-solicitacao ${getStatusClass(sol.status)}`}>
-                    <div className="card-header-solicitacao">
-                      <div className="viajante-info">
+              <div className="solicitacoes-grid"> {/* Grid de solicitações */}
+                {solicitacoesFiltradas.map(sol => ( //  Mapeia as solicitações
+                  <div key={sol.id} className={`card-solicitacao ${getStatusClass(sol.status)}`}> {/* Card de solicitação */}
+                    <div className="card-header-solicitacao"> {/* Header do card */}
+                      <div className="viajante-info">   {/* Informações do viajante */}
                         <User size={20} />
                         <div>
-                          <h4>{getNomeFuncionario(sol.viajanteId)}</h4>
-                          <p>{getDepartamentoFuncionario(sol.viajanteId)}</p>
+                          <h4>{getNomeFuncionario(sol.viajanteId)}</h4> {/* Nome do viajante */}
+                          <p>{getDepartamentoFuncionario(sol.viajanteId)}</p> {/* Departamento do viajante */}
                         </div>
                       </div>
-                      <div className={`badge-status ${getStatusClass(sol.status)}`}>
+                      <div className={`badge-status ${getStatusClass(sol.status)}`}> {/* Badge de status */}
                         {getStatusIcon(sol.status)}
                         {STATUS_VIAGEM[sol.status]}
                       </div>
                     </div>
 
-                    <div className="rota-viagem">
-                      <div className="local-viagem">
+                    <div className="rota-viagem"> {/* Rota da solicitação */}
+                      <div className="local-viagem"> {/* Local de partida e chegada */}
                         <MapPin size={16} />
                         <div>
-                          <span className="label-local">Origem</span>
-                          <span className="nome-local">{sol.origem}</span>
+                          <span className="label-local">Origem</span> {/* Label "Origem" */}
+                          <span className="nome-local">{sol.origem}</span> {/* Nome do local de partida */}
                         </div>
                       </div>
-                      <div className="seta-rota">→</div>
-                      <div className="local-viagem">
+                      <div className="seta-rota">→</div> {/* Seta de rota */}
+                      <div className="local-viagem"> {/* Local de chegada */}
                         <MapPin size={16} />
                         <div>
-                          <span className="label-local">Destino</span>
-                          <span className="nome-local">{sol.destino}</span>
+                          <span className="label-local">Destino</span> {/* Label "Destino" */}
+                          <span className="nome-local">{sol.destino}</span> {/* Nome do local de chegada */}
                         </div>
                       </div>
                     </div>
 
-                    <div className="datas-viagem">
-                      <div className="data-info">
+                    <div className="datas-viagem"> {/* Datas da solicitação */}
+                      <div className="data-info"> {/* Informações de data e horário */}
                         <Calendar size={16} />
                         <div>
-                          <span className="label-data">Ida</span>
-                          <span className="valor-data">{formatarData(sol.dataIda)}</span>
-                          <span className="horario-badge">{formatarHorario(sol.horarioIda)}</span>
+                          <span className="label-data">Ida</span> {/* Label "Ida" */}
+                          <span className="valor-data">{formatarData(sol.dataIda)}</span> {/* Data de ida */}
+                          <span className="horario-badge">{/* Horário de ida */}
+                              {formatarHorario(sol.horarioIdaInicio)} - {formatarHorario(sol.horarioIdaFim)}
+                          </span>
                         </div>
                       </div>
-                      <div className="data-info">
+                      <div className="data-info"> {/* Informações de data e horário */}
                         <Calendar size={16} />
                         <div>
-                          <span className="label-data">Volta</span>
-                          <span className="valor-data">{formatarData(sol.dataVolta)}</span>
-                          <span className="horario-badge">{formatarHorario(sol.horarioVolta)}</span>
+                          <span className="label-data">Volta</span> {/* Label "Volta" */}
+                          <span className="valor-data">{formatarData(sol.dataVolta)}</span> {/* Data de volta */}
+                          <span className="horario-badge"> {/* Horário de volta */}
+                            {formatarHorario(sol.horarioVoltaInicio)} - {formatarHorario(sol.horarioVoltaFim)}
+                          </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="justificativa-box">
+                    <div className="justificativa-box"> {/* Box de justificativa */}
                       <FileText size={16} />
                       <div>
                         <strong>Justificativa:</strong>
-                        <p>{sol.justificativa}</p>
+                        <p>{sol.justificativa}</p> {/* Justificativa da solicitação */}
                       </div>
                     </div>
 
                     {sol.observacao && (
-                      <div className="observacao-box">
+                      <div className="observacao-box"> {/* Box de observação */}
                         <strong>Observação:</strong>
-                        <p>{sol.observacao}</p>
+                        <p>{sol.observacao}</p> {/* Observação da solicitação */}
                       </div>
                     )}
 
-                    <div className="card-footer-solicitacao">
-                      <span className="data-solicitacao">
-                        Solicitado em: {formatarDataHora(sol.dataSolicitacao)}
+                    <div className="card-footer-solicitacao"> {/* Footer do card */}
+                      <span className="data-solicitacao"> {/* Data de solicitação */}
+                        Solicitado em: {formatarDataHora(sol.dataSolicitacao)} {/* Data e horário de solicitação */}
                       </span>
-                      <div className="acoes-solicitacao">
-                        {sol.status === 'PENDENTE' && (
+                      <div className="acoes-solicitacao"> {/* Ações da solicitação */}
+                        {sol.status === 'PENDENTE' && ( // Se o status da solicitação for "PENDENTE"
                           <>
                             <button
                               onClick={() => handleAlterarStatus(sol.id, 'APROVADA')}
-                              className="btn-acao-status btn-aprovar"
+                              className="btn-acao-status btn-aprovar" //* Botão aprovar */
                               title="Aprovar"
                             >
                               <CheckCircle size={16} />
                             </button>
                             <button
                               onClick={() => handleAlterarStatus(sol.id, 'RECUSADA')}
-                              className="btn-acao-status btn-recusar"
+                              className="btn-acao-status btn-recusar" //* Botão recusar */
                               title="Recusar"
                             >
                               <XCircle size={16} />
@@ -276,7 +318,7 @@ function SolicitacaoViagem({ onVoltar }) {
                         )}
                         <button
                           onClick={() => handleExcluir(sol.id)}
-                          className="btn-acao-status btn-excluir-sol"
+                          className="btn-acao-status btn-excluir-sol" //* Botão excluir */
                           title="Excluir"
                         >
                           <Trash2 size={16} />
@@ -290,13 +332,13 @@ function SolicitacaoViagem({ onVoltar }) {
           </div>
         </>
       ) : (
-        <div className="formulario-viagem">
-          <div className="form-header">
+        <div className="formulario-viagem"> {/* Formulário de solicitação de viagem */}
+          <div className="form-header"> {/* Header do formulário */}
             <h3>Nova Solicitação de Viagem</h3>
           </div>
 
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
+            <div className="form-group"> {/* Campo para selecionar o funcionário viajante */}
               <label>
                 <User size={18} />
                 Viajante *
@@ -304,50 +346,70 @@ function SolicitacaoViagem({ onVoltar }) {
               <select
                 value={viajanteId}
                 onChange={(e) => setViajanteId(e.target.value)}
-                className="select-filtro"
+                className="select-filtro" //* Estilo do select */
                 required
               >
                 <option value="">Selecione o funcionário viajante</option>
-                {funcionarios?.map(func => (
-                  <option key={func.id} value={func.id}>
-                    {func.nome} - {func.departamento}
+                {funcionarios?.map(func => ( // Mapeia os funcionários e cria as opções do select
+                  <option key={func.id} value={func.id}> {/* Valor do option */}
+                    {func.nome} - {func.departamento} {/* Nome e departamento do funcionário */}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
+            <div className="form-row"> {/* Linha de campos */}
+              <div className="form-group"> {/* Campo para selecionar a origem */}
                 <label>
                   <MapPin size={18} />
                   Origem *
-                </label>
-                <input
-                  type="text"
+                </label> 
+                <select
                   value={origem}
                   onChange={(e) => setOrigem(e.target.value)}
-                  placeholder="Ex: São Paulo - SP"
                   required
-                />
+                >
+                  <option value="">Selecione a origem</option>
+                  <option value="Rio de Janeiro - RJ">Rio de Janeiro - RJ</option>
+                  <option value="São Paulo - SP">São Paulo - SP</option>
+                  <option value="Curitiba - PR">Curitiba - PR</option>
+                  <option value="Belo Horizonte - MG">Belo Horizonte - MG</option>
+                  <option value="Brasília - DF">Brasília - DF</option>
+                  <option value="Salvador - BA">Salvador - BA</option>
+                  <option value="Recife - PE">Recife - PE</option>
+                  <option value="Fortaleza - CE">Fortaleza - CE</option>
+                  <option value="Porto Alegre - RS">Porto Alegre - RS</option>
+                  <option value="Manaus - AM">Manaus - AM</option>
+                </select>
               </div>
 
-              <div className="form-group">
+              <div className="form-group"> {/* Campo para selecionar o destino */}
                 <label>
                   <MapPin size={18} />
                   Destino *
                 </label>
-                <input
-                  type="text"
+                <select
                   value={destino}
                   onChange={(e) => setDestino(e.target.value)}
-                  placeholder="Ex: Rio de Janeiro - RJ"
                   required
-                />
+                >
+                  <option value="">Selecione o destino</option>
+                  <option value="Rio de Janeiro - RJ">Rio de Janeiro - RJ</option>
+                  <option value="São Paulo - SP">São Paulo - SP</option>
+                  <option value="Curitiba - PR">Curitiba - PR</option>
+                  <option value="Belo Horizonte - MG">Belo Horizonte - MG</option>
+                  <option value="Brasília - DF">Brasília - DF</option>
+                  <option value="Salvador - BA">Salvador - BA</option>
+                  <option value="Recife - PE">Recife - PE</option>
+                  <option value="Fortaleza - CE">Fortaleza - CE</option>
+                  <option value="Porto Alegre - RS">Porto Alegre - RS</option>
+                  <option value="Manaus - AM">Manaus - AM</option>
+                </select>
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
+            <div className="form-row"> {/* Linha de campos */}
+              <div className="form-group"> {/* Campo para selecionar a data de ida */}
                 <label>
                   <Calendar size={18} />
                   Data de Ida *
@@ -360,23 +422,96 @@ function SolicitacaoViagem({ onVoltar }) {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group"> {/* Campo para selecionar o horário de ida */}
                 <label>
                   <Clock size={18} />
-                  Horário de Ida *
+                   Horário de Ida *
                 </label>
-                <input
-                  type="time"
-                  value={horarioIda}
-                  onChange={(e) => setHorarioIda(e.target.value)}
-                  className="input-time"
-                  required
-                />
+                <div style={{ // Estilo do container do horário
+                  padding: '25px 20px', 
+                  backgroundColor: '#fff', 
+                  borderRadius: '8px',
+                  border: '1px solid #ced4da'
+                }}>
+                  <div style={{ // Estilo do horário
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '25px'
+                  }}>
+                    <div style={{ textAlign: 'center', flex: 1 }}> {/* Estilo do início do horário */}
+                      <div style={{ fontSize: '0.7rem', color: '#6c757d', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Início</div> {/* Label do início do horário */}
+                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}> {/* Estilo do valor do início do horário */}
+                        {minutosParaHorario(faixaHorarioIda[0])}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '1.2rem', color: '#adb5bd', padding: '0 20px' }}>→</div> {/* Ícone de seta */}
+                    <div style={{ textAlign: 'center', flex: 1 }}> {/* Estilo do fim do horário */}
+                      <div style={{ fontSize: '0.7rem', color: '#6c757d', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fim</div> {/* Label do fim do horário */}
+                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}> {/* Estilo do valor do fim do horário */}
+                        {minutosParaHorario(faixaHorarioIda[1])}
+                      </div>
+                    </div>
+                  </div>
+                  <Box sx={{ px: 1 }}> {/* Box do slider */}
+                    <Slider
+                      getAriaLabel={() => 'Faixa de horário de ida'}
+                      value={faixaHorarioIda}
+                      onChange={handleChangeHorarioIda}
+                      valueLabelDisplay="auto"
+                      valueLabelFormat={(value) => minutosParaHorario(value)}
+                      getAriaValueText={(value) => minutosParaHorario(value)}
+                      min={0}
+                      max={1440}
+                      step={15}
+                      disableSwap
+                      marks={[
+                        { value: 0, label: '00:00' },
+                        { value: 360, label: '06:00' },
+                        { value: 720, label: '12:00' },
+                        { value: 1080, label: '18:00' },
+                        { value: 1440, label: '23:59' }
+                      ]}
+                      sx={{ // Estilo do slider
+                        color: '#667eea',
+                        '& .MuiSlider-thumb': { // Estilo do thumb
+                          width: 18,
+                          height: 18,
+                          backgroundColor: '#fff',
+                          border: '2px solid currentColor',
+                          '&:hover, &.Mui-focusVisible': {
+                            boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
+                          },
+                        },
+                        '& .MuiSlider-track': { // Estilo do trilho
+                          height: 4,
+                        },
+                        '& .MuiSlider-rail': { // Estilo do trilho do slider
+                          height: 4,
+                          opacity: 0.2,
+                          backgroundColor: '#dee2e6',
+                        },
+                        '& .MuiSlider-markLabel': { // Estilo das marcas do slider
+                          fontSize: '0.7rem',
+                          color: '#adb5bd',
+                        },
+                      }}
+                    />
+                  </Box> {/* Fim do box do slider */}
+                  <div style={{ // Estilo da distância mínima
+                    marginTop: '15px',
+                    fontSize: '0.75rem',
+                    color: '#adb5bd',
+                    textAlign: 'center'
+                  }}>
+                    Distância mínima: 2 horas
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
+            <div className="form-row"> {/* Linha do formulário */}
+              <div className="form-group"> {/* Campo para selecionar a data de volta */}
                 <label>
                   <Calendar size={18} />
                   Data de Volta *
@@ -390,22 +525,95 @@ function SolicitacaoViagem({ onVoltar }) {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group"> {/* Campo para selecionar o horário de volta */}
                 <label>
                   <Clock size={18} />
                   Horário de Volta *
                 </label>
-                <input
-                  type="time"
-                  value={horarioVolta}
-                  onChange={(e) => setHorarioVolta(e.target.value)}
-                  className="input-time"
-                  required
-                />
+                <div style={{ // Estilo do box do horário de volta
+                  padding: '25px 20px', 
+                  backgroundColor: '#fff', 
+                  borderRadius: '8px',
+                  border: '1px solid #ced4da'
+                }}>
+                  <div style={{ // Estilo do horário de volta
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '25px'
+                  }}>
+                    <div style={{ textAlign: 'center', flex: 1 }}> {/* Estilo do início do horário de volta */}
+                      <div style={{ fontSize: '0.7rem', color: '#6c757d', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Início</div> {/* Label do início do horário de volta */}
+                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}> {/* Estilo do valor do início do horário de volta */}
+                        {minutosParaHorario(faixaHorarioVolta[0])}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '1.2rem', color: '#adb5bd', padding: '0 20px' }}>→</div> {/* Ícone de seta */}
+                    <div style={{ textAlign: 'center', flex: 1 }}> {/* Estilo do fim do horário de volta */}
+                      <div style={{ fontSize: '0.7rem', color: '#6c757d', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fim</div>  {/* Label do fim do horário de volta */}
+                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}>  {/* Estilo do valor do fim do horário de volta */}
+                        {minutosParaHorario(faixaHorarioVolta[1])}
+                      </div>
+                    </div>
+                  </div>
+                  <Box sx={{ px: 1 }}> {/* Box do slider do horário de volta */}
+                    <Slider
+                      getAriaLabel={() => 'Faixa de horário de volta'}
+                      value={faixaHorarioVolta}
+                      onChange={handleChangeHorarioVolta}
+                      valueLabelDisplay="auto"
+                      valueLabelFormat={(value) => minutosParaHorario(value)}
+                      getAriaValueText={(value) => minutosParaHorario(value)}
+                      min={0}
+                      max={1440}
+                      step={15}
+                      disableSwap
+                      marks={[
+                        { value: 0, label: '00:00' },
+                        { value: 360, label: '06:00' },
+                        { value: 720, label: '12:00' },
+                        { value: 1080, label: '18:00' },
+                        { value: 1440, label: '24:00' }
+                      ]}
+                      sx={{ // Estilo do slider do horário de volta
+                        color: '#667eea',
+                        '& .MuiSlider-thumb': {
+                          width: 18,
+                          height: 18,
+                          backgroundColor: '#fff',
+                          border: '2px solid currentColor',
+                          '&:hover, &.Mui-focusVisible': {
+                            boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
+                          },
+                        },
+                        '& .MuiSlider-track': { // Estilo do trilho do slider
+                          height: 4,
+                        },
+                        '& .MuiSlider-rail': { // Estilo do trilho do slider
+                          height: 4,
+                          opacity: 0.2,
+                          backgroundColor: '#dee2e6',
+                        },
+                        '& .MuiSlider-markLabel': { // Estilo das marcas do slider
+                          fontSize: '0.7rem',
+                          color: '#adb5bd',
+                        },
+                      }}
+                    />
+                  </Box>
+                  <div style={{ // Estilo da distância mínima do horário de volta
+                    marginTop: '15px',
+                    fontSize: '0.75rem',
+                    color: '#adb5bd',
+                    textAlign: 'center'
+                  }}>
+                    Distância mínima: 2 horas
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-group"> {/* Campo de justificativa */}
               <label>
                 <FileText size={18} />
                 Justificativa *
@@ -419,7 +627,7 @@ function SolicitacaoViagem({ onVoltar }) {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group"> {/* Campo de observação */}
               <label>
                 <FileText size={18} />
                 Observação (opcional)
@@ -427,19 +635,19 @@ function SolicitacaoViagem({ onVoltar }) {
               <textarea
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
-                placeholder="Informações adicionais... Ex: Assento, companhia aérea, número do voo ou outras informações relevantes."
+                placeholder="Ex: Assento, companhia aérea, número do voo ou outras informações relevantes."
                 rows="3"
               />
             </div>
 
-            <div className="form-actions">
+            <div className="form-actions"> {/* Botoes de confirmar e cancelar */}
               <button
                 type="button"
                 onClick={() => {
                   setMostrarFormulario(false);
                   limparFormulario();
                 }}
-                className="btn-cancelar"
+                className="btn-cancelar" // Botão de cancelar
               >
                 Cancelar
               </button>
@@ -455,4 +663,4 @@ function SolicitacaoViagem({ onVoltar }) {
   );
 }
 
-export default SolicitacaoViagem;
+export default SolicitacaoViagem; // Exporta o componente
