@@ -274,6 +274,11 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
                 >
                   <option value="usuario">Usuário Padrão</option> {/* Opção de usuário padrão */}
                   <option value="admin">Administrador</option> {/* Opção de administrador */}
+                  <option value="presi">Presi</option> {/* Opção de PRESI */}
+                  <option value="diretor">Diretor</option> {/* Opção de DIRETOR */}
+                  <option value="gecon">Gecon</option> {/* Opção de GECON */}
+                  <option value="presi">Secre</option> {/* Opção de SECRE */}
+                  <option value="diretor">Conse</option> {/* Opção de CONSE */}
                 </select>
               </div>
             </div>
