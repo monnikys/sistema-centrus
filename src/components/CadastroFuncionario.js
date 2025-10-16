@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../db';
+import { CARGOS, db } from '../db';
 import { ArrowLeft, Save } from 'lucide-react';
+import { DEPARTAMENTOS } from '../db';
 
 function CadastroFuncionario({ funcionario, onVoltar }) {  // Componente que cadastra ou edita funcionários; recebe o funcionário e uma função para voltar
   const [formData, setFormData] = useState({  // Estado que armazena os dados do formulário
@@ -76,24 +77,37 @@ function CadastroFuncionario({ funcionario, onVoltar }) {  // Componente que cad
         <div className="form-row">  {/* Linha com dois campos lado a lado */}
           <div className="form-group">  {/* Campo: Cargo */}
             <label>Cargo *</label>
-            <input
-              type="text"
-              name="cargo"
+            <select 
               value={formData.cargo}
               onChange={handleChange}
+              className="select-filtro"
               required
-            />
+            >
+              <option value="">Selecione um cargo</option>
+              {CARGOS.map((dep, index) => (
+                <option key={index} value={dep}>
+                  {dep}
+                </option>
+              ))}  
+            </select>
+              
           </div>
 
           <div className="form-group">  {/* Campo: Departamento */}
             <label>Departamento *</label>
-            <input
-              type="text"
-              name="departamento"
+            <select
               value={formData.departamento}
               onChange={handleChange}
               required
-            />
+            >
+              <option value="">Selecione um cargo</option>
+              {DEPARTAMENTOS.map((dep, index) => (
+                <option key={index} value={dep}>
+                  {dep}
+                </option>
+              ))}  
+            </select>
+              
           </div>
         </div>
 

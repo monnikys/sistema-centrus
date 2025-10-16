@@ -61,6 +61,37 @@ export const DEPARTAMENTOS = [
   'AUDIT',
   'COJUR',
 ]
+
+export const CARGOS = [
+  'Advogada Jr. B',
+  'Advogada Sr. D',
+  'Advogado Pl. E',
+  'Advogado Sr. E',
+  'Analista Jr. A',
+  'Analista Jr. B',
+  'Analista Jr. C',
+  'Analista Jr. D',
+  'Analista Jr. E',
+  'Analista Jr. F',
+  'Analista Pl. A',
+  'Analista Pl. B',
+  'Analista Pl. C',
+  'Analista Pl. E',
+  'Analista Pl. F',
+  'Analista Sr. A',
+  'Analista Sr. B',
+  'Analista Sr. C',
+  'Analista Sr. D',
+  'Analista Sr. E',
+  'Analista Sr. F',
+  'Diretor',
+  'Diretor-Presidente',
+  'Estagiário',
+  'Gerente',
+  'Gerente Geral',
+  
+]
+
 export const DOCUMENTOS_EXEMPLO = {
   // Adicionar documentos de exemplo
   INCLUSAO_CONVENIO: [
