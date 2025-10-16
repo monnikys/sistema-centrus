@@ -49,14 +49,6 @@ export const DOCUMENTOS_EXEMPLO = {
   ],
 }
 
-export const HORARIOS_VIAGEM = {
-  // Definir horários de viagem
-  MADRUGADA: 'Madrugada (00h - 06h)', // Chave para MADRUGADA
-  MANHA: 'Manhã (06h - 12h)', // Chave para MANHA
-  TARDE: 'Tarde (12h - 18h)', // Chave para TARDE
-  NOITE: 'Noite (18h - 00h)', // Chave para NOITE
-}
-
 export const STATUS_VIAGEM = {
   // Definir status de viagem
   PENDENTE: 'Pendente', // Chave para PENDENTE

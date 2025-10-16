@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, HORARIOS_VIAGEM, STATUS_VIAGEM } from '../db';
+import { db, STATUS_VIAGEM } from '../db';
 import { ArrowLeft, PlaneTakeoff, Plus, Trash2, MapPin, Calendar, Clock, FileText, User, CheckCircle, XCircle, AlertCircle, Briefcase } from 'lucide-react';
 
 function SolicitacaoViagem({ onVoltar }) {
@@ -105,6 +105,12 @@ function SolicitacaoViagem({ onVoltar }) {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const formatarHorario = (horario) => {
+    if (!horario) return 'N/A';
+    // Se vier no formato HH:mm, retorna direto
+    return horario;
   };
 
   const getStatusIcon = (status) => {
@@ -217,7 +223,7 @@ function SolicitacaoViagem({ onVoltar }) {
                         <div>
                           <span className="label-data">Ida</span>
                           <span className="valor-data">{formatarData(sol.dataIda)}</span>
-                          <span className="horario-badge">{HORARIOS_VIAGEM[sol.horarioIda]}</span>
+                          <span className="horario-badge">{formatarHorario(sol.horarioIda)}</span>
                         </div>
                       </div>
                       <div className="data-info">
@@ -225,7 +231,7 @@ function SolicitacaoViagem({ onVoltar }) {
                         <div>
                           <span className="label-data">Volta</span>
                           <span className="valor-data">{formatarData(sol.dataVolta)}</span>
-                          <span className="horario-badge">{HORARIOS_VIAGEM[sol.horarioVolta]}</span>
+                          <span className="horario-badge">{formatarHorario(sol.horarioVolta)}</span>
                         </div>
                       </div>
                     </div>
@@ -359,17 +365,13 @@ function SolicitacaoViagem({ onVoltar }) {
                   <Clock size={18} />
                   Horário de Ida *
                 </label>
-                <select
+                <input
+                  type="time"
                   value={horarioIda}
                   onChange={(e) => setHorarioIda(e.target.value)}
-                  className="select-filtro"
+                  className="input-time"
                   required
-                >
-                  <option value="">Selecione o horário</option>
-                  {Object.entries(HORARIOS_VIAGEM).map(([key, label]) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
 
@@ -393,17 +395,13 @@ function SolicitacaoViagem({ onVoltar }) {
                   <Clock size={18} />
                   Horário de Volta *
                 </label>
-                <select
+                <input
+                  type="time"
                   value={horarioVolta}
                   onChange={(e) => setHorarioVolta(e.target.value)}
-                  className="select-filtro"
+                  className="input-time"
                   required
-                >
-                  <option value="">Selecione o horário</option>
-                  {Object.entries(HORARIOS_VIAGEM).map(([key, label]) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
 
@@ -429,7 +427,7 @@ function SolicitacaoViagem({ onVoltar }) {
               <textarea
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
-                placeholder="Informações adicionais..."
+                placeholder="Informações adicionais... Ex: Assento, companhia aérea, número do voo ou outras informações relevantes."
                 rows="3"
               />
             </div>
