@@ -89,8 +89,32 @@ export const CARGOS = [
   'Estagiário',
   'Gerente',
   'Gerente Geral',
-  
+
 ]
+
+export const AEROPORTOS = [
+  { nome: 'Aeroporto Internacional de São Paulo-Guarulhos', iata: 'GRU', icao: 'SBGR' },
+  { nome: 'Aeroporto de São Paulo-Congonhas', iata: 'CGH', icao: 'SBSP' },
+  { nome: 'Aeroporto Internacional de Brasília', iata: 'BSB', icao: 'SBBR' },
+  { nome: 'Aeroporto Internacional do Rio de Janeiro-Galeão', iata: 'GIG', icao: 'SBGL' },
+  { nome: 'Aeroporto Internacional de Campinas (Viracopos)', iata: 'VCP', icao: 'SBKP' },
+  { nome: 'Aeroporto Internacional de Belo Horizonte-Confins', iata: 'CNF', icao: 'SBCF' },
+  { nome: 'Aeroporto Internacional do Recife-Guararapes', iata: 'REC', icao: 'SBRF' },
+  { nome: 'Aeroporto Internacional de Salvador', iata: 'SSA', icao: 'SBSV' },
+  { nome: 'Aeroporto do Rio de Janeiro-Santos Dumont', iata: 'SDU', icao: 'SBRJ' },
+  { nome: 'Aeroporto Internacional de Curitiba (Afonso Pena)', iata: 'CWB', icao: 'SBCT' },
+  { nome: 'Aeroporto Internacional de Fortaleza', iata: 'FOR', icao: 'SBFZ' },
+  { nome: 'Aeroporto Internacional de Florianópolis', iata: 'FLN', icao: 'SBFL' },
+  { nome: 'Aeroporto Internacional de Belém (Val de Cans)', iata: 'BEL', icao: 'SBBE' },
+  { nome: 'Aeroporto Internacional de Goiânia (Santa Genoveva)', iata: 'GYN', icao: 'SBGO' },
+  { nome: 'Aeroporto Internacional de Porto Alegre', iata: 'POA', icao: 'SBPA' },
+  { nome: 'Aeroporto Internacional de Vitória (Eurico de Aguiar Salles)', iata: 'VIX', icao: 'SBVT' },
+  { nome: 'Aeroporto Internacional de Manaus (Eduardo Gomes)', iata: 'MAO', icao: 'SBEG' },
+  { nome: 'Aeroporto Internacional de Cuiabá (Marechal Rondon)', iata: 'CGB', icao: 'SBCY' },
+  { nome: 'Aeroporto Internacional de Maceió (Zumbi dos Palmares)', iata: 'MCZ', icao: 'SBMO' },
+  { nome: 'Aeroporto Internacional de Natal (Governador Aluízio Alves)', iata: 'NAT', icao: 'SBNT' }
+];
+
 
 export const DOCUMENTOS_EXEMPLO = {
   // Adicionar documentos de exemplo

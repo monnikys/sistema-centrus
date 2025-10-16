@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, STATUS_VIAGEM } from '../db';
+import { AEROPORTOS } from '../db';
 import { ArrowLeft, PlaneTakeoff, Plus, Trash2, MapPin, Calendar, Clock, FileText, User, CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
@@ -478,17 +479,12 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                   onChange={(e) => setOrigem(e.target.value)}
                   required
                 >
-                  <option value="">Selecione a origem</option>
-                  <option value="Rio de Janeiro - RJ">Rio de Janeiro - RJ</option>
-                  <option value="São Paulo - SP">São Paulo - SP</option>
-                  <option value="Curitiba - PR">Curitiba - PR</option>
-                  <option value="Belo Horizonte - MG">Belo Horizonte - MG</option>
-                  <option value="Brasília - DF">Brasília - DF</option>
-                  <option value="Salvador - BA">Salvador - BA</option>
-                  <option value="Recife - PE">Recife - PE</option>
-                  <option value="Fortaleza - CE">Fortaleza - CE</option>
-                  <option value="Porto Alegre - RS">Porto Alegre - RS</option>
-                  <option value="Manaus - AM">Manaus - AM</option>
+                  <option value="">Selecione um aeroporto</option>
+                  {AEROPORTOS.map((aeroporto, index) => (
+                  <option key={index} value={aeroporto.iata}>
+                     {aeroporto.nome}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -502,17 +498,12 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                   onChange={(e) => setDestino(e.target.value)}
                   required
                 >
-                  <option value="">Selecione o destino</option>
-                  <option value="Rio de Janeiro - RJ">Rio de Janeiro - RJ</option>
-                  <option value="São Paulo - SP">São Paulo - SP</option>
-                  <option value="Curitiba - PR">Curitiba - PR</option>
-                  <option value="Belo Horizonte - MG">Belo Horizonte - MG</option>
-                  <option value="Brasília - DF">Brasília - DF</option>
-                  <option value="Salvador - BA">Salvador - BA</option>
-                  <option value="Recife - PE">Recife - PE</option>
-                  <option value="Fortaleza - CE">Fortaleza - CE</option>
-                  <option value="Porto Alegre - RS">Porto Alegre - RS</option>
-                  <option value="Manaus - AM">Manaus - AM</option>
+                  <option value="">Selecione um aeroporto</option>
+                  {AEROPORTOS.map((aeroporto, index) => (
+                  <option key={index} value={aeroporto.iata}>
+                     {aeroporto.nome}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
