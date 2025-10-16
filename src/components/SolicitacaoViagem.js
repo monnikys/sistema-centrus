@@ -4,15 +4,24 @@ import { db, STATUS_VIAGEM } from '../db';
 import { ArrowLeft, PlaneTakeoff, Plus, Trash2, MapPin, Calendar, Clock, FileText, User, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
+
+
+// Configurar dayjs para português
+dayjs.locale('pt-br');
 
 function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu principal
   const [mostrarFormulario, setMostrarFormulario] = useState(false); // Estado para controlar a visibilidade do formulário
   const [viajanteId, setViajanteId] = useState(''); // ID do viajante
   const [origem, setOrigem] = useState(''); // Origem
   const [destino, setDestino] = useState(''); // Destino
-  const [dataIda, setDataIda] = useState(''); // Data de ida
+  const [dataIda, setDataIda] = useState(null); // Data de ida
   const [faixaHorarioIda, setFaixaHorarioIda] = useState([480, 720]); // 08:00 às 12:00 em minutos
-  const [dataVolta, setDataVolta] = useState(''); // Data de volta
+  const [dataVolta, setDataVolta] = useState(null); // Data de volta
   const [faixaHorarioVolta, setFaixaHorarioVolta] = useState([1080, 1200]); // 18:00 às 20:00 em minutos
   const [justificativa, setJustificativa] = useState(''); // Justificativa
   const [observacao, setObservacao] = useState(''); // Observação
@@ -75,17 +84,16 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
 
   const handleSubmit = async (e) => { // Função para lidar com envio do formulário
     e.preventDefault(); // Evitar o comportamento padrão do formulário
-
     try { // Tenta criar a solicitação
       await db.solicitacoesViagem.add({// Cria a solicitação
         solicitanteId: 1,
         viajanteId: parseInt(viajanteId),
         origem,
         destino,
-        dataIda,
+        dataIda: dataIda.format('YYYY-MM-DD'),
         horarioIdaInicio: minutosParaHorario(faixaHorarioIda[0]),
         horarioIdaFim: minutosParaHorario(faixaHorarioIda[1]),
-        dataVolta,
+        dataVolta: dataVolta.format('YYYY-MM-DD'),
         horarioVoltaInicio: minutosParaHorario(faixaHorarioVolta[0]),
         horarioVoltaFim: minutosParaHorario(faixaHorarioVolta[1]),
         justificativa,
@@ -414,12 +422,33 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                   <Calendar size={18} />
                   Data de Ida *
                 </label>
-                <input
-                  type="date"
-                  value={dataIda}
-                  onChange={(e) => setDataIda(e.target.value)}
-                  required
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+                  <DatePicker
+                    value={dataIda}
+                    onChange={(newValue) => setDataIda(newValue)}
+                    format="DD/MM/YYYY"
+                    slotProps={{
+                      textField: {
+                        required: true,
+                        fullWidth: true,
+                        sx: {
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: '6px',
+                            '& fieldset': {
+                              borderColor: '#ced4da',
+                            },
+                            '&:hover fieldset': {
+                              borderColor: '#667eea',
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: '#667eea',
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
               </div>
 
               <div className="form-group"> {/* Campo para selecionar o horário de ida */}
@@ -516,13 +545,35 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                   <Calendar size={18} />
                   Data de Volta *
                 </label>
-                <input
-                  type="date"
-                  value={dataVolta}
-                  onChange={(e) => setDataVolta(e.target.value)}
-                  min={dataIda}
-                  required
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+                  <DatePicker
+                    value={dataVolta}
+                    onChange={(newValue) => setDataVolta(newValue)}
+                    format="DD/MM/YYYY"
+                    minDate={dataIda}
+                    disabled={!dataIda}
+                    slotProps={{
+                      textField: {
+                        required: true,
+                        fullWidth: true,
+                        sx: {
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: '6px',
+                            '& fieldset': {
+                              borderColor: '#ced4da',
+                            },
+                            '&:hover fieldset': {
+                              borderColor: '#667eea',
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: '#667eea',
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
               </div>
 
               <div className="form-group"> {/* Campo para selecionar o horário de volta */}

@@ -1741,3 +1741,92 @@ body {  /* Estilos globais do corpo */
 }
 
 /* ==================== FIM RANGE SLIDER HORÁRIOS ==================== */
+/* ==================== RANGE SLIDER MUI ==================== */
+
+/* Estilos adicionais para melhorar a aparência dos sliders do Material-UI */
+.MuiSlider-root {
+  color: #667eea !important;
+}
+
+.MuiSlider-thumb { /* Estilo do thumb (bolinha) do slider */
+  width: 20px !important;
+  height: 20px !important;
+  background-color: #fff !important;
+  border: 2px solid currentColor !important;
+}
+
+.MuiSlider-thumb:hover, /* Efeito hover no thumb */
+.MuiSlider-thumb.Mui-focusVisible { /* Efeito focus no thumb */
+  box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.16) !important;
+}
+
+.MuiSlider-track { /* Estilo da trilha do slider */
+  height: 6px !important;
+}
+
+.MuiSlider-rail { /* Estilo do trilho do slider */
+  height: 6px !important;
+  opacity: 0.3 !important;
+}
+
+.MuiSlider-markLabel { /* Estilo das marcas do slider */
+  font-size: 0.75rem !important;
+  color: #666 !important;
+}
+
+/* ==================== FIM RANGE SLIDER HORÁRIOS ==================== */
+
+/* ==================== MUI DATE PICKERS ==================== */
+
+/* Ajustes para os Date Pickers do MUI */
+.MuiDateCalendar-root { /* Cor de fundo do calendário */
+  background-color: white;
+}
+
+.MuiPickersDay-root { /* Estilo dos dias do calendário */
+  font-size: 0.9rem;
+}
+
+.MuiPickersDay-root.Mui-selected {  /* Estilo dos dias selecionados */
+  background-color: #667eea !important;
+  color: white !important;
+}
+
+.MuiPickersDay-root.Mui-selected:hover {  /* Efeito hover nos dias selecionados */
+  background-color: #5568d3 !important;
+}
+
+.MuiPickersDay-root:hover {  /* Efeito hover nos dias do calendário */
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+.MuiPickersCalendarHeader-root {  /* Estilo do cabeçalho do calendário */
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.MuiPickersCalendarHeader-label {  /* Estilo do texto do cabeçalho do calendário */
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.MuiIconButton-root {  /* Estilo do botão de navegação do calendário */
+  color: #667eea;
+}
+
+.MuiPickersYear-yearButton.Mui-selected {  /* Estilo dos anos selecionados */
+  background-color: #667eea !important;
+  color: white !important;
+}
+
+/* Ajuste do input do date picker */
+.MuiTextField-root {  /* Estilo do input do date picker */  
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.MuiInputBase-input {  /* Estilo do input do date picker */
+  padding: 0.75rem !important;
+  font-size: 1rem !important;
+}
+
+/* ==================== FIM MUI DATE PICKERS ==================== */
