@@ -473,7 +473,6 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
                   value={novoUsuario.tipo}
                   onChange={(e) => handleTipoChange(e.target.value)} // Função para alterar o tipo e atualizar permissões
                 >
-                  <option value="usuario">Usuário Padrão</option> {/* Opção de usuário padrão */}
                   <option value="admin">Administrador</option> {/* Opção de administrador */}
                   <option value="presi">Presi</option> {/* Opção de PRESI */}
                   <option value="diretor">Diretor</option> {/* Opção de DIRETOR */}
