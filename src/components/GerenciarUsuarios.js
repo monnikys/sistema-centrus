@@ -19,6 +19,7 @@ import {
   BarChart3,
   Settings,
   Edit,
+  Key,
 } from 'lucide-react'
 import { AuthService } from '../authDb'
 import './styles/GerenciarUsuarios.css'
@@ -96,7 +97,6 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
     // Função para carregar usuários
     try {
       const lista = await AuthService.listarUsuarios() // Buscar usuários
-      console.log('Usuários carregados:', lista) // Debug: verificar permissões
       setUsuarios(lista) // Atualizar estado dos usuários
     } catch (error) {
       // Capturar erros
@@ -157,7 +157,6 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
 
   const iniciarEdicao = (usuario) => {
     // Função para iniciar a edição de um usuário
-    console.log('Iniciando edição do usuário:', usuario) // Debug
     setModoEdicao(true) // Ativa o modo de edição
     setUsuarioEditando(usuario.id) // Define o ID do usuário sendo editado
     setNovoUsuario({
@@ -225,11 +224,9 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
         dadosAtualizacao.senha = novoUsuario.senha
       }
 
-      console.log('Enviando dados de atualização:', dadosAtualizacao) // Debug
       resultado = await AuthService.editarUsuario(usuarioEditando, dadosAtualizacao) // Chamar a função para editar usuário
     } else {
       // Se está criando um novo usuário
-      console.log('Criando novo usuário com permissões:', novoUsuario.permissoes) // Debug
       resultado = await AuthService.criarUsuario(novoUsuario) // Chamar a função para criar um novo usuário
     }
 
