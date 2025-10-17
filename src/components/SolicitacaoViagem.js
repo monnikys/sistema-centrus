@@ -437,7 +437,7 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                         Solicitado em: {formatarDataHora(sol.dataSolicitacao)} {/* Data e horário de solicitação */}
                       </span>
                       <div className="acoes-solicitacao"> {/* Ações da solicitação */}
-                        {sol.status === 'PENDENTE' && ( // Se o status da solicitação for "PENDENTE"
+                        {sol.status === 'PENDENTE' && permissoes.podeAprovar && ( // Se o status da solicitação for "PENDENTE" E tiver permissão
                           <>
                             <button
                               onClick={() => handleAlterarStatus(sol.id, 'APROVADA')}
@@ -455,13 +455,15 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
                             </button>
                           </>
                         )}
-                        <button
-                          onClick={() => handleExcluir(sol.id)}
-                          className="btn-acao-status btn-excluir-sol" //* Botão excluir */
-                          title="Excluir"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        {permissoes.podeExcluir && (
+                          <button
+                            onClick={() => handleExcluir(sol.id)}
+                            className="btn-acao-status btn-excluir-sol" //* Botão excluir */
+                            title="Excluir"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
