@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, STATUS_VIAGEM } from '../db';
+import { AuthService } from '../authDb';
 import { AEROPORTOS } from '../db';
 import { ArrowLeft, PlaneTakeoff, Plus, Trash2, MapPin, Calendar, Clock, FileText, User, CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
-import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
+import { Box, Slider, Grid, Card, CardContent, Typography, Divider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -27,6 +27,12 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
   const [justificativa, setJustificativa] = useState(''); // Justificativa
   const [observacao, setObservacao] = useState(''); // Observação
   const [filtroStatus, setFiltroStatus] = useState('todos'); // Filtro de status
+  const [usuarioAtual, setUsuarioAtual] = useState(null); // Usuário logado
+  const [permissoes, setPermissoes] = useState({ // Permissões do usuário
+    podeCriar: false,
+    podeAprovar: false,
+    podeExcluir: false
+  });
   
   // Estados para o modal de recusa
   const [mostrarModalRecusa, setMostrarModalRecusa] = useState(false); // Controla a visibilidade do modal
@@ -219,6 +225,29 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
         return 'status-pendente';
     }
   };
+
+
+  // Carregar usuário e permissões ao montar o componente
+  React.useEffect(() => {
+    const carregarUsuario = async () => {
+      const usuario = await AuthService.obterUsuarioAtual();
+      if (usuario) {
+        setUsuarioAtual(usuario);
+        
+        // Verificar permissões
+        const isAdmin = usuario.tipo === 'admin';
+        const permissoesUsuario = usuario.permissoes || [];
+        
+        setPermissoes({
+          podeCriar: isAdmin || permissoesUsuario.includes('solicitar_viagens'),
+          podeAprovar: isAdmin || permissoesUsuario.includes('aprovar_viagens'),
+          podeExcluir: isAdmin || permissoesUsuario.includes('aprovar_viagens')
+        });
+      }
+    };
+    
+    carregarUsuario();
+  }, []);
 
   return (
     <div className="solicitacao-viagem-container"> {/* Container principal */}
@@ -448,349 +477,380 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
           </div>
 
           <form onSubmit={handleSubmit}>
-            <div className="form-group"> {/* Campo para selecionar o funcionário viajante */}
-              <label>
-                <User size={18} />
-                Viajante *
-              </label>
-              <select
-                value={viajanteId}
-                onChange={(e) => setViajanteId(e.target.value)}
-                className="select-filtro" //* Estilo do select */
-                required
-              >
-                <option value="">Selecione o funcionário viajante</option>
-                {funcionarios?.map(func => ( // Mapeia os funcionários e cria as opções do select
-                  <option key={func.id} value={func.id}> {/* Valor do option */}
-                    {func.nome} - {func.departamento} {/* Nome e departamento do funcionário */}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-row"> {/* Linha de campos */}
-              <div className="form-group"> {/* Campo para selecionar a origem */}
+            {/* SEÇÃO 1: VIAJANTE */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1, color: '#667eea' }}>
+                <User size={20} />
+                Informações do Viajante
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <div className="form-group">
                 <label>
-                  <MapPin size={18} />
-                  Origem *
-                </label> 
+                  <User size={18} />
+                  Viajante *
+                </label>
                 <select
-                  value={origem}
-                  onChange={(e) => setOrigem(e.target.value)}
+                  value={viajanteId}
+                  onChange={(e) => setViajanteId(e.target.value)}
+                  className="select-filtro"
                   required
                 >
-                  <option value="">Selecione um aeroporto</option>
-                  {AEROPORTOS.map((aeroporto, index) => (
-                  <option key={index} value={aeroporto.iata}>
-                     {aeroporto.nome}
+                  <option value="">Selecione o funcionário viajante</option>
+                  {funcionarios?.map(func => (
+                    <option key={func.id} value={func.id}>
+                      {func.nome} - {func.departamento}
                     </option>
                   ))}
                 </select>
               </div>
+            </Box>
 
-              <div className="form-group"> {/* Campo para selecionar o destino */}
+            {/* SEÇÃO 2: ROTA */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1, color: '#667eea' }}>
+                <MapPin size={20} />
+                Rota da Viagem
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <div className="form-row">
+                <div className="form-group">
+                  <label>
+                    <MapPin size={18} />
+                    Origem *
+                  </label>
+                  <select
+                    value={origem}
+                    onChange={(e) => setOrigem(e.target.value)}
+                    required
+                  >
+                    <option value="">Selecione um aeroporto</option>
+                    {AEROPORTOS.map((aeroporto, index) => (
+                      <option key={index} value={aeroporto.iata}>
+                        {aeroporto.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>
+                    <MapPin size={18} />
+                    Destino *
+                  </label>
+                  <select
+                    value={destino}
+                    onChange={(e) => setDestino(e.target.value)}
+                    required
+                  >
+                    <option value="">Selecione um aeroporto</option>
+                    {AEROPORTOS.map((aeroporto, index) => (
+                      <option key={index} value={aeroporto.iata}>
+                        {aeroporto.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </Box>
+
+            {/* SEÇÃO 3: IDA */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1, color: '#667eea' }}>
+                <Calendar size={20} />
+                Informações de Ida
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <div className="form-row">
+                <div className="form-group">
+                  <label>
+                    <Calendar size={18} />
+                    Data de Ida *
+                  </label>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+                    <DatePicker
+                      value={dataIda}
+                      onChange={(newValue) => setDataIda(newValue)}
+                      format="DD/MM/YYYY"
+                      slotProps={{
+                        textField: {
+                          required: true,
+                          fullWidth: true,
+                          sx: {
+                            '& .MuiOutlinedInput-root': {
+                              borderRadius: '6px',
+                              '& fieldset': {
+                                borderColor: '#ced4da',
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#667eea',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#667eea',
+                              },
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </div>
+
+                <div className="form-group">
+                  <label>
+                    <Clock size={18} />
+                    Horário de Ida *
+                  </label>
+                  <Card variant="outlined" sx={{ height: '100%', boxShadow: 'none' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Box sx={{ textAlign: 'center', flex: 1 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                            Início
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#667eea', mt: 0.5 }}>
+                            {minutosParaHorario(faixaHorarioIda[0])}
+                          </Typography>
+                        </Box>
+                        <Typography variant="h6" color="text.secondary" sx={{ px: 2 }}>
+                          →
+                        </Typography>
+                        <Box sx={{ textAlign: 'center', flex: 1 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                            Fim
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#667eea', mt: 0.5 }}>
+                            {minutosParaHorario(faixaHorarioIda[1])}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ px: 1 }}>
+                        <Slider
+                          getAriaLabel={() => 'Faixa de horário de ida'}
+                          value={faixaHorarioIda}
+                          onChange={handleChangeHorarioIda}
+                          valueLabelDisplay="auto"
+                          valueLabelFormat={(value) => minutosParaHorario(value)}
+                          getAriaValueText={(value) => minutosParaHorario(value)}
+                          min={0}
+                          max={1440}
+                          step={15}
+                          disableSwap
+                          marks={[
+                            { value: 0, label: '00:00' },
+                            { value: 360, label: '06:00' },
+                            { value: 720, label: '12:00' },
+                            { value: 1080, label: '18:00' },
+                            { value: 1440, label: '23:59' }
+                          ]}
+                          sx={{
+                            color: '#667eea',
+                            '& .MuiSlider-thumb': {
+                              width: 18,
+                              height: 18,
+                              backgroundColor: '#fff',
+                              border: '2px solid currentColor',
+                              '&:hover, &.Mui-focusVisible': {
+                                boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
+                              },
+                            },
+                            '& .MuiSlider-track': {
+                              height: 4,
+                            },
+                            '& .MuiSlider-rail': {
+                              height: 4,
+                              opacity: 0.2,
+                              backgroundColor: '#dee2e6',
+                            },
+                            '& .MuiSlider-markLabel': {
+                              fontSize: '0.7rem',
+                              color: '#adb5bd',
+                            },
+                          }}
+                        />
+                      </Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
+                        Distância mínima: 1 hora
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </Box>
+
+            {/* SEÇÃO 4: VOLTA */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1, color: '#667eea' }}>
+                <Calendar size={20} />
+                Informações de Volta
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <div className="form-row">
+                <div className="form-group">
+                  <label>
+                    <Calendar size={18} />
+                    Data de Volta *
+                  </label>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+                    <DatePicker
+                      value={dataVolta}
+                      onChange={(newValue) => setDataVolta(newValue)}
+                      format="DD/MM/YYYY"
+                      minDate={dataIda}
+                      disabled={!dataIda}
+                      slotProps={{
+                        textField: {
+                          required: true,
+                          fullWidth: true,
+                          sx: {
+                            '& .MuiOutlinedInput-root': {
+                              borderRadius: '6px',
+                              '& fieldset': {
+                                borderColor: '#ced4da',
+                              },
+                              '&:hover fieldset': {
+                                borderColor: '#667eea',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#667eea',
+                              },
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </div>
+
+                <div className="form-group">
+                  <label>
+                    <Clock size={18} />
+                    Horário de Volta *
+                  </label>
+                  <Card variant="outlined" sx={{ height: '100%', boxShadow: 'none' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Box sx={{ textAlign: 'center', flex: 1 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                            Início
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#667eea', mt: 0.5 }}>
+                            {minutosParaHorario(faixaHorarioVolta[0])}
+                          </Typography>
+                        </Box>
+                        <Typography variant="h6" color="text.secondary" sx={{ px: 2 }}>
+                          →
+                        </Typography>
+                        <Box sx={{ textAlign: 'center', flex: 1 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                            Fim
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#667eea', mt: 0.5 }}>
+                            {minutosParaHorario(faixaHorarioVolta[1])}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ px: 1 }}>
+                        <Slider
+                          getAriaLabel={() => 'Faixa de horário de volta'}
+                          value={faixaHorarioVolta}
+                          onChange={handleChangeHorarioVolta}
+                          valueLabelDisplay="auto"
+                          valueLabelFormat={(value) => minutosParaHorario(value)}
+                          getAriaValueText={(value) => minutosParaHorario(value)}
+                          min={0}
+                          max={1440}
+                          step={15}
+                          disableSwap
+                          marks={[
+                            { value: 0, label: '00:00' },
+                            { value: 360, label: '06:00' },
+                            { value: 720, label: '12:00' },
+                            { value: 1080, label: '18:00' },
+                            { value: 1440, label: '24:00' }
+                          ]}
+                          sx={{
+                            color: '#667eea',
+                            '& .MuiSlider-thumb': {
+                              width: 18,
+                              height: 18,
+                              backgroundColor: '#fff',
+                              border: '2px solid currentColor',
+                              '&:hover, &.Mui-focusVisible': {
+                                boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
+                              },
+                            },
+                            '& .MuiSlider-track': {
+                              height: 4,
+                            },
+                            '& .MuiSlider-rail': {
+                              height: 4,
+                              opacity: 0.2,
+                              backgroundColor: '#dee2e6',
+                            },
+                            '& .MuiSlider-markLabel': {
+                              fontSize: '0.7rem',
+                              color: '#adb5bd',
+                            },
+                          }}
+                        />
+                      </Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
+                        Distância mínima: 1 hora
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </Box>
+
+            {/* SEÇÃO 5: DETALHES */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1, color: '#667eea' }}>
+                <FileText size={20} />
+                Detalhes Adicionais
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              <div className="form-group">
                 <label>
-                  <MapPin size={18} />
-                  Destino *
+                  <FileText size={18} />
+                  Justificativa *
                 </label>
-                <select
-                  value={destino}
-                  onChange={(e) => setDestino(e.target.value)}
+                <textarea
+                  value={justificativa}
+                  onChange={(e) => setJustificativa(e.target.value)}
+                  placeholder="Descreva o motivo da viagem..."
+                  rows="4"
                   required
-                >
-                  <option value="">Selecione um aeroporto</option>
-                  {AEROPORTOS.map((aeroporto, index) => (
-                  <option key={index} value={aeroporto.iata}>
-                     {aeroporto.nome}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
-            </div>
 
-            <div className="form-row"> {/* Linha de campos */}
-              <div className="form-group"> {/* Campo para selecionar a data de ida */}
+              <div className="form-group">
                 <label>
-                  <Calendar size={18} />
-                  Data de Ida *
+                  <FileText size={18} />
+                  Observação (opcional)
                 </label>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
-                  <DatePicker
-                    value={dataIda}
-                    onChange={(newValue) => setDataIda(newValue)}
-                    format="DD/MM/YYYY"
-                    slotProps={{
-                      textField: {
-                        required: true,
-                        fullWidth: true,
-                        sx: {
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: '6px',
-                            '& fieldset': {
-                              borderColor: '#ced4da',
-                            },
-                            '&:hover fieldset': {
-                              borderColor: '#667eea',
-                            },
-                            '&.Mui-focused fieldset': {
-                              borderColor: '#667eea',
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <textarea
+                  value={observacao}
+                  onChange={(e) => setObservacao(e.target.value)}
+                  placeholder="Ex: Assento, companhia aérea, número do voo ou outras informações relevantes."
+                  rows="3"
+                />
               </div>
+            </Box>
 
-              <div className="form-group"> {/* Campo para selecionar o horário de ida */}
-                <label>
-                  <Clock size={18} />
-                   Horário de Ida *
-                </label>
-                <div style={{ // Estilo do container do horário
-                  padding: '25px 20px', 
-                  backgroundColor: '#fff', 
-                  borderRadius: '8px',
-                  border: '1px solid #ced4da'
-                }}>
-                  <div style={{ // Estilo do horário
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '25px'
-                  }}>
-                    <div style={{ textAlign: 'center', flex: 1 }}> {/* Estilo do início do horário */}
-                      <div style={{ fontSize: '0.7rem', color: '#6c757d', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Início</div> {/* Label do início do horário */}
-                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}> {/* Estilo do valor do início do horário */}
-                        {minutosParaHorario(faixaHorarioIda[0])}
-                      </div>
-                    </div>
-                    <div style={{ fontSize: '1.2rem', color: '#adb5bd', padding: '0 20px' }}>→</div> {/* Ícone de seta */}
-                    <div style={{ textAlign: 'center', flex: 1 }}> {/* Estilo do fim do horário */}
-                      <div style={{ fontSize: '0.7rem', color: '#6c757d', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fim</div> {/* Label do fim do horário */}
-                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}> {/* Estilo do valor do fim do horário */}
-                        {minutosParaHorario(faixaHorarioIda[1])}
-                      </div>
-                    </div>
-                  </div>
-                  <Box sx={{ px: 1 }}> {/* Box do slider */}
-                    <Slider
-                      getAriaLabel={() => 'Faixa de horário de ida'}
-                      value={faixaHorarioIda}
-                      onChange={handleChangeHorarioIda}
-                      valueLabelDisplay="auto"
-                      valueLabelFormat={(value) => minutosParaHorario(value)}
-                      getAriaValueText={(value) => minutosParaHorario(value)}
-                      min={0}
-                      max={1440}
-                      step={15}
-                      disableSwap
-                      marks={[
-                        { value: 0, label: '00:00' },
-                        { value: 360, label: '06:00' },
-                        { value: 720, label: '12:00' },
-                        { value: 1080, label: '18:00' },
-                        { value: 1440, label: '23:59' }
-                      ]}
-                      sx={{ // Estilo do slider
-                        color: '#667eea',
-                        '& .MuiSlider-thumb': { // Estilo do thumb
-                          width: 18,
-                          height: 18,
-                          backgroundColor: '#fff',
-                          border: '2px solid currentColor',
-                          '&:hover, &.Mui-focusVisible': {
-                            boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
-                          },
-                        },
-                        '& .MuiSlider-track': { // Estilo do trilho
-                          height: 4,
-                        },
-                        '& .MuiSlider-rail': { // Estilo do trilho do slider
-                          height: 4,
-                          opacity: 0.2,
-                          backgroundColor: '#dee2e6',
-                        },
-                        '& .MuiSlider-markLabel': { // Estilo das marcas do slider
-                          fontSize: '0.7rem',
-                          color: '#adb5bd',
-                        },
-                      }}
-                    />
-                  </Box> {/* Fim do box do slider */}
-                  <div style={{ // Estilo da distância mínima
-                    marginTop: '15px',
-                    fontSize: '0.75rem',
-                    color: '#adb5bd',
-                    textAlign: 'center'
-                  }}>
-                    Distância mínima: 2 horas
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="form-row"> {/* Linha do formulário */}
-              <div className="form-group"> {/* Campo para selecionar a data de volta */}
-                <label>
-                  <Calendar size={18} />
-                  Data de Volta *
-                </label>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
-                  <DatePicker
-                    value={dataVolta}
-                    onChange={(newValue) => setDataVolta(newValue)}
-                    format="DD/MM/YYYY"
-                    minDate={dataIda}
-                    disabled={!dataIda}
-                    slotProps={{
-                      textField: {
-                        required: true,
-                        fullWidth: true,
-                        sx: {
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: '6px',
-                            '& fieldset': {
-                              borderColor: '#ced4da',
-                            },
-                            '&:hover fieldset': {
-                              borderColor: '#667eea',
-                            },
-                            '&.Mui-focused fieldset': {
-                              borderColor: '#667eea',
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
-              </div>
-
-              <div className="form-group"> {/* Campo para selecionar o horário de volta */}
-                <label>
-                  <Clock size={18} />
-                  Horário de Volta *
-                </label>
-                <div style={{ // Estilo do box do horário de volta
-                  padding: '25px 20px', 
-                  backgroundColor: '#fff', 
-                  borderRadius: '8px',
-                  border: '1px solid #ced4da'
-                }}>
-                  <div style={{ // Estilo do horário de volta
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '25px'
-                  }}>
-                    <div style={{ textAlign: 'center', flex: 1 }}> {/* Estilo do início do horário de volta */}
-                      <div style={{ fontSize: '0.7rem', color: '#6c757d', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Início</div> {/* Label do início do horário de volta */}
-                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}> {/* Estilo do valor do início do horário de volta */}
-                        {minutosParaHorario(faixaHorarioVolta[0])}
-                      </div>
-                    </div>
-                    <div style={{ fontSize: '1.2rem', color: '#adb5bd', padding: '0 20px' }}>→</div> {/* Ícone de seta */}
-                    <div style={{ textAlign: 'center', flex: 1 }}> {/* Estilo do fim do horário de volta */}
-                      <div style={{ fontSize: '0.7rem', color: '#6c757d', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fim</div>  {/* Label do fim do horário de volta */}
-                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}>  {/* Estilo do valor do fim do horário de volta */}
-                        {minutosParaHorario(faixaHorarioVolta[1])}
-                      </div>
-                    </div>
-                  </div>
-                  <Box sx={{ px: 1 }}> {/* Box do slider do horário de volta */}
-                    <Slider
-                      getAriaLabel={() => 'Faixa de horário de volta'}
-                      value={faixaHorarioVolta}
-                      onChange={handleChangeHorarioVolta}
-                      valueLabelDisplay="auto"
-                      valueLabelFormat={(value) => minutosParaHorario(value)}
-                      getAriaValueText={(value) => minutosParaHorario(value)}
-                      min={0}
-                      max={1440}
-                      step={15}
-                      disableSwap
-                      marks={[
-                        { value: 0, label: '00:00' },
-                        { value: 360, label: '06:00' },
-                        { value: 720, label: '12:00' },
-                        { value: 1080, label: '18:00' },
-                        { value: 1440, label: '24:00' }
-                      ]}
-                      sx={{ // Estilo do slider do horário de volta
-                        color: '#667eea',
-                        '& .MuiSlider-thumb': {
-                          width: 18,
-                          height: 18,
-                          backgroundColor: '#fff',
-                          border: '2px solid currentColor',
-                          '&:hover, &.Mui-focusVisible': {
-                            boxShadow: '0 0 0 8px rgba(102, 126, 234, 0.16)',
-                          },
-                        },
-                        '& .MuiSlider-track': { // Estilo do trilho do slider
-                          height: 4,
-                        },
-                        '& .MuiSlider-rail': { // Estilo do trilho do slider
-                          height: 4,
-                          opacity: 0.2,
-                          backgroundColor: '#dee2e6',
-                        },
-                        '& .MuiSlider-markLabel': { // Estilo das marcas do slider
-                          fontSize: '0.7rem',
-                          color: '#adb5bd',
-                        },
-                      }}
-                    />
-                  </Box>
-                  <div style={{ // Estilo da distância mínima do horário de volta
-                    marginTop: '15px',
-                    fontSize: '0.75rem',
-                    color: '#adb5bd',
-                    textAlign: 'center'
-                  }}>
-                    Distância mínima: 2 horas
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="form-group"> {/* Campo de justificativa */}
-              <label>
-                <FileText size={18} />
-                Justificativa *
-              </label>
-              <textarea
-                value={justificativa}
-                onChange={(e) => setJustificativa(e.target.value)}
-                placeholder="Descreva o motivo da viagem..."
-                rows="4"
-                required
-              />
-            </div>
-
-            <div className="form-group"> {/* Campo de observação */}
-              <label>
-                <FileText size={18} />
-                Observação (opcional)
-              </label>
-              <textarea
-                value={observacao}
-                onChange={(e) => setObservacao(e.target.value)}
-                placeholder="Ex: Assento, companhia aérea, número do voo ou outras informações relevantes."
-                rows="3"
-              />
-            </div>
-
-            <div className="form-actions"> {/* Botoes de confirmar e cancelar */}
+            <div className="form-actions">
               <button
                 type="button"
                 onClick={() => {
                   setMostrarFormulario(false);
                   limparFormulario();
                 }}
-                className="btn-cancelar" // Botão de cancelar
+                className="btn-cancelar"
               >
                 Cancelar
               </button>
@@ -800,6 +860,7 @@ function SolicitacaoViagem({ onVoltar }) { // Propriedade para voltar ao menu pr
               </button>
             </div>
           </form>
+
         </div>
       )}
     </div>

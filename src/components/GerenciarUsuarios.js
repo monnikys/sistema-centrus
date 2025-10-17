@@ -70,6 +70,23 @@ const PAGINAS_DISPONIVEIS = [
   },
 ]
 
+
+// Permissões de ação específicas (além das páginas)
+const PERMISSOES_ACAO = [
+  {
+    id: 'solicitar_viagens',
+    nome: 'Solicitar Viagens',
+    descricao: 'Permite criar novas solicitações de viagem',
+    icone: PlaneTakeoff
+  },
+  {
+    id: 'aprovar_viagens',
+    nome: 'Aprovar Viagens',
+    descricao: 'Permite aprovar, recusar e excluir solicitações de viagem',
+    icone: CheckCircle
+  }
+]
+
 const GerenciarUsuarios = ({ usuarioAtual }) => {
   // Componente de gerenciamento de usuários
   const [usuarios, setUsuarios] = useState([]) // Lista de usuários
@@ -502,8 +519,44 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
                   </p>
                 </div>
               ) : (
-                <div className="permissoes-grid"> {/* Grid de permissões */}
-                  {Object.entries(categorias).map(([categoria, paginas]) => (
+                <>
+                  {/* Seção de Permissões de Ação (Viagens) */}
+                  <div className="permissoes-acao-section" style={{ marginBottom: '24px', padding: '16px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#667eea', fontSize: '16px', fontWeight: '600' }}>
+                      <PlaneTakeoff size={20} />
+                      Permissões de Viagem
+                    </h4>
+                    <div style={{ display: 'grid', gap: '12px' }}>
+                      {PERMISSOES_ACAO.map((permissao) => {
+                        const Icone = permissao.icone
+                        const isChecked = novoUsuario.permissoes.includes(permissao.id)
+                        
+                        return (
+                          <label
+                            key={permissao.id}
+                            className={`permissao-item ${isChecked ? 'checked' : ''}`}
+                            style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', backgroundColor: '#fff', borderRadius: '6px', border: '1px solid #e0e0e0', cursor: 'pointer' }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => handlePermissaoChange(permissao.id)}
+                              style={{ marginTop: '2px' }}
+                            />
+                            <Icone size={18} style={{ color: '#667eea', flexShrink: 0 }} />
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontWeight: '500', marginBottom: '4px' }}>{permissao.nome}</div>
+                              <div style={{ fontSize: '13px', color: '#666' }}>{permissao.descricao}</div>
+                            </div>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Permissões de Páginas */}
+                  <div className="permissoes-grid"> {/* Grid de permissões */}
+                    {Object.entries(categorias).map(([categoria, paginas]) => (
                     <div key={categoria} className="categoria-permissoes"> {/* Categoria de permissões */}
                       <h4 className="categoria-titulo">{categoria}</h4> {/* Título da categoria */}
                       {paginas.map((pagina) => {
@@ -527,7 +580,8 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
                       })}
                     </div>
                   ))}
-                </div>
+                  </div>
+                </>
               )}
             </div>
 
