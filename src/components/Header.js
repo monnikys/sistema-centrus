@@ -1,70 +1,105 @@
-// src/components/Header.js - EXEMPLO DE REFERÊNCIA
-// Use este código como referência para adicionar o Dashboard ao seu Header existente
+// src/components/Header.js
 import React from 'react'
-import { LogOut, Users, FileText, BarChart3 } from 'lucide-react'
+import { LayoutDashboard, Users, Plane, Building2, Download, UserPlus, UserCog, LogOut } from 'lucide-react'
 
 function Header({ usuario, onLogout, paginaAtual, onMudarPagina }) {
-  // Componente do cabeçalho da aplicação
-  
+  // Componente de cabeçalho/sidebar com navegação
+
   return (
-    <header className="app-header"> {/* Cabeçalho principal */}
-      <div className="header-content"> {/* Container do conteúdo do cabeçalho */}
-        <div className="header-left"> {/* Lado esquerdo - Logo e título */}
-          <h1>Sistema Centrus</h1> {/* Título da aplicação */}
-        </div>
-
-        <nav className="header-menu"> {/* Menu de navegação */}
-          
-          {/* NOVO: Botão Dashboard */}
-          <button
-            onClick={() => onMudarPagina('dashboard')} // Função para mudar para a página dashboard
-            className={paginaAtual === 'dashboard' ? 'menu-item menu-item-active' : 'menu-item'} // Classe condicional
-            title="Dashboard" // Tooltip
-          >
-            <BarChart3 size={20} /> {/* Ícone de gráfico/dashboard */}
-            <span>Dashboard</span> {/* Texto do menu */}
-          </button>
-
-          {/* Botão Funcionários */}
-          <button
-            onClick={() => onMudarPagina('funcionarios')} // Função para mudar para a página de funcionários
-            className={paginaAtual === 'funcionarios' ? 'menu-item menu-item-active' : 'menu-item'} // Classe condicional
-            title="Funcionários" // Tooltip
-          >
-            <Users size={20} /> {/* Ícone de usuários */}
-            <span>Funcionários</span> {/* Texto do menu */}
-          </button>
-
-          {/* Botão Usuários (apenas para admin) */}
-          {usuario?.isAdmin && ( // Renderizar apenas se o usuário for admin
-            <button
-              onClick={() => onMudarPagina('usuarios')} // Função para mudar para a página de usuários
-              className={paginaAtual === 'usuarios' ? 'menu-item menu-item-active' : 'menu-item'} // Classe condicional
-              title="Gerenciar Usuários" // Tooltip
-            >
-              <FileText size={20} /> {/* Ícone de documento/configuração */}
-              <span>Usuários</span> {/* Texto do menu */}
-            </button>
-          )}
-        </nav>
-
-        <div className="header-right"> {/* Lado direito - Informações do usuário */}
-          <div className="user-info"> {/* Informações do usuário */}
-            <span className="user-name">{usuario?.nome}</span> {/* Nome do usuário */}
-            <span className="user-role">{usuario?.isAdmin ? 'Admin' : 'Usuário'}</span> {/* Tipo de usuário */}
-          </div>
-          
-          <button 
-            onClick={onLogout} // Função para fazer logout
-            className="btn-logout" // Classe do botão de logout
-            title="Sair" // Tooltip
-          >
-            <LogOut size={20} /> {/* Ícone de logout */}
-          </button>
-        </div>
+    <aside className="app-sidebar">
+      {/* Logo e título */}
+      <div className="sidebar-header">
+        <h1>Sistema Centrus</h1>
       </div>
-    </header>
+
+      {/* Menu de navegação */}
+      <nav className="sidebar-menu">
+        <button
+          className={paginaAtual === 'dashboard' ? 'menu-item-active' : 'menu-item'}
+          onClick={() => onMudarPagina('dashboard')}
+        >
+          <LayoutDashboard size={20} />
+          <span>Dashboard</span>
+        </button>
+
+        <button
+          className={paginaAtual === 'funcionarios' ? 'menu-item-active' : 'menu-item'}
+          onClick={() => onMudarPagina('funcionarios')}
+        >
+          <Users size={20} />
+          <span>Funcionários</span>
+        </button>
+
+        {/* Separador visual */}
+        <div className="menu-divider"></div>
+        <div className="menu-section-title">Módulos</div>
+
+        <button
+          className={paginaAtual === 'solicitacao-viagem' ? 'menu-item-active' : 'menu-item'}
+          onClick={() => onMudarPagina('solicitacao-viagem')}
+        >
+          <Plane size={20} />
+          <span>Solicitação Viagem</span>
+        </button>
+
+        <button
+          className={paginaAtual === 'docs-empresa' ? 'menu-item-active' : 'menu-item'}
+          onClick={() => onMudarPagina('docs-empresa')}
+        >
+          <Building2 size={20} />
+          <span>Docs Empresa</span>
+        </button>
+
+        <button
+          className={paginaAtual === 'download-massa' ? 'menu-item-active' : 'menu-item'}
+          onClick={() => onMudarPagina('download-massa')}
+        >
+          <Download size={20} />
+          <span>Download em Massa</span>
+        </button>
+
+        <button
+          className={paginaAtual === 'novo-funcionario' ? 'menu-item-active' : 'menu-item'}
+          onClick={() => onMudarPagina('novo-funcionario')}
+        >
+          <UserPlus size={20} />
+          <span>Novo Funcionário</span>
+        </button>
+
+        {/* Mostrar opção de gerenciar usuários apenas para admin */}
+        {usuario && usuario.tipo === 'admin' && (
+          <>
+            <div className="menu-divider"></div>
+            <div className="menu-section-title">Administração</div>
+            
+            <button
+              className={paginaAtual === 'usuarios' ? 'menu-item-active' : 'menu-item'}
+              onClick={() => onMudarPagina('usuarios')}
+            >
+              <UserCog size={20} />
+              <span>Gerenciar Usuários</span>
+            </button>
+          </>
+        )}
+      </nav>
+
+      {/* Informações do usuário e logout */}
+      <div className="sidebar-footer">
+        <div className="user-info-sidebar">
+          <div className="user-avatar">
+            {usuario?.nome?.charAt(0).toUpperCase() || 'U'}
+          </div>
+          <div className="user-details">
+            <span className="user-name">{usuario?.nome || 'Usuário'}</span>
+            <span className="user-role">{usuario?.tipo === 'admin' ? 'Administrador' : 'Usuário'}</span>
+          </div>
+        </div>
+        <button className="btn-logout" onClick={onLogout} title="Sair">
+          <LogOut size={20} />
+        </button>
+      </div>
+    </aside>
   )
 }
 
-export default Header // Exporta o componente Header
+export default Header

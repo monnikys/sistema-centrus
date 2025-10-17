@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { db } from '../db';
-import { UserPlus, Edit, Trash2, FolderOpen, Search, FileArchive, Building2, PlaneTakeoff } from 'lucide-react';
+import { Edit, Trash2, FolderOpen, Search } from 'lucide-react';
 
-function ListaFuncionarios({ funcionarios, onNovoFuncionario, onEditar, onGerenciarDocumentos, onRelatorio, onDocumentosEmpresa, onSolicitacaoViagem }) {
+function ListaFuncionarios({ funcionarios, onEditar, onGerenciarDocumentos }) {
   const [busca, setBusca] = useState('');
 
   const funcionariosFiltrados = funcionarios.filter(f => 
@@ -28,24 +28,6 @@ function ListaFuncionarios({ funcionarios, onNovoFuncionario, onEditar, onGerenc
     <div className="lista-container">
       <div className="lista-header">
         <h2>Funcionários</h2>
-        <div className="header-acoes">
-          <button onClick={onSolicitacaoViagem} className="btn-solicitacao-viagem">
-            <PlaneTakeoff size={20} />
-            Solicitação Viagem
-          </button>
-          <button onClick={onDocumentosEmpresa} className="btn-docs-empresa">
-            <Building2 size={20} />
-            Docs Empresa
-          </button>
-          <button onClick={onRelatorio} className="btn-relatorio">
-            <FileArchive size={20} />
-            Download em Massa
-          </button>
-          <button onClick={onNovoFuncionario} className="btn-novo">
-            <UserPlus size={20} />
-            Novo Funcionário
-          </button>
-        </div>
       </div>
 
       <div className="busca-container">

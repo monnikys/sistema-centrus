@@ -165,6 +165,55 @@ function App() {
               <DashboardMUI /> {/*Renderiza o Dashboard com Material-UI*/}
             </ProtectedRoute>
           )}
+          {paginaAtual === 'solicitacao-viagem' && ( // Se a página atual é solicitação de viagem
+            <ProtectedRoute>
+              {' '}
+              {/*Rota protegida para usuários autenticados*/}
+              <SolicitacaoViagem
+                onVoltar={() => {
+                  setPaginaAtual('dashboard')
+                  setTelaAtual('lista')
+                }}
+              />
+            </ProtectedRoute>
+          )}
+          {paginaAtual === 'docs-empresa' && ( // Se a página atual é documentos da empresa
+            <ProtectedRoute>
+              {' '}
+              {/*Rota protegida para usuários autenticados*/}
+              <DocumentosEmpresa
+                onVoltar={() => {
+                  setPaginaAtual('dashboard')
+                  setTelaAtual('lista')
+                }}
+              />
+            </ProtectedRoute>
+          )}
+          {paginaAtual === 'download-massa' && ( // Se a página atual é download em massa
+            <ProtectedRoute>
+              {' '}
+              {/*Rota protegida para usuários autenticados*/}
+              <RelatorioDocumentos
+                onVoltar={() => {
+                  setPaginaAtual('dashboard')
+                  setTelaAtual('lista')
+                }}
+              />
+            </ProtectedRoute>
+          )}
+          {paginaAtual === 'novo-funcionario' && ( // Se a página atual é novo funcionário
+            <ProtectedRoute>
+              {' '}
+              {/*Rota protegida para usuários autenticados*/}
+              <CadastroFuncionario
+                funcionario={null}
+                onVoltar={() => {
+                  setPaginaAtual('funcionarios')
+                  setTelaAtual('lista')
+                }}
+              />
+            </ProtectedRoute>
+          )}
           {paginaAtual === 'funcionarios' && ( // Se a página atual é de funcionários
             <ProtectedRoute>
               {' '}
@@ -172,12 +221,8 @@ function App() {
               {telaAtual === 'lista' && ( // Se a tela atual é a lista de funcionários
                 <ListaFuncionarios // Renderiza a lista de funcionários
                   funcionarios={funcionarios || []} // Passa a lista de funcionários (ou array vazio se nulo)
-                  onNovoFuncionario={handleNovoFuncionario} // Função para novo funcionário
                   onEditar={handleEditarFuncionario} // Função para editar funcionário
                   onGerenciarDocumentos={handleGerenciarDocumentos} // Função para gerenciar documentos
-                  onRelatorio={handleRelatorio} // Função para ver relatório
-                  onDocumentosEmpresa={handleDocumentosEmpresa} // Função para ver documentos da empresa
-                  onSolicitacaoViagem={handleSolicitacaoViagem} // Função para ver solicitações de viagem
                 />
               )}
               {telaAtual === 'cadastro' && ( // Se a tela atual é de cadastro/edição de funcionário

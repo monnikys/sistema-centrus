@@ -13,27 +13,185 @@ body {  /* Estilos globais do corpo */
 .app {  /* Container principal da aplicação */
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
 }
 
-.app-header { /* Cabeçalho da aplicação */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* ========== SIDEBAR VERTICAL ========== */
+.app-sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  z-index: 1000;
 }
 
-.app-header h1 {  /* Título no cabeçalho */
-  font-size: 1.75rem;
-  font-weight: 600;
+.sidebar-header {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.app-main { /* Área principal da aplicação */
+.sidebar-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+.sidebar-menu {
   flex: 1;
-  padding: 2rem;
-  max-width: 1400px;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
   width: 100%;
-  margin: 0 auto;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+}
+
+.menu-item-active {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: left;
+  width: 100%;
+}
+
+.menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 1rem 0;
+}
+
+.menu-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.5px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.sidebar-footer {
+  padding: 1.5rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.user-info-sidebar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: white;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.btn-logout {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+/* ========== FIM SIDEBAR VERTICAL ========== */
+
+.app-main { /* Área principal do aplicativo */
+  flex: 1;
+  margin-left: 280px; /* Largura do sidebar */
+  padding: 2rem;
+  min-height: 100vh;
 }
 
 /* Lista de Funcionários */
@@ -491,8 +649,54 @@ body {  /* Estilos globais do corpo */
 }
 
 /* Responsividade */
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: 240px;
+  }
+  
+  .app-main {
+    margin-left: 240px;
+  }
+  
+  .menu-item span,
+  .menu-item-active span {
+    font-size: 0.875rem;
+  }
+}
+
 @media (max-width: 768px) { /* Estilos para telas menores */
+  .app {
+    flex-direction: column;
+  }
+  
+  .app-sidebar {
+    width: 100%;
+    position: relative;
+    min-height: auto;
+  }
+  
+  .sidebar-menu {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 1rem;
+  }
+  
+  .menu-divider {
+    width: 1px;
+    height: 40px;
+    margin: 0 0.5rem;
+  }
+  
+  .menu-section-title {
+    display: none;
+  }
+  
+  .sidebar-footer {
+    flex-direction: row;
+  }
+  
   .app-main { /* Ajuste do padding */
+    margin-left: 0;
     padding: 1rem;
   }
 
@@ -1741,40 +1945,6 @@ body {  /* Estilos globais do corpo */
 }
 
 /* ==================== FIM RANGE SLIDER HORÁRIOS ==================== */
-/* ==================== RANGE SLIDER MUI ==================== */
-
-/* Estilos adicionais para melhorar a aparência dos sliders do Material-UI */
-.MuiSlider-root {
-  color: #667eea !important;
-}
-
-.MuiSlider-thumb { /* Estilo do thumb (bolinha) do slider */
-  width: 20px !important;
-  height: 20px !important;
-  background-color: #fff !important;
-  border: 2px solid currentColor !important;
-}
-
-.MuiSlider-thumb:hover, /* Efeito hover no thumb */
-.MuiSlider-thumb.Mui-focusVisible { /* Efeito focus no thumb */
-  box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.16) !important;
-}
-
-.MuiSlider-track { /* Estilo da trilha do slider */
-  height: 6px !important;
-}
-
-.MuiSlider-rail { /* Estilo do trilho do slider */
-  height: 6px !important;
-  opacity: 0.3 !important;
-}
-
-.MuiSlider-markLabel { /* Estilo das marcas do slider */
-  font-size: 0.75rem !important;
-  color: #666 !important;
-}
-
-/* ==================== FIM RANGE SLIDER HORÁRIOS ==================== */
 
 /* ==================== MUI DATE PICKERS ==================== */
 
@@ -1946,191 +2116,35 @@ body {  /* Estilos globais do corpo */
 
 /* ==================== FIM BOXES DE INFORMAÇÃO ==================== */
 
-/* ========== ESTILOS PARA HEADER COM DASHBOARD ========== */
-/* Adicione estes estilos ao seu App.css se ainda não tiver */
-
-/* Container do cabeçalho */
-.app-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-/* Conteúdo do cabeçalho */
-.header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
-}
-
-/* Lado esquerdo - Logo */
-.header-left h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-  color: white;
-}
-
-/* Menu de navegação */
-.header-menu {
-  display: flex;
-  gap: 0.5rem;
-  flex: 1;
-  justify-content: center;
-}
-
-/* Item do menu */
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-size: 0.95rem;
-  font-weight: 500;
-  backdrop-filter: blur(10px);
-}
-
-/* Hover no item do menu */
-.menu-item:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-/* Item do menu ativo */
-.menu-item-active {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: white;
-  color: #667eea;
-  border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Lado direito - Usuário */
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Informações do usuário */
-.user-info {
+/* ========== CARREGANDO APP ========== */
+.carregando-app {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-}
-
-/* Nome do usuário */
-.user-name {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-/* Tipo de usuário (Admin/Usuário) */
-.user-role {
-  font-size: 0.75rem;
-  opacity: 0.9;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 0.15rem 0.5rem;
-  border-radius: 12px;
-}
-
-/* Botão de logout */
-.btn-logout {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border: none;
-  padding: 0.75rem;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
-  backdrop-filter: blur(10px);
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 
-/* Hover no botão de logout */
-.btn-logout:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
+.spinner-app {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
-/* ========== RESPONSIVIDADE ========== */
-@media (max-width: 1024px) {
-  .header-content {
-    padding: 1rem;
-  }
-
-  .header-menu {
-    gap: 0.25rem;
-  }
-
-  .menu-item,
-  .menu-item-active {
-    padding: 0.6rem 1rem;
-    font-size: 0.875rem;
-  }
-
-  .menu-item span,
-  .menu-item-active span {
-    display: none; /* Esconder texto em telas médias */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .header-menu {
-    width: 100%;
-    justify-content: space-around;
-  }
-
-  .user-info {
-    align-items: center;
-  }
-
-  .header-right {
-    width: 100%;
-    justify-content: space-between;
-  }
+.carregando-app p {
+  font-size: 1.1rem;
+  font-weight: 500;
 }
-
-@media (max-width: 480px) {
-  .header-left h1 {
-    font-size: 1.25rem;
-  }
-
-  .menu-item,
-  .menu-item-active {
-    padding: 0.5rem;
-    flex: 1;
-    justify-content: center;
-  }
-
-  .user-name {
-    font-size: 0.875rem;
-  }
-}
-
-/* ========== FIM ESTILOS HEADER ========== */
+/* ========== FIM CARREGANDO APP ========== */
