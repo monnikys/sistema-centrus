@@ -1945,3 +1945,192 @@ body {  /* Estilos globais do corpo */
 }
 
 /* ==================== FIM BOXES DE INFORMAÇÃO ==================== */
+
+/* ========== ESTILOS PARA HEADER COM DASHBOARD ========== */
+/* Adicione estes estilos ao seu App.css se ainda não tiver */
+
+/* Container do cabeçalho */
+.app-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Conteúdo do cabeçalho */
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Lado esquerdo - Logo */
+.header-left h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+/* Menu de navegação */
+.header-menu {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: center;
+}
+
+/* Item do menu */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+/* Hover no item do menu */
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Item do menu ativo */
+.menu-item-active {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Lado direito - Usuário */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Informações do usuário */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+/* Nome do usuário */
+.user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Tipo de usuário (Admin/Usuário) */
+.user-role {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+}
+
+/* Botão de logout */
+.btn-logout {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+/* Hover no botão de logout */
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 1024px) {
+  .header-content {
+    padding: 1rem;
+  }
+
+  .header-menu {
+    gap: 0.25rem;
+  }
+
+  .menu-item,
+  .menu-item-active {
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .menu-item span,
+  .menu-item-active span {
+    display: none; /* Esconder texto em telas médias */
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .header-menu {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .user-info {
+    align-items: center;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-left h1 {
+    font-size: 1.25rem;
+  }
+
+  .menu-item,
+  .menu-item-active {
+    padding: 0.5rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .user-name {
+    font-size: 0.875rem;
+  }
+}
+
+/* ========== FIM ESTILOS HEADER ========== */
