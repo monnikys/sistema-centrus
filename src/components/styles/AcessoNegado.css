@@ -1,0 +1,76 @@
+/* ==================== ACESSO NEGADO ==================== */
+
+.acesso-negado { /* Container de acesso negado */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+  border-radius: 12px;
+  margin: 2rem;
+}
+
+.acesso-negado-content { /* Conteúdo de acesso negado */
+  text-align: center;
+  max-width: 500px;
+  padding: 3rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(220, 53, 69, 0.15);
+  border: 3px solid #dc3545;
+}
+
+.acesso-negado-content svg { /* Ícone de acesso negado */
+  color: #dc3545;
+  margin-bottom: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { /* Animação de pulse */
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.acesso-negado-content h2 { /* Título de acesso negado */
+  color: #b71c1c;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.acesso-negado-content p { /* Parágrafo de acesso negado */
+  color: #721c24;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .acesso-negado { /* Container em mobile */
+    min-height: 50vh;
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .acesso-negado-content { /* Conteúdo em mobile */
+    padding: 2rem;
+  }
+
+  .acesso-negado-content h2 { /* Título em mobile */
+    font-size: 1.5rem;
+  }
+
+  .acesso-negado-content p { /* Parágrafo em mobile */
+    font-size: 1rem;
+  }
+}
+
+/* ==================== FIM ACESSO NEGADO ==================== */

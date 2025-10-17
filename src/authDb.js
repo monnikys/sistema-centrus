@@ -4,11 +4,29 @@ import Dexie from 'dexie';
 // Criar banco de dados de autenticação
 export const authDb = new Dexie('SistemaCentrusAuth');
 
-authDb.version(1).stores({ // Definir estrutura das tabelas
-  usuarios: '++id, email, nome, senha, tipo, ativo, dataCriacao', // Adicionar campo 'tipo' e 'ativo'
-  sessoes: '++id, usuarioId, token, dataExpiracao', // Adicionar campo 'dataExpiracao'
-  permissoes: '++id, nome', // Tabela de permissões
-  usuarioPermissoes: '++id, usuarioId, permissaoId' // Tabela de relação usuário-permissão
+// Versão 1 - Schema original
+authDb.version(1).stores({ 
+  usuarios: '++id, email, nome, senha, tipo, ativo, dataCriacao',
+  sessoes: '++id, usuarioId, token, dataExpiracao',
+  permissoes: '++id, nome',
+  usuarioPermissoes: '++id, usuarioId, permissaoId'
+});
+
+// Versão 2 - Adicionar suporte a permissões nos usuários
+authDb.version(2).stores({
+  usuarios: '++id, email, nome, senha, tipo, ativo, dataCriacao', // Mantém o mesmo schema
+  sessoes: '++id, usuarioId, token, dataExpiracao',
+  permissoes: '++id, nome',
+  usuarioPermissoes: '++id, usuarioId, permissaoId'
+}).upgrade(async tx => {
+  // Migração: adicionar campo permissoes aos usuários existentes
+  const usuarios = await tx.table('usuarios').toArray();
+  for (const usuario of usuarios) {
+    if (!usuario.permissoes) {
+      await tx.table('usuarios').update(usuario.id, { permissoes: [] });
+    }
+  }
+  console.log('Migração concluída: campo permissoes adicionado aos usuários');
 });
 
 // Classe para gerenciar usuários
@@ -22,6 +40,7 @@ class Usuario {
     this.ativo = dados.ativo !== undefined ? dados.ativo : true; // Usuário ativo ou inativo
     this.dataCriacao = dados.dataCriacao || new Date().toISOString(); // Data de criação
     this.ultimoAcesso = dados.ultimoAcesso || null; // Último acesso
+    this.permissoes = dados.permissoes || []; // Permissões do usuário
   }
 }
 
@@ -59,7 +78,8 @@ export const inicializarAuth = async () => { // Função para inicializar o banc
       senha: senhaHash, // Senha (hash)
       tipo: 'admin', // Tipo do usuário
       ativo: true, // Usuário ativo
-      dataCriacao: new Date().toISOString() // Data de criação
+      dataCriacao: new Date().toISOString(), // Data de criação
+      permissoes: [] // Admin não precisa de permissões específicas
     });
 
     // Criar permissões padrão
@@ -187,7 +207,8 @@ export const AuthService = { // Objeto para gerenciar autenticação
       id: usuario.id, // ID do usuário
       nome: usuario.nome, // Nome do usuário
       email: usuario.email, // Email do usuário
-      tipo: usuario.tipo // Tipo do usuário
+      tipo: usuario.tipo, // Tipo do usuário
+      permissoes: usuario.permissoes || [] // Permissões do usuário
     };
   },
 
@@ -214,16 +235,20 @@ export const AuthService = { // Objeto para gerenciar autenticação
         senha: senhaHash, // Senha (hash)
         tipo: dados.tipo || 'usuario', // 'admin' ou 'usuario' // Tipo do usuário
         ativo: true, // Usuário ativo por padrão
-        dataCriacao: new Date().toISOString() // Data de criação
+        dataCriacao: new Date().toISOString(), // Data de criação
+        permissoes: Array.isArray(dados.permissoes) ? dados.permissoes : [] // Garantir que permissoes seja um array
       };
 
       const id = await authDb.usuarios.add(novoUsuario); // Adicionar novo usuário ao banco
+      
+      console.log('Usuário criado com permissões:', novoUsuario.permissoes); // Debug
 
       return { // Retornar sucesso e dados do novo usuário
         sucesso: true, // Indicar sucesso
         usuario: { id, ...novoUsuario, senha: undefined } // Retornar dados do usuário sem a senha
       };
     } catch (error) { // Capturar erros
+      console.error('Erro ao criar usuário:', error); // Debug
       return { // Retornar erro
         sucesso: false, // Indicar falha
         erro: error.message // Mensagem de erro
@@ -240,15 +265,23 @@ export const AuthService = { // Objeto para gerenciar autenticação
     }
 
     const usuarios = await authDb.usuarios.toArray(); // Buscar todos os usuários
-    return usuarios.map(u => ({ // Retornar dados sem a senha
-      id: u.id, // ID do usuário
-      nome: u.nome, // Nome do usuário
-      email: u.email, // Email do usuário
-      tipo: u.tipo, // Tipo do usuário
-      ativo: u.ativo, // Status ativo/inativo
-      dataCriacao: u.dataCriacao, // Data de criação
-      ultimoAcesso: u.ultimoAcesso // Último acesso
-    }));
+    
+    return usuarios.map(u => {
+      const usuarioFormatado = { // Retornar dados sem a senha
+        id: u.id, // ID do usuário
+        nome: u.nome, // Nome do usuário
+        email: u.email, // Email do usuário
+        tipo: u.tipo, // Tipo do usuário
+        ativo: u.ativo, // Status ativo/inativo
+        dataCriacao: u.dataCriacao, // Data de criação
+        ultimoAcesso: u.ultimoAcesso, // Último acesso
+        permissoes: Array.isArray(u.permissoes) ? u.permissoes : [] // Garantir que permissoes seja um array
+      };
+      
+      console.log('Usuário carregado:', usuarioFormatado.nome, 'Permissões:', usuarioFormatado.permissoes); // Debug
+      
+      return usuarioFormatado;
+    });
   },
 
   // Alterar status do usuário
@@ -277,6 +310,48 @@ export const AuthService = { // Objeto para gerenciar autenticação
 
     await authDb.usuarios.delete(usuarioId); // Excluir usuário do banco
     return { sucesso: true }; // Retornar sucesso
+  },
+
+  // Editar usuário (apenas admin)
+  editarUsuario: async (usuarioId, dadosAtualizacao) => {
+    try {
+      // Verificar se o usuário atual é admin
+      const usuarioAtual = await AuthService.obterUsuarioAtual(); // Obter dados do usuário atual
+      
+      if (!usuarioAtual || usuarioAtual.tipo !== 'admin') { // Se não é admin
+        throw new Error('Apenas administradores podem editar usuários'); // Lançar erro de permissão
+      }
+
+      // Buscar o usuário pelo ID
+      const usuario = await authDb.usuarios.get(usuarioId); // Buscar usuário no banco
+
+      if (!usuario) { // Se o usuário não existir
+        throw new Error('Usuário não encontrado'); // Lançar erro
+      }
+
+      // Preparar os dados atualizados
+      const dadosAtualizados = {
+        nome: dadosAtualizacao.nome, // Atualizar nome
+        email: dadosAtualizacao.email, // Atualizar email
+        tipo: dadosAtualizacao.tipo, // Atualizar tipo
+        permissoes: Array.isArray(dadosAtualizacao.permissoes) ? dadosAtualizacao.permissoes : [], // Garantir que seja array
+      };
+
+      // Se uma nova senha foi fornecida, atualiza a senha
+      if (dadosAtualizacao.senha && dadosAtualizacao.senha.trim() !== '') {
+        dadosAtualizados.senha = await hashSenha(dadosAtualizacao.senha); // Hash da nova senha
+      }
+
+      console.log('Atualizando usuário com permissões:', dadosAtualizados.permissoes); // Debug
+
+      // Atualizar o usuário no banco de dados
+      await authDb.usuarios.update(usuarioId, dadosAtualizados); // Atualizar dados do usuário
+
+      return { sucesso: true }; // Retornar sucesso
+    } catch (error) { // Capturar erros
+      console.error('Erro ao editar usuário:', error); // Log de erro
+      return { sucesso: false, erro: error.message }; // Retornar erro
+    }
   },
 
   // Verificar permissão

@@ -339,6 +339,26 @@
   font-size: 14px;
 }
 
+.btn-editar { /* Botão de editar usuário */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.btn-editar:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-1px);
+}
+
 .btn-ativar { /* Estilos para o botão de ativar usuário */
   background: #28a745;
   color: white;
@@ -371,6 +391,169 @@
   padding: 40px;
   color: #666;
   font-size: 16px;
+}
+
+/* Ajuste no container de permissões do usuário */
+.usuario-permissoes {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.usuario-permissoes strong {
+  font-size: 13px;
+  color: #555;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.permissoes-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge-permissao {
+  display: inline-block;
+  padding: 3px 10px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge-permissao.badge-mais {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+/* Estilos para a seção de permissões no formulário */
+.permissoes-section {
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fafafa;
+}
+
+.permissoes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.permissoes-header label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #333;
+  font-size: 16px;
+}
+
+.permissoes-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-selecionar-todos,
+.btn-limpar-todos {
+  padding: 8px 14px;
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-selecionar-todos:hover:not(:disabled),
+.btn-limpar-todos:hover:not(:disabled) {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-selecionar-todos:disabled,
+.btn-limpar-todos:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.aviso-admin {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+}
+
+.aviso-admin p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.permissoes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.categoria-permissoes {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.categoria-titulo {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #667eea;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.permissao-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 6px;
+}
+
+.permissao-item:hover {
+  background: #f5f5f5;
+}
+
+.permissao-item.checked {
+  background: #e8eaf6;
+  border: 1px solid #667eea;
+}
+
+.permissao-item input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+}
+
+.permissao-item span {
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) { /* Estilos responsivos para telas menores */
@@ -409,6 +592,7 @@
     width: 100%;
   }
 
+  .btn-editar,
   .btn-status,  /* Ajusta os botões de status */
   .btn-excluir {  /* e excluir */
     flex: 1;
