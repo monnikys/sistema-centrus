@@ -1,0 +1,13 @@
+body { /* Estilos globais para o corpo da página */
+  margin: 0; /* Remove a margem padrão */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', /* Define a família de fontes */
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', /* Fontes de sistema e web */
+    sans-serif;
+  -webkit-font-smoothing: antialiased; /* Suavização de fontes para WebKit */
+  -moz-osx-font-smoothing: grayscale; /* Suavização de fontes para Firefox */
+}
+
+code { /* Estilos para elementos de código */
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', /* Define a família de fontes para código */
+    monospace;
+}

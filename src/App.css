@@ -1,0 +1,2150 @@
+* { /* Reset básico para todos os elementos */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {  /* Estilos globais do corpo */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #f5f7fa;
+  color: #2c3e50;
+}
+
+.app {  /* Container principal da aplicação */
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ========== SIDEBAR VERTICAL ========== */
+.app-sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.sidebar-header {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+}
+
+.menu-item-active {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: left;
+  width: 100%;
+}
+
+.menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 1rem 0;
+}
+
+.menu-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.5px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.sidebar-footer {
+  padding: 1.5rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.user-info-sidebar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: white;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.btn-logout {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+/* ========== FIM SIDEBAR VERTICAL ========== */
+
+.app-main { /* Área principal do aplicativo */
+  flex: 1;
+  margin-left: 280px; /* Largura do sidebar */
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* Lista de Funcionários */
+.lista-container {  /* Container da lista de funcionários */
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.lista-header { /* Cabeçalho da lista */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.lista-header h2 {  /* Título da lista */
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.btn-novo { /* Botão de novo funcionário */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-novo:hover { /* Efeito hover no botão */
+  background: #5568d3;
+}
+
+.busca-container {  /* Container da barra de busca */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.busca-container svg {  /* Ícone de busca */
+  color: #6c757d;
+}
+
+.input-busca {  /* Estilos do input de busca */
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1rem;
+}
+
+.tabela-container { /* Container da tabela */
+  overflow-x: auto;
+}
+
+.tabela-funcionarios {  /* Estilos da tabela de funcionários */
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-funcionarios thead {  /* Cabeçalho da tabela */
+  background: #f8f9fa;
+}
+
+.tabela-funcionarios th { /* Estilos das células do cabeçalho */
+  text-align: left;
+  padding: 1rem;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.tabela-funcionarios td { /* Estilos das células da tabela */
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tabela-funcionarios tbody tr:hover { /* Efeito hover nas linhas da tabela */
+  background: #f8f9fa;
+}
+
+.acoes {  /* Container das ações (botões) */
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-acao { /* Estilos base dos botões de ação */
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-documentos { /* Botão de gerenciar documentos */
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.btn-documentos:hover { /* Efeito hover no botão */
+  background: #bbdefb;
+}
+
+.btn-editar { /* Botão de editar funcionário */
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.btn-editar:hover { /* Efeito hover no botão */
+  background: #ffe0b2;
+}
+
+.btn-excluir {  /* Botão de excluir funcionário */
+  background: #ffebee;
+  color: #c62828;
+}
+
+.btn-excluir:hover {  /* Efeito hover no botão */
+  background: #ffcdd2;
+}
+
+.sem-dados {  /* Mensagem quando não há dados */
+  text-align: center;
+  padding: 3rem;
+  color: #6c757d;
+}
+
+/* Cadastro de Funcionário */
+.cadastro-container { /* Container do formulário de cadastro */
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.cadastro-header {  /* Cabeçalho do formulário de cadastro */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.cadastro-header h2 { /* Título do formulário */
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.btn-voltar { /* Botão de voltar */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #e9ecef;
+  color: #495057;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-voltar:hover { /* Efeito hover no botão */
+  background: #dee2e6;
+}
+
+.form-cadastro {  /* Estilos do formulário */
+  max-width: 800px;
+}
+
+.form-group { /* Grupo de campos do formulário */
+  margin-bottom: 1.5rem;
+}
+
+.form-group label { /* Estilos dos labels */
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-group input { /* Estilos dos inputs */
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { /* Efeito focus nos inputs */
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-row { /* Linha de formulário para múltiplos campos */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.btn-salvar { /* Botão de salvar */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 1rem;
+}
+
+.btn-salvar:hover { /* Efeito hover no botão */
+  background: #5568d3;
+}
+
+/* Gerenciar Documentos */
+.documentos-container { /* Container principal de documentos */
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.documentos-header {  /* Cabeçalho da seção de documentos */
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.documentos-header h2 { /* Título da seção de documentos */
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.subtitulo {  /* Subtítulo ou descrição */
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.categorias-tabs {  /* Tabs de categorias */
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e9ecef;
+  overflow-x: auto;
+}
+
+.tab {  /* Estilos das tabs */
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 0.95rem;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab:hover {  /* Efeito hover nas tabs */
+  color: #667eea;
+}
+
+.tab.active { /* Tab ativa */
+  color: #667eea;
+  border-bottom-color: #667eea;
+  font-weight: 600;
+}
+
+.filtros-periodo {  /* Filtros de período */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.filtro-item {  /* Item de filtro individual */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filtro-item svg {  /* Ícone do filtro */
+  color: #667eea;
+}
+
+.select-filtro {  /* Estilos do select de filtro */
+  padding: 0.5rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.select-filtro:focus {  /* Efeito focus no select */
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn-limpar-filtro {  /* Botão de limpar filtros */
+  background: #e9ecef;
+  color: #495057;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-limpar-filtro:hover {  /* Efeito hover no botão */
+  background: #dee2e6;
+}
+
+.upload-area {  /* Área de upload de documentos */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.btn-upload { /* Botão de upload */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #667eea;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-upload:hover { /* Efeito hover no botão */
+  background: #5568d3;
+}
+
+.contador-docs {  /* Contador de documentos */
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.documentos-lista { /* Lista de documentos */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sem-documentos { /* Mensagem quando não há documentos */
+  text-align: center;
+  padding: 4rem;
+  color: #adb5bd;
+}
+
+.sem-documentos svg { /* Ícone na mensagem */
+  margin-bottom: 1rem;
+}
+
+.documento-item { /* Item individual de documento */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.documento-item:hover { /* Efeito hover no item */
+  border-color: #667eea;
+  background: #f8f9fa;
+}
+
+.documento-info { /* Informações do documento */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.documento-info svg { /* Ícone do documento */
+  color: #667eea;
+}
+
+.documento-info h4 {  /* Nome do documento */
+  font-size: 1rem;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.documento-info p { /* Metadados do documento */
+  font-size: 0.875rem;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge-periodo {  /* Badge de período */
+  background: #667eea;
+  color: white;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.documento-acoes {  /* Ações do documento */
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-visualizar { /* Botão de visualizar documento */
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.btn-visualizar:hover { /* Efeito hover no botão */
+  background: #bbdefb;
+}
+
+.btn-download { /* Botão de download documento */
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.btn-download:hover { /* Efeito hover no botão */
+  background: #c8e6c9;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: 240px;
+  }
+  
+  .app-main {
+    margin-left: 240px;
+  }
+  
+  .menu-item span,
+  .menu-item-active span {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) { /* Estilos para telas menores */
+  .app {
+    flex-direction: column;
+  }
+  
+  .app-sidebar {
+    width: 100%;
+    position: relative;
+    min-height: auto;
+  }
+  
+  .sidebar-menu {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 1rem;
+  }
+  
+  .menu-divider {
+    width: 1px;
+    height: 40px;
+    margin: 0 0.5rem;
+  }
+  
+  .menu-section-title {
+    display: none;
+  }
+  
+  .sidebar-footer {
+    flex-direction: row;
+  }
+  
+  .app-main { /* Ajuste do padding */
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .form-row { /* Formulário em coluna */
+    grid-template-columns: 1fr;
+  }
+
+  .lista-header { /* Header em coluna */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .tabela-funcionarios {  /* Tabela com fonte menor */
+    font-size: 0.875rem;
+  }
+
+  .categorias-tabs {  /* Tabs com scroll */
+    flex-wrap: wrap;
+  }
+
+  .documento-item { /* Item de documento em coluna */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+/* ========== RELATÓRIO ========== */
+
+.header-acoes {   /* Cabeçalho com ações */
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-relatorio {  /* Botão de gerar relatório */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.btn-relatorio:hover {  /* Efeito hover no botão */
+  background: #218838;
+}
+
+.relatorio-container {  /* Container do relatório */
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.relatorio-header { /* Cabeçalho do relatório */
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.relatorio-header h2 {  /* Título do relatório */
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.filtros-relatorio {  /* Filtros do relatório */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.filtro-grupo { /* Grupo de filtro individual */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filtro-grupo label { /* Label do filtro */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.filtro-grupo label svg { /* Ícone do label */
+  color: #667eea;
+}
+
+.acoes-relatorio {  /* Ações do relatório */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: #e7f3ff;
+  border-radius: 8px;
+  border: 1px solid #c3dafe;
+}
+
+.btn-selecionar-todos { /* Botão selecionar todos */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.btn-selecionar-todos:hover { /* Efeito hover no botão */
+  background: #667eea;
+  color: white;
+}
+
+.info-selecao { /* Informação de seleção */
+  color: #495057;
+  font-weight: 600;
+}
+
+.btn-baixar-massa { /* Botão baixar massa */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-baixar-massa:hover:not(:disabled) {  /* Efeito hover no botão */
+  background: #218838;
+}
+
+.btn-baixar-massa:disabled {  /* Estado desabilitado do botão */
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.lista-documentos-relatorio { /* Lista de documentos no relatório */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sem-resultados { /* Mensagem quando não há resultados */
+  text-align: center;
+  padding: 4rem;
+  color: #adb5bd;
+}
+
+.sem-resultados svg { /* Ícone na mensagem */
+  margin-bottom: 1rem;
+}
+
+.documento-relatorio {  /* Item de documento no relatório */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.documento-relatorio:hover {  /* Efeito hover no item */
+  border-color: #667eea;
+  background: #f8f9fa;
+}
+
+.documento-relatorio.selecionado {  /* Estado selecionado do item */
+  border-color: #667eea;
+  background: #e7f3ff;
+}
+
+.checkbox-custom {  /* Checkbox customizado */
+  color: #667eea;
+  display: flex;
+  align-items: center;
+}
+
+.doc-info-relatorio { /* Informações do documento */
+  flex: 1;
+}
+
+.doc-info-relatorio h4 {  /* Título do documento */
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.doc-info-relatorio p { /* Metadados do documento */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.badge-categoria { /* Badge de categoria */
+  background: #667eea;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-periodo-rel {  /* Badge de período */
+  background: #28a745;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Botão Exportar CSV */
+.btn-exportar-csv {  
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-exportar-csv:hover:not(:disabled) {  /* Efeito hover no botão */
+  background: #138496;
+}
+
+.btn-exportar-csv:disabled {  /* Estado desabilitado do botão */
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ==================== DOCUMENTOS DA EMPRESA ==================== */
+
+.documentos-empresa-container { /* Container principal de documentos da empresa */
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.btn-docs-empresa { /* Botão de gerenciar documentos da empresa */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #6f42c1;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.btn-docs-empresa:hover { /* Efeito hover no botão */
+  background: #5a32a3;
+}
+
+.upload-empresa-area {  /* Área de upload de documentos da empresa */
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 2px solid #dee2e6;
+}
+
+.upload-empresa-area h3 { /* Título da área de upload */
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.upload-form {  /* Formulário de upload */
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.form-group-inline {  /* Grupo de campo inline */
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group-inline label {  /* Label do campo */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.filtros-empresa {  /* Filtros para documentos da empresa */
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.filtros-empresa h3 { /* Título dos filtros */
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.filtros-grid { /* Grid de filtros */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filtro-item label {  /* Label do item de filtro */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.lista-documentos-empresa { /* Lista de documentos da empresa */
+  margin-top: 2rem;
+}
+
+.lista-documentos-empresa h3 {  /* Título da lista */
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.documentos-grid {  /* Grid de documentos */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.documento-card-empresa { /* Card individual de documento */
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s;
+}
+
+.documento-card-empresa:hover { /* Efeito hover no card */
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.documento-header-card {  /* Cabeçalho do card de documento */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.documento-badges { /* Container de badges */
+  display: flex;
+  gap: 0.5rem;
+}
+
+.badge-mes-ano {  /* Badge de mês/ano */
+  background: #667eea;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.documento-corpo {  /* Corpo do card de documento */
+  margin-bottom: 1rem;
+}
+
+.documento-corpo h4 { /* Título do documento */
+  color: #2c3e50;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.departamento-info {  /* Informações do departamento */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.arquivo-nome { /* Nome do arquivo */
+  color: #495057;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  word-break: break-word;
+}
+
+.documento-meta { /* Metadados do documento */
+  color: #adb5bd;
+  font-size: 0.8rem;
+}
+
+.documento-card-empresa .documento-acoes {  /* Ações do card de documento */
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Responsividade - Documentos Empresa */
+@media (max-width: 768px) {  /* Estilos para telas menores */
+  .upload-form {  /* Formulário de upload em coluna */
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-group-inline { /* Campo com largura total */
+    min-width: 100%;
+  }
+
+  .filtros-grid { /* Filtros em coluna */
+    grid-template-columns: 1fr;
+  }
+
+  .documentos-grid {  /* Documentos em coluna */
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Documentos de Exemplo */
+.documentos-exemplo-section { /* Seção de documentos de exemplo */
+  background: linear-gradient(135deg, #fff9e6 0%, #fffbf0 100%);
+  border: 2px dashed #ffc107;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.documentos-exemplo-section h3 {  /* Título da seção */
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.documentos-exemplo-section h3 svg {  /* Ícone do título */
+  color: #ffc107;
+}
+
+.documento-exemplo {  /* Card individual de documento de exemplo */
+  background: white;
+  border: 2px solid #ffc107;
+}
+
+.documento-exemplo:hover {  /* Efeito hover no card */
+  border-color: #ff9800;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.badge-exemplo {  /* Badge de exemplo */
+  background: #ffc107;
+  color: #000;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.arquivo-descricao {  /* Descrição do arquivo de exemplo */
+  color: #6c757d;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Modal de Upload com Datas */
+.modal-overlay {  /* Overlay do modal */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {  /* Conteúdo do modal */
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn { /* Animação de entrada do modal */
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header { /* Cabeçalho do modal */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {  /* Título do modal */
+  color: #2c3e50;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.btn-fechar-modal { /* Botão de fechar o modal */
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-fechar-modal:hover { /* Efeito hover no botão */
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.modal-body { /* Corpo do modal */
+  padding: 1.5rem;
+}
+
+.info-arquivo { /* Informações do arquivo */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.nome-arquivo { /* Nome do arquivo */
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.tamanho-arquivo {  /* Tamanho do arquivo */
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.form-datas { /* Formulário de datas */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.input-data { /* Estilos dos inputs de data */
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.input-data:focus { /* Efeito focus nos inputs */
+  outline: none;
+  border-color: #667eea;
+}
+
+.info-dias {  /* Informação de dias selecionados */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #e7f3ff;
+  border-radius: 8px;
+  color: #0d47a1;
+  font-size: 0.95rem;
+}
+
+.info-dias svg {  /* Ícone na informação */
+  color: #1976d2;
+}
+
+.modal-footer { /* Rodapé do modal */
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn-cancelar { /* Botão de cancelar */
+  padding: 0.75rem 1.5rem;
+  background: #e9ecef;
+  color: #495057;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.btn-cancelar:hover { /* Efeito hover no botão */
+  background: #dee2e6;
+}
+
+.btn-confirmar {  /* Botão de confirmar */
+  padding: 0.75rem 1.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.btn-confirmar:hover:not(:disabled) { /* Efeito hover no botão */
+  background: #5568d3;
+}
+
+.btn-confirmar:disabled { /* Estado desabilitado do botão */
+  background: #adb5bd;
+  cursor: not-allowed;
+}
+
+/* Informações de Período no Documento */
+.documento-detalhes { /* Container de detalhes do documento */
+  flex: 1;
+}
+
+.documento-meta-info {  /* Metadados do documento */
+  font-size: 0.875rem;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.periodo-documento {  /* Informação de período do documento */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #e7f3ff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #1976d2;
+  margin-top: 0.5rem;
+}
+
+.periodo-documento svg {  /* Ícone do período */
+  flex-shrink: 0;
+}
+
+.dias-count { /* Contador de dias */
+  color: #0d47a1;
+  font-weight: 600;
+}
+
+/* Responsividade Modal */
+@media (max-width: 768px) { /* Estilos para telas menores */
+  .modal-content {  /* Modal com largura total */
+    max-width: calc(100% - 2rem);
+  }
+
+  .form-datas { /* Formulário de datas em coluna */
+    grid-template-columns: 1fr;
+  }
+
+  .modal-footer { /* Rodapé em coluna */
+    flex-direction: column;
+  }
+
+  .modal-footer button {  /* Botões com largura total */
+    width: 100%;
+  }
+}
+
+/* ==================== SOLICITAÇÃO DE VIAGEM ==================== */
+
+.solicitacao-viagem-container { /* Container principal de solicitação de viagem */
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.btn-solicitacao-viagem { /* Botão de nova solicitação de viagem */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.btn-solicitacao-viagem:hover { /* Efeito hover no botão */
+  background: #ee5a52;
+}
+
+.acoes-viagem-header {  /* Cabeçalho com ações */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-nova-solicitacao { /* Botão de nova solicitação */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.btn-nova-solicitacao:hover { /* Efeito hover no botão */
+  background: #ee5a52;
+}
+
+.filtro-status-viagem { /* Filtro de status */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filtro-status-viagem label { /* Label do filtro */
+  font-weight: 500;
+  color: #495057;
+}
+
+.lista-solicitacoes { /* Lista de solicitações */
+  margin-top: 1rem;
+}
+
+.solicitacoes-grid {  /* Grid de solicitações */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.card-solicitacao { /* Card individual de solicitação */
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s;
+}
+
+.card-solicitacao:hover { /* Efeito hover no card */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card-solicitacao.status-pendente { /* Borda esquerda conforme status */
+  border-left: 4px solid #ffc107;
+}
+
+.card-solicitacao.status-aprovada { /* Borda esquerda conforme status */
+  border-left: 4px solid #28a745;
+}
+
+.card-solicitacao.status-recusada { /* Borda esquerda conforme status */
+  border-left: 4px solid #dc3545;
+}
+
+.card-header-solicitacao {  /* Cabeçalho do card de solicitação */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.viajante-info {  /* Informações do viajante */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.viajante-info svg {  /* Ícone do viajante */
+  color: #667eea;
+  flex-shrink: 0;
+}
+
+.viajante-info h4 { /* Nome do viajante */
+  color: #2c3e50;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.viajante-info p {  /* Cargo do viajante */
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.badge-status { /* Badge de status */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge-status.status-pendente { /* Estilo para status pendente */
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-status.status-aprovada { /* Estilo para status aprovada */
+  background: #d4edda;
+  color: #155724;
+}
+
+.badge-status.status-recusada { /* Estilo para status recusada */
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.rota-viagem {  /* Informações da rota */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.local-viagem { /* Local de viagem */
+  flex: 1;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.local-viagem svg { /* Ícone do local */
+  color: #667eea;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.label-local {  /* Label do local */
+  display: block;
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.nome-local { /* Nome do local */
+  display: block;
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.seta-rota { /* Ícone de seta entre locais */
+  font-size: 1.5rem;
+  color: #667eea;
+  font-weight: bold;
+}
+
+.datas-viagem { /* Informações das datas */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.data-info {  /* Box individual de data */
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #e7f3ff;
+  border-radius: 8px;
+}
+
+.data-info svg { /* Ícone da data */
+  color: #1976d2;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.label-data { /* Label da data */
+  display: block;
+  font-size: 0.75rem;
+  color: #0d47a1;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.valor-data { /* Valor da data */
+  display: block;
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.horario-badge {  /* Badge de horário */
+  display: inline-block;
+  background: white;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  color: #495057;
+}
+
+.justificativa-box {  /* Box de justificativa */
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #fff9e6;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.justificativa-box svg {  /* Ícone da justificativa */
+  color: #ff9800;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.justificativa-box strong { /* Título da justificativa */
+  display: block;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.justificativa-box p {  /* Texto da justificativa */
+  color: #495057;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.observacao-box { /* Box de observação */
+  padding: 1rem;
+  background: #e7f3ff;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.observacao-box strong {  /* Título da observação */
+  display: block;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.observacao-box p { /* Texto da observação */
+  color: #495057;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.card-footer-solicitacao {  /* Rodapé do card de solicitação */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.data-solicitacao { /* Data da solicitação */
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.acoes-solicitacao {  /* Ações da solicitação */
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-acao-status {  /* Botões de ação de status */
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-aprovar {  /* Botão aprovar */
+  background: #d4edda;
+  color: #28a745;
+}
+
+.btn-aprovar:hover {  /* Efeito hover no botão */
+  background: #c3e6cb;
+}
+
+.btn-recusar {  /* Botão recusar */
+  background: #f8d7da;
+  color: #dc3545;
+}
+
+.btn-recusar:hover {  /* Efeito hover no botão */
+  background: #f5c6cb;
+}
+
+.btn-excluir-sol {  /* Botão excluir solicitação */
+  background: #ffebee;
+  color: #c62828;
+}
+
+.btn-excluir-sol:hover {  /* Efeito hover no botão */
+  background: #ffcdd2;
+}
+
+/* Formulário de Viagem */
+.formulario-viagem {  /* Container do formulário */
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-header {  /* Cabeçalho do formulário */
+  margin-bottom: 2rem;
+}
+
+.form-header h3 { /* Título do formulário */
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.formulario-viagem .form-group {  /* Grupo de campo do formulário */
+  margin-bottom: 1.5rem;
+}
+
+.formulario-viagem .form-group label {  /* Label do campo */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.formulario-viagem .form-group label svg {  /* Ícone do label */
+  color: #667eea;
+}
+
+.formulario-viagem input, /* Estilos dos inputs, selects e textareas */
+.formulario-viagem select,  /* Estilos dos inputs, selects e textareas */
+.formulario-viagem textarea { /* Estilos dos inputs, selects e textareas */
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.formulario-viagem input:focus, /* Efeito focus nos inputs, selects e textareas */
+.formulario-viagem select:focus,  /* Efeito focus nos inputs, selects e textareas */
+.formulario-viagem textarea:focus { /* Efeito focus nos inputs, selects e textareas */
+  outline: none;
+  border-color: #667eea;
+}
+
+.formulario-viagem textarea { /* Estilos específicos para textarea */
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-actions { /* Ações do formulário */
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) { /* Estilos para telas menores */
+  .solicitacoes-grid {  /* Solicitações em coluna */
+    grid-template-columns: 1fr;
+  }
+
+  .acoes-viagem-header {  /* Ações em coluna */
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtro-status-viagem { /* Filtro com largura total */
+    width: 100%;
+  }
+
+  .filtro-status-viagem select {  /* Select com largura total */
+    flex: 1;
+  }
+
+  .rota-viagem {  /* Rota em coluna */
+    flex-direction: column;
+  }
+
+  .seta-rota {  /* Ícone de seta rotacionado */
+    transform: rotate(90deg);
+  }
+
+  .datas-viagem { /* Datas em coluna */
+    grid-template-columns: 1fr;
+  }
+
+  .card-footer-solicitacao {  /* Rodapé em coluna */
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
+/* ==================== RANGE SLIDER MUI ==================== */
+
+/* Estilos adicionais para melhorar a aparência dos sliders do Material-UI */
+.MuiSlider-root {
+  color: #667eea !important;
+}
+
+.MuiSlider-thumb { /* Estilo do thumb (bolinha) do slider */
+  width: 20px !important;
+  height: 20px !important;
+  background-color: #fff !important;
+  border: 2px solid currentColor !important;
+}
+
+.MuiSlider-thumb:hover, /* Efeito hover no thumb */
+.MuiSlider-thumb.Mui-focusVisible { /* Efeito focus no thumb */
+  box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.16) !important;
+}
+
+.MuiSlider-track { /* Estilo da trilha do slider */
+  height: 6px !important;
+}
+
+.MuiSlider-rail { /* Estilo do trilho do slider */
+  height: 6px !important;
+  opacity: 0.3 !important;
+}
+
+.MuiSlider-markLabel { /* Estilo das marcas do slider */
+  font-size: 0.75rem !important;
+  color: #666 !important;
+}
+
+/* ==================== FIM RANGE SLIDER HORÁRIOS ==================== */
+
+/* ==================== MUI DATE PICKERS ==================== */
+
+/* Ajustes para os Date Pickers do MUI */
+.MuiDateCalendar-root { /* Cor de fundo do calendário */
+  background-color: white;
+}
+
+.MuiPickersDay-root { /* Estilo dos dias do calendário */
+  font-size: 0.9rem;
+}
+
+.MuiPickersDay-root.Mui-selected {  /* Estilo dos dias selecionados */
+  background-color: #667eea !important;
+  color: white !important;
+}
+
+.MuiPickersDay-root.Mui-selected:hover {  /* Efeito hover nos dias selecionados */
+  background-color: #5568d3 !important;
+}
+
+.MuiPickersDay-root:hover {  /* Efeito hover nos dias do calendário */
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+.MuiPickersCalendarHeader-root {  /* Estilo do cabeçalho do calendário */
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.MuiPickersCalendarHeader-label {  /* Estilo do texto do cabeçalho do calendário */
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.MuiIconButton-root {  /* Estilo do botão de navegação do calendário */
+  color: #667eea;
+}
+
+.MuiPickersYear-yearButton.Mui-selected {  /* Estilo dos anos selecionados */
+  background-color: #667eea !important;
+  color: white !important;
+}
+
+/* Ajuste do input do date picker */
+.MuiTextField-root {  /* Estilo do input do date picker */  
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.MuiInputBase-input {  /* Estilo do input do date picker */
+  padding: 0.75rem !important;
+  font-size: 1rem !important;
+}
+
+/* ==================== FIM MUI DATE PICKERS ==================== */
+
+/* ==================== BOXES DE MOTIVO DE RECUSA) ==================== */
+
+/* Box de Motivo de Recusa */
+.motivo-recusa-box { /* Box de motivo de recusa */
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 2px solid #ef5350;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+  transition: all 0.3s ease;
+}
+
+.motivo-recusa-box:hover { /* Efeito hover no box */
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+  transform: translateY(-2px);
+}
+
+.motivo-recusa-box svg {  /* Ícone do motivo de recusa */
+  color: #c62828;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
+}
+
+.motivo-recusa-box > div { /* Container interno do texto */
+  flex: 1;
+}
+
+.motivo-recusa-box strong { /* Título do motivo de recusa */
+  display: block;
+  color: #b71c1c;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.motivo-recusa-box strong::before { /* Linha decorativa antes do título */
+  content: '';
+  width: 4px;
+  height: 18px;
+  background: #c62828;
+  border-radius: 2px;
+}
+
+.motivo-recusa-box p {  /* Texto do motivo de recusa */
+  color: #7f1d1d;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  border-left: 3px solid #e53935;
+  font-weight: 500;
+}
+
+/* Animações de entrada */
+@keyframes slideInBox {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+.observacao-box,
+.motivo-recusa-box {
+  animation: slideInBox 0.4s ease-out;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+
+  .observacao-box,
+  .motivo-recusa-box {
+    padding: 1rem;
+  }
+
+
+  .observacao-box strong,
+  .motivo-recusa-box strong {
+    font-size: 0.85rem;
+  }
+
+
+  .observacao-box p,
+  .motivo-recusa-box p {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+
+ 
+  .observacao-box svg,
+  .motivo-recusa-box svg {
+    padding: 0.4rem;
+  }
+}
+
+/* ==================== FIM BOXES DE INFORMAÇÃO ==================== */
+
+/* ========== CARREGANDO APP ========== */
+.carregando-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.spinner-app {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.carregando-app p {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+/* ========== FIM CARREGANDO APP ========== */
