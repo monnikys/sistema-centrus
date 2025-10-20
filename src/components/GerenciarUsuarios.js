@@ -13,9 +13,62 @@ import {
   AlertCircle,
   Calendar,
   Clock,
+  FileText,
+  FolderOpen,
+  PlaneTakeoff,
+  BarChart3,
+  Settings,
+  Edit,
+  Key,
 } from 'lucide-react'
 import { AuthService } from '../authDb'
 import './styles/GerenciarUsuarios.css'
+
+// Definição de todas as páginas disponíveis no sistema
+const PAGINAS_DISPONIVEIS = [
+  {
+    id: 'lista_funcionarios',
+    nome: 'Lista de Funcionários',
+    icone: Users,
+    categoria: 'Funcionários',
+  },
+  {
+    id: 'cadastro_funcionarios',
+    nome: 'Cadastrar Funcionários',
+    icone: UserPlus,
+    categoria: 'Funcionários',
+  },
+  {
+    id: 'documentos_funcionarios',
+    nome: 'Documentos de Funcionários',
+    icone: FileText,
+    categoria: 'Funcionários',
+  },
+  {
+    id: 'relatorios',
+    nome: 'Relatórios',
+    icone: BarChart3,
+    categoria: 'Relatórios',
+  },
+  {
+    id: 'documentos_empresa',
+    nome: 'Documentos da Empresa',
+    icone: FolderOpen,
+    categoria: 'Empresa',
+  },
+  {
+    id: 'solicitacao_viagem',
+    nome: 'Solicitação de Viagem',
+    icone: PlaneTakeoff,
+    categoria: 'Viagens',
+  },
+  {
+    id: 'gerenciar_usuarios',
+    nome: 'Gerenciar Usuários',
+    icone: Settings,
+    categoria: 'Administração',
+  },
+]
 
 const GerenciarUsuarios = ({ usuarioAtual }) => {
   // Componente de gerenciamento de usuários
@@ -23,13 +76,16 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
   const [mostrarForm, setMostrarForm] = useState(false) // Controla se o formulário de criação de usuários deve ser exibido
   const [carregando, setCarregando] = useState(true) // Controla se o carregamento de usuários deve ser exibido
   const [mensagem, setMensagem] = useState({ tipo: '', texto: '' }) // Exibe mensagens de erro ou sucesso
+  const [modoEdicao, setModoEdicao] = useState(false) // Controla se está em modo de edição
+  const [usuarioEditando, setUsuarioEditando] = useState(null) // Armazena o ID do usuário sendo editado
 
   const [novoUsuario, setNovoUsuario] = useState({
-    // Dados do usuário sendo criado
+    // Dados do usuário sendo criado ou editado
     nome: '',
     email: '',
     senha: '',
     tipo: 'usuario',
+    permissoes: [], // Array de IDs das páginas que o usuário pode acessar
   })
 
   useEffect(() => {
@@ -56,29 +112,151 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
     setTimeout(() => setMensagem({ tipo: '', texto: '' }), 4000) // Após 4 segundos, limpa a mensagem automaticamente
   }
 
+  const handlePermissaoChange = (paginaId) => {
+    // Função para adicionar ou remover permissões
+    setNovoUsuario((prev) => {
+      const permissoesAtuais = prev.permissoes || [] // Pega as permissões atuais
+      const jaTemPermissao = permissoesAtuais.includes(paginaId) // Verifica se já tem a permissão
+
+      if (jaTemPermissao) {
+        // Se já tem, remove
+        return {
+          ...prev,
+          permissoes: permissoesAtuais.filter((p) => p !== paginaId),
+        }
+      } else {
+        // Se não tem, adiciona
+        return {
+          ...prev,
+          permissoes: [...permissoesAtuais, paginaId],
+        }
+      }
+    })
+  }
+
+  const selecionarTodasPermissoes = () => {
+    // Função para selecionar todas as permissões
+    const todasPermissoes = PAGINAS_DISPONIVEIS.map((p) => p.id) // Mapeia todos os IDs das páginas
+    setNovoUsuario({ ...novoUsuario, permissoes: todasPermissoes }) // Define todas as permissões
+  }
+
+  const limparTodasPermissoes = () => {
+    // Função para limpar todas as permissões
+    setNovoUsuario({ ...novoUsuario, permissoes: [] }) // Define permissões como array vazio
+  }
+
+  const handleTipoChange = (tipo) => {
+    // Função para alterar o tipo de usuário
+    setNovoUsuario({ ...novoUsuario, tipo }) // Define o tipo de usuário
+
+    if (tipo === 'admin') {
+      // Se for admin, seleciona todas as permissões automaticamente
+      selecionarTodasPermissoes()
+    }
+  }
+
+  const iniciarEdicao = (usuario) => {
+    // Função para iniciar a edição de um usuário
+    setModoEdicao(true) // Ativa o modo de edição
+    setUsuarioEditando(usuario.id) // Define o ID do usuário sendo editado
+    setNovoUsuario({
+      // Preenche o formulário com os dados do usuário
+      nome: usuario.nome,
+      email: usuario.email,
+      senha: '', // Senha vazia por padrão (será preenchida apenas se o admin quiser redefinir)
+      tipo: usuario.tipo,
+      permissoes: usuario.permissoes || [],
+    })
+    setMostrarForm(true) // Exibe o formulário
+  }
+
+  const cancelarEdicao = () => {
+    // Função para cancelar a edição
+    setModoEdicao(false) // Desativa o modo de edição
+    setUsuarioEditando(null) // Remove o ID do usuário sendo editado
+    setNovoUsuario({
+      nome: '',
+      email: '',
+      senha: '',
+      tipo: 'usuario',
+      permissoes: [],
+    }) // Limpa o formulário
+    setMostrarForm(false) // Esconde o formulário
+  }
+
   const handleSubmit = async (e) => {
     // Função que será executada ao enviar o formulário
     e.preventDefault() // Evita o recarregamento da página ao enviar o formulário
 
-    if (!novoUsuario.nome || !novoUsuario.email || !novoUsuario.senha) {
-      // Verificar se todos os campos foram preenchidos
-      mostrarMensagem('erro', 'Preencha todos os campos') // Exibir mensagem de erro
+    if (!novoUsuario.nome || !novoUsuario.email) {
+      // Verificar se os campos obrigatórios foram preenchidos
+      mostrarMensagem('erro', 'Preencha todos os campos obrigatórios') // Exibir mensagem de erro
       return
     }
 
-    if (novoUsuario.senha.length < 6) {
-      // Verificar se a senha tem pelo menos 6 caracteres
+    // Validação de senha apenas para criação ou se o admin preencheu o campo de senha na edição
+    if (!modoEdicao && !novoUsuario.senha) {
+      // Se está criando um novo usuário, senha é obrigatória
+      mostrarMensagem('erro', 'A senha é obrigatória') // Exibir mensagem de erro
+      return
+    }
+
+    if (novoUsuario.senha && novoUsuario.senha.length < 6) {
+      // Verificar se a senha tem pelo menos 6 caracteres (se foi preenchida)
       mostrarMensagem('erro', 'A senha deve ter no mínimo 6 caracteres') // Exibir mensagem de erro
       return
     }
 
-    const resultado = await AuthService.criarUsuario(novoUsuario) // Chamar a função para criar um novo usuário
+    if (novoUsuario.tipo !== 'admin' && novoUsuario.permissoes.length === 0) {
+      // Verificar se foi selecionada pelo menos uma permissão para usuários não-admin
+      mostrarMensagem('erro', 'Selecione pelo menos uma página de acesso') // Exibir mensagem de erro
+      return
+    }
+
+    let resultado
+
+    if (modoEdicao) {
+      // Se está em modo de edição
+      const dadosAtualizacao = {
+        // Dados a serem atualizados
+        nome: novoUsuario.nome,
+        email: novoUsuario.email,
+        tipo: novoUsuario.tipo,
+        permissoes: novoUsuario.permissoes,
+      }
+
+      // Apenas inclui a senha se ela foi preenchida (para redefinir)
+      if (novoUsuario.senha) {
+        dadosAtualizacao.senha = novoUsuario.senha
+      }
+
+      resultado = await AuthService.editarUsuario(
+        usuarioEditando,
+        dadosAtualizacao
+      ) // Chamar a função para editar usuário
+    } else {
+      // Se está criando um novo usuário
+      resultado = await AuthService.criarUsuario(novoUsuario) // Chamar a função para criar um novo usuário
+    }
 
     if (resultado.sucesso) {
-      // Se o usuário foi criado com sucesso
-      mostrarMensagem('sucesso', 'Usuário criado com sucesso!') // Exibir mensagem de sucesso
-      setNovoUsuario({ nome: '', email: '', senha: '', tipo: 'usuario' }) // Limpar os campos do formulário
+      // Se a operação foi bem-sucedida
+      mostrarMensagem(
+        'sucesso',
+        modoEdicao
+          ? 'Usuário atualizado com sucesso!'
+          : 'Usuário criado com sucesso!'
+      ) // Exibir mensagem de sucesso
+      setNovoUsuario({
+        nome: '',
+        email: '',
+        senha: '',
+        tipo: 'usuario',
+        permissoes: [],
+      }) // Limpar os campos do formulário
       setMostrarForm(false) // Fechar o formulário
+      setModoEdicao(false) // Desativar o modo de edição
+      setUsuarioEditando(null) // Limpar o ID do usuário sendo editado
       carregarUsuarios() // Recarregar a lista de usuários
     } else {
       mostrarMensagem('erro', resultado.erro) // Exibir mensagem de erro
@@ -133,6 +311,21 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
     })
   }
 
+  const obterNomePagina = (paginaId) => {
+    // Função para obter o nome da página pelo ID
+    const pagina = PAGINAS_DISPONIVEIS.find((p) => p.id === paginaId) // Busca a página pelo ID
+    return pagina ? pagina.nome : paginaId // Retorna o nome da página ou o ID se não encontrar
+  }
+
+  // Agrupar páginas por categoria
+  const categorias = PAGINAS_DISPONIVEIS.reduce((acc, pagina) => {
+    if (!acc[pagina.categoria]) {
+      acc[pagina.categoria] = []
+    }
+    acc[pagina.categoria].push(pagina)
+    return acc
+  }, {})
+
   if (carregando) {
     // Se estiver carregando
     return (
@@ -178,7 +371,15 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
         </div>
         <button
           className="btn-adicionar" // Botão de adicionar usuário
-          onClick={() => setMostrarForm(!mostrarForm)} // Função para alternar o formulário
+          onClick={() => {
+            // Função para alternar o formulário
+            if (mostrarForm && modoEdicao) {
+              // Se está mostrando o formulário E está em modo de edição
+              cancelarEdicao() // Cancela a edição
+            } else {
+              setMostrarForm(!mostrarForm) // Alterna a exibição do formulário
+            }
+          }}
         >
           <UserPlus size={18} />
           {mostrarForm ? 'Cancelar' : 'Novo Usuário'}{' '}
@@ -201,7 +402,7 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
         <div className="form-usuario-card">
           {' '}
           {/* Div do formulário do usuário */}
-          <h3>Criar Novo Usuário</h3>
+          <h3>{modoEdicao ? 'Editar Usuário' : 'Criar Novo Usuário'}</h3>
           <form onSubmit={handleSubmit} className="form-usuario">
             {' '}
             {/* Formulário do usuário */}
@@ -237,165 +438,361 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
                 <input
                   type="email"
                   value={novoUsuario.email}
-                  onChange={(e) =>
-                    setNovoUsuario({ ...novoUsuario, email: e.target.value }) // Atualiza o valor do input
+                  onChange={
+                    (e) =>
+                      setNovoUsuario({ ...novoUsuario, email: e.target.value }) // Atualiza o valor do input
                   }
                   placeholder="email@exemplo.com" // Placeholder do input
                 />
               </div>
             </div>
-            <div className="form-row"> {/* Div da linha do formulário */}
-              <div className="form-group"> {/* Div do grupo do formulário */}
+            <div className="form-row">
+              {' '}
+              {/* Div da linha do formulário */}
+              <div className="form-group">
+                {' '}
+                {/* Div do grupo do formulário */}
                 <label>
                   <Lock size={16} />
-                  Senha (mínimo 6 caracteres)
+                  {modoEdicao
+                    ? 'Nova Senha (deixe em branco para manter)'
+                    : 'Senha (mínimo 6 caracteres)'}
                 </label>
                 <input
                   type="password"
                   value={novoUsuario.senha}
-                  onChange={(e) =>
-                    setNovoUsuario({ ...novoUsuario, senha: e.target.value }) // Atualiza o valor do input
+                  onChange={
+                    (e) =>
+                      setNovoUsuario({ ...novoUsuario, senha: e.target.value }) // Atualiza o valor do input
                   }
-                  placeholder="••••••••"
+                  placeholder={
+                    modoEdicao ? 'Deixe em branco para não alterar' : '••••••••'
+                  }
                   minLength="6"
                 />
+                {modoEdicao && (
+                  <small
+                    style={{
+                      color: '#666',
+                      fontSize: '12px',
+                      marginTop: '4px',
+                      display: 'block',
+                    }}
+                  >
+                    Preencha apenas se desejar redefinir a senha
+                  </small>
+                )}
               </div>
-
-              <div className="form-group"> {/* Div do grupo do formulário */}
+              <div className="form-group">
+                {' '}
+                {/* Div do grupo do formulário */}
                 <label>
                   <Shield size={16} />
                   Tipo de Usuário
                 </label>
                 <select
                   value={novoUsuario.tipo}
-                  onChange={(e) =>
-                    setNovoUsuario({ ...novoUsuario, tipo: e.target.value }) // Atualiza o valor do input
-                  }
+                  onChange={(e) => handleTipoChange(e.target.value)} // Função para alterar o tipo e atualizar permissões
                 >
-                  <option value="usuario">Usuário Padrão</option> {/* Opção de usuário padrão */}
-                  <option value="admin">Administrador</option> {/* Opção de administrador */}
+                  <option value="usuario">Usuário Padrão</option>{' '}
+                  {/* Opção de usuário padrão */}
+                  <option value="admin">Administrador</option>{' '}
+                  {/* Opção de administrador */}
                   <option value="presi">Presi</option> {/* Opção de PRESI */}
-                  <option value="diretor">Diretor</option> {/* Opção de DIRETOR */}
+                  <option value="diretor">Diretor</option>{' '}
+                  {/* Opção de DIRETOR */}
                   <option value="gecon">Gecon</option> {/* Opção de GECON */}
-                  <option value="presi">Secre</option> {/* Opção de SECRE */}
-                  <option value="diretor">Conse</option> {/* Opção de CONSE */}
+                  <option value="secre">Secre</option> {/* Opção de SECRE */}
+                  <option value="conse">Conse</option> {/* Opção de CONSE */}
                 </select>
               </div>
             </div>
-            <div className="form-actions"> {/* Div das ações do formulário */}
-              <button type="submit" className="btn-salvar"> {/* Botão de salvar */}
-                <UserPlus size={18} />
-                Criar Usuário
+            {/* Seção de Permissões */}
+            <div className="permissoes-section">
+              {' '}
+              {/* Seção de permissões */}
+              <div className="permissoes-header">
+                {' '}
+                {/* Cabeçalho das permissões */}
+                <label>
+                  <Shield size={18} />
+                  Permissões de Acesso
+                </label>
+                <div className="permissoes-actions">
+                  {' '}
+                  {/* Ações de permissões */}
+                  <button
+                    type="button"
+                    onClick={selecionarTodasPermissoes} // Função para selecionar todas
+                    className="btn-selecionar-todos"
+                    disabled={novoUsuario.tipo === 'admin'} // Desabilita se for admin
+                  >
+                    Selecionar Todas
+                  </button>
+                  <button
+                    type="button"
+                    onClick={limparTodasPermissoes} // Função para limpar todas
+                    className="btn-limpar-todos"
+                    disabled={novoUsuario.tipo === 'admin'} // Desabilita se for admin
+                  >
+                    Limpar Todas
+                  </button>
+                </div>
+              </div>
+              {novoUsuario.tipo === 'admin' ? (
+                <div className="aviso-admin">
+                  {' '}
+                  {/* Aviso para admin */}
+                  <AlertCircle size={18} />
+                  <p>
+                    Administradores têm acesso total a todas as funcionalidades
+                    do sistema.
+                  </p>
+                </div>
+              ) : (
+                <div className="permissoes-grid">
+                  {' '}
+                  {/* Grid de permissões */}
+                  {Object.entries(categorias).map(([categoria, paginas]) => (
+                    <div key={categoria} className="categoria-permissoes">
+                      {' '}
+                      {/* Categoria de permissões */}
+                      <h4 className="categoria-titulo">{categoria}</h4>{' '}
+                      {/* Título da categoria */}
+                      {paginas.map((pagina) => {
+                        const Icone = pagina.icone // Pega o ícone da página
+                        const isChecked = novoUsuario.permissoes.includes(
+                          pagina.id
+                        ) // Verifica se a página está selecionada
+
+                        return (
+                          <label
+                            key={pagina.id}
+                            className={`permissao-item ${
+                              isChecked ? 'checked' : ''
+                            }`}
+                          >
+                            {' '}
+                            {/* Item de permissão */}
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => handlePermissaoChange(pagina.id)} // Função para alterar permissão
+                            />
+                            <Icone size={16} />
+                            <span>{pagina.nome}</span> {/* Nome da página */}
+                          </label>
+                        )
+                      })}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="form-actions">
+              {' '}
+              {/* Div das ações do formulário */}
+              <button type="submit" className="btn-salvar">
+                {' '}
+                {/* Botão de salvar */}
+                {modoEdicao ? <Edit size={18} /> : <UserPlus size={18} />}
+                {modoEdicao ? 'Atualizar Usuário' : 'Criar Usuário'}
               </button>
             </div>
           </form>
         </div>
       )}
-      <div className="lista-usuarios"> {/* Div da lista de usuários */}
-        <div className="usuarios-stats"> {/* Div das estatísticas de usuários */}
-          <div className="stat-card"> {/* Cartão da estatística de usuários */}
+      <div className="lista-usuarios">
+        {' '}
+        {/* Div da lista de usuários */}
+        <div className="usuarios-stats">
+          {' '}
+          {/* Div das estatísticas de usuários */}
+          <div className="stat-card">
+            {' '}
+            {/* Cartão da estatística de usuários */}
             <Users size={24} />
             <div>
-              <span className="stat-numero">{usuarios.length}</span> {/* Número de usuários */}
-              <span className="stat-label">Total de Usuários</span> {/* Etiqueta da estatística de usuários */}
+              <span className="stat-numero">{usuarios.length}</span>{' '}
+              {/* Número de usuários */}
+              <span className="stat-label">Total de Usuários</span>{' '}
+              {/* Etiqueta da estatística de usuários */}
             </div>
           </div>
-          <div className="stat-card"> {/* Cartão da estatística de usuários */}
+          <div className="stat-card">
+            {' '}
+            {/* Cartão da estatística de usuários */}
             <Shield size={24} />
             <div>
-              <span className="stat-numero"> {/* Número de administradores */}
-                {usuarios.filter((u) => u.tipo === 'admin').length} {/* Filtro de administradores */}
+              <span className="stat-numero">
+                {' '}
+                {/* Número de administradores */}
+                {usuarios.filter((u) => u.tipo === 'admin').length}{' '}
+                {/* Filtro de administradores */}
               </span>
-              <span className="stat-label">Administradores</span> {/* Etiqueta da estatística de usuários */}
+              <span className="stat-label">Administradores</span>{' '}
+              {/* Etiqueta da estatística de usuários */}
             </div>
           </div>
-          <div className="stat-card"> {/* Cartão da estatística de usuários */}
+          <div className="stat-card">
+            {' '}
+            {/* Cartão da estatística de usuários */}
             <CheckCircle size={24} />
             <div>
-              <span className="stat-numero"> {/* Número de usuários ativos */}
-                {usuarios.filter((u) => u.ativo).length} {/* Filtro de usuários ativos */}
+              <span className="stat-numero">
+                {' '}
+                {/* Número de usuários ativos */}
+                {usuarios.filter((u) => u.ativo).length}{' '}
+                {/* Filtro de usuários ativos */}
               </span>
-              <span className="stat-label">Usuários Ativos</span> {/* Etiqueta da estatística de usuários */}
+              <span className="stat-label">Usuários Ativos</span>{' '}
+              {/* Etiqueta da estatística de usuários */}
             </div>
           </div>
         </div>
-
-        <div className="tabela-usuarios"> {/* Div da tabela de usuários */}
-          {usuarios.map((usuario) => ( // Mapeamento dos usuários
-            <div key={usuario.id} className="usuario-card"> {/* Cartão do usuário */}
-              <div className="usuario-info"> {/* Div das informações do usuário */}
-                <div className="usuario-avatar"> {/* Div do avatar do usuário */}
-                  {usuario.tipo === 'admin' ? ( // Se o usuário é admin
-                    <Shield size={24} />
-                  ) : (
-                    <UserIcon size={24} />
-                  )}
-                </div>
-                <div className="usuario-detalhes"> {/* Div das detalhes do usuário */}
-                  <div className="usuario-nome-linha"> {/* Div do nome e linha do usuário */}
-                    <h4>{usuario.nome}</h4> {/* Nome do usuário */}
-                    <span className={`badge badge-${usuario.tipo}`}> {/* Etiqueta do tipo de usuário */}
-                      {usuario.tipo === 'admin' ? 'Administrador' : 'Usuário'} {/* Se o usuário é admin, mostra "Administrador", senão, mostra "Usuário" */}
-                    </span>
-                    <span
-                      className={`badge badge-${  // Etiqueta do status do usuário
-                        usuario.ativo ? 'ativo' : 'inativo' // Se o usuário é ativo, mostra "Ativo", senão, mostra "Inativo"
-                      }`}
-                    >
-                      {usuario.ativo ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </div>
-                  <p className="usuario-email"> {/* Parágrafo do email do usuário */}
-                    <Mail size={14} />
-                    {usuario.email} 
-                  </p>
-                  <div className="usuario-datas"> {/* Div das datas do usuário */}
-                    <span>
-                      <Calendar size={14} />
-                      Criado: {formatarData(usuario.dataCriacao)} {/* Data de criação do usuário */}
-                    </span>
-                    <span>
-                      <Clock size={14} />
-                      Último acesso: {formatarData(usuario.ultimoAcesso)} {/* Último acesso do usuário */}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {usuario.id !== usuarioAtual.id && ( // Se o usuário atual não é o usuário atual
-                <div className="usuario-acoes"> {/* Div das ações do usuário */}
-                  <button
-                    className={`btn-status ${ // Classe do botão de status
-                      usuario.ativo ? 'btn-desativar' : 'btn-ativar' // Se o usuário é ativo, mostra "btn-desativar", senão, mostra "btn-ativar"
-                    }`}
-                    onClick={() => alterarStatus(usuario.id, usuario.ativo)} 
-                    title={
-                      usuario.ativo ? 'Desativar usuário' : 'Ativar usuário' // Se o usuário é ativo, mostra "Desativar usuário", senão, mostra "Ativar usuário"
-                    }
-                  >
-                    {usuario.ativo ? ( // Se o usuário é ativo
-                      <XCircle size={18} />
+        <div className="tabela-usuarios">
+          {' '}
+          {/* Div da tabela de usuários */}
+          {usuarios.map(
+            (
+              usuario // Mapeamento dos usuários
+            ) => (
+              <div key={usuario.id} className="usuario-card">
+                {' '}
+                {/* Cartão do usuário */}
+                <div className="usuario-info">
+                  {' '}
+                  {/* Div das informações do usuário */}
+                  <div className="usuario-avatar">
+                    {' '}
+                    {/* Div do avatar do usuário */}
+                    {usuario.tipo === 'admin' ? ( // Se o usuário é admin
+                      <Shield size={24} />
                     ) : (
-                      <CheckCircle size={18} />
+                      <UserIcon size={24} />
                     )}
-                    {usuario.ativo ? 'Desativar' : 'Ativar'}
-                  </button>
-                  <button
-                    className="btn-excluir" // Classe do botão de exclusão
-                    onClick={() => excluirUsuario(usuario.id, usuario.nome)} // Função de exclusão
-                    title="Excluir usuário"
-                  >
-                    <Trash2 size={18} />
-                    Excluir
-                  </button>
+                  </div>
+                  <div className="usuario-detalhes">
+                    {' '}
+                    {/* Div das detalhes do usuário */}
+                    <div className="usuario-nome-linha">
+                      {' '}
+                      {/* Div do nome e linha do usuário */}
+                      <h4>{usuario.nome}</h4> {/* Nome do usuário */}
+                      <span className={`badge badge-${usuario.tipo}`}>
+                        {' '}
+                        {/* Etiqueta do tipo de usuário */}
+                        {usuario.tipo === 'admin'
+                          ? 'Administrador'
+                          : 'Usuário'}{' '}
+                        {/* Se o usuário é admin, mostra "Administrador", senão, mostra "Usuário" */}
+                      </span>
+                      <span
+                        className={`badge badge-${
+                          // Etiqueta do status do usuário
+                          usuario.ativo ? 'ativo' : 'inativo' // Se o usuário é ativo, mostra "Ativo", senão, mostra "Inativo"
+                        }`}
+                      >
+                        {usuario.ativo ? 'Ativo' : 'Inativo'}
+                      </span>
+                    </div>
+                    <p className="usuario-email">
+                      {' '}
+                      {/* Parágrafo do email do usuário */}
+                      <Mail size={14} />
+                      {usuario.email}
+                    </p>
+                    {/* Mostrar permissões do usuário */}
+                    {usuario.tipo !== 'admin' &&
+                      usuario.permissoes &&
+                      usuario.permissoes.length > 0 && (
+                        <div className="usuario-permissoes">
+                          {' '}
+                          {/* Div das permissões do usuário */}
+                          <strong>Acessos:</strong>
+                          <div className="permissoes-badges">
+                            {' '}
+                            {/* Badges das permissões */}
+                            {usuario.permissoes
+                              .slice(0, 3)
+                              .map((permissaoId) => (
+                                <span
+                                  key={permissaoId}
+                                  className="badge-permissao"
+                                >
+                                  {obterNomePagina(permissaoId)}
+                                </span>
+                              ))}
+                            {usuario.permissoes.length > 3 && (
+                              <span className="badge-permissao badge-mais">
+                                +{usuario.permissoes.length - 3} mais
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    <div className="usuario-datas">
+                      {' '}
+                      {/* Div das datas do usuário */}
+                      <span>
+                        <Calendar size={14} />
+                        Criado: {formatarData(usuario.dataCriacao)}{' '}
+                        {/* Data de criação do usuário */}
+                      </span>
+                      <span>
+                        <Clock size={14} />
+                        Último acesso: {formatarData(usuario.ultimoAcesso)}{' '}
+                        {/* Último acesso do usuário */}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+                {usuario.id !== usuarioAtual.id && ( // Se o usuário atual não é o usuário atual
+                  <div className="usuario-acoes">
+                    {' '}
+                    {/* Div das ações do usuário */}
+                    <button
+                      className="btn-editar" // Botão de editar
+                      onClick={() => iniciarEdicao(usuario)} // Função para iniciar edição
+                      title="Editar usuário"
+                    >
+                      <Edit size={18} />
+                      Editar
+                    </button>
+                    <button
+                      className={`btn-status ${
+                        // Classe do botão de status
+                        usuario.ativo ? 'btn-desativar' : 'btn-ativar' // Se o usuário é ativo, mostra "btn-desativar", senão, mostra "btn-ativar"
+                      }`}
+                      onClick={() => alterarStatus(usuario.id, usuario.ativo)}
+                      title={
+                        usuario.ativo ? 'Desativar usuário' : 'Ativar usuário' // Se o usuário é ativo, mostra "Desativar usuário", senão, mostra "Ativar usuário"
+                      }
+                    >
+                      {usuario.ativo ? ( // Se o usuário é ativo
+                        <XCircle size={18} />
+                      ) : (
+                        <CheckCircle size={18} />
+                      )}
+                      {usuario.ativo ? 'Desativar' : 'Ativar'}
+                    </button>
+                    <button
+                      className="btn-excluir" // Classe do botão de exclusão
+                      onClick={() => excluirUsuario(usuario.id, usuario.nome)} // Função de exclusão
+                      title="Excluir usuário"
+                    >
+                      <Trash2 size={18} />
+                      Excluir
+                    </button>
+                  </div>
+                )}
+              </div>
+            )
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-export default GerenciarUsuarios  // Exporta o componente
+export default GerenciarUsuarios // Exporta o componente

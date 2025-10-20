@@ -1,117 +1,49 @@
-/* src/styles/ProtectedRoute.css */
+/* src/components/styles/ProtectedRoute.css */
 
-.verificando-auth { /* Estilos da tela de verificação de autenticação */
-  min-height: 100vh;
+.acesso-negado {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.spinner-grande {  /* Spinner de carregamento grande */
-  width: 60px;
-  height: 60px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {  /* Animação de rotação */
-  to { transform: rotate(360deg); }   /* Estado final da rotação */
-}
-
-.verificando-auth p {  /* Parágrafo da tela de verificação de autenticação */
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.acesso-negado {  /* Estilos da tela de acesso negado */
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.acesso-negado-card {  /* Cartão da tela de acesso negado */
-  background: white;
-  border-radius: 20px;
-  padding: 50px 40px;
+  min-height: 400px;
+  padding: 40px 20px;
   text-align: center;
-  max-width: 500px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.5s ease-out;
 }
 
-@keyframes slideUp {  /* Animação de slide-up */
-  from {  /* Estado inicial */
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {  /* Estado final */
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.acesso-negado-card svg {  /* Estilos do SVG da tela de acesso negado */
+.acesso-negado svg {
+  color: #dc3545;
   margin-bottom: 20px;
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.acesso-negado-card h2 {  /* Título da tela de acesso negado */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.acesso-negado h2 {
   margin: 0 0 15px 0;
-  color: #333;
   font-size: 28px;
-}
-
-.acesso-negado-card p {  /* Parágrafo da tela de acesso negado */
-  color: #666;
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 12px;
-}
-
-.usuario-info {  /* Informações do usuário da tela de acesso negado */
-  background: #f8f9fa;
-  padding: 12px;
-  border-radius: 8px;
-  margin: 20px 0;
-}
-
-.usuario-info strong {  /* Texto forte das informações do usuário da tela de acesso negado */
+  font-weight: 700;
   color: #333;
 }
 
-.btn-voltar {  /* Botão de voltar da tela de acesso negado */
-  margin-top: 25px;
-  padding: 14px 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
+.acesso-negado p {
+  margin: 0 0 10px 0;
   font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  color: #666;
+  max-width: 500px;
 }
 
-.btn-voltar:hover {  /* Efeito hover no botão de voltar da tela de acesso negado */
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-}
-
-@media (max-width: 480px) {  /* Estilos responsivos para telas menores */
-  .acesso-negado-card {  /* Cartão da tela de acesso negado */
-    padding: 40px 25px;
-  }
-
-  .acesso-negado-card h2 {  /* Título da tela de acesso negado */
-    font-size: 24px;
-  }
+.acesso-negado-detalhe {
+  font-size: 14px;
+  color: #999;
+  font-style: italic;
 }

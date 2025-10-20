@@ -39,47 +39,69 @@ function App() {
 
   useEffect(() => {
     // Efeito para inicializar o sistema na montagem do componente
+    console.log('🚀 App.js: Iniciando aplicação...')
     inicializar() // Chamar função de inicialização
   }, []) // Executar apenas uma vez na montagem
 
   const inicializar = async () => {
-    // Função
+    // Função para inicializar o sistema
     try {
+      console.log('⚙️ Inicializando banco de autenticação...')
       // Tentar inicializar o sistema
       // Inicializar banco de autenticação
       await inicializarAuth() // Chamar função de inicialização do AuthService
+      console.log('✅ Banco de autenticação inicializado')
 
       // Verificar se já está autenticado
       const estaAuth = await AuthService.estaAutenticado()
+      console.log('🔐 Está autenticado?', estaAuth)
 
       if (estaAuth) {
         // Se está autenticado
         const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuário atual
+        console.log('👤 Usuário autenticado:', usuarioAtual)
+        console.log('🔑 Tipo:', usuarioAtual?.tipo)
+        console.log('📋 Permissões:', usuarioAtual?.permissoes)
         setUsuario(usuarioAtual) // Atualizar estado do usuário
+      } else {
+        console.log('❌ Nenhum usuário autenticado')
       }
     } catch (error) {
       // Capturar erros
-      console.error('Erro ao inicializar:', error) // Logar erro no console
+      console.error('❌ Erro ao inicializar:', error) // Logar erro no console
     } finally {
       // Sempre executar
       setCarregando(false) // Indicar que o carregamento terminou
+      console.log('✅ Inicialização concluída')
     }
   }
 
-  const handleLoginSucesso = (usuarioLogado) => {
+  const handleLoginSucesso = async (usuarioLogado) => {
     // Função chamada ao fazer login com sucesso
-    setUsuario(usuarioLogado) // Atualizar estado do usuário
+    console.log('🎉 Login bem-sucedido!')
+    console.log('👤 Usuário logado:', usuarioLogado)
+
+    // IMPORTANTE: Recarregar o usuário do banco para garantir que tem as permissões
+    const usuarioCompleto = await AuthService.obterUsuarioAtual()
+    console.log('🔄 Usuário recarregado do banco:', usuarioCompleto)
+    console.log('📋 Permissões carregadas:', usuarioCompleto?.permissoes)
+
+    setUsuario(usuarioCompleto) // Atualizar estado do usuário com dados completos
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Função para fazer logout
+    console.log('👋 Fazendo logout...')
+    await AuthService.logout() // Fazer logout no AuthService
     setUsuario(null) // Limpar estado do usuário
     setPaginaAtual('dashboard') // Voltar para o dashboard
     setTelaAtual('lista') // Voltar para a tela de lista
+    console.log('✅ Logout concluído')
   }
 
   const handleMudarPagina = (pagina) => {
     // Função para mudar a página atual
+    console.log('📄 Mudando página para:', pagina)
     setPaginaAtual(pagina) // Atualizar estado da página
     setTelaAtual('lista') // Voltar para a tela de lista
     setFuncionarioSelecionado(null) // Limpar funcionário selecionado
@@ -103,26 +125,19 @@ function App() {
     setTelaAtual('documentos') // Mudar para a tela de gerenciamento de documentos
   }
 
-  const handleRelatorio = () => {
-    // Função para ver o relatório de documentos
-    setTelaAtual('relatorio') // Mudar para a tela de relatório
-  }
-
-  const handleDocumentosEmpresa = () => {
-    // Função para ver documentos da empresa
-    setTelaAtual('documentosEmpresa') // Mudar para a tela de documentos da empresa
-  }
-
-  const handleSolicitacaoViagem = () => {
-    // Função para ver solicitações de viagem
-    setTelaAtual('solicitacaoViagem') // Mudar para a tela de solicitações de viagem
-  }
-
   const handleVoltar = () => {
     // Função para voltar para a lista de funcionários
     setFuncionarioSelecionado(null) // Limpar funcionário selecionado
     setTelaAtual('lista') // Mudar para a tela de lista
   }
+
+  // DEBUG: Log do usuário sempre que mudar
+  useEffect(() => {
+    console.log('🔄 Estado do usuário mudou:', usuario)
+    if (usuario) {
+      console.log('  📋 Permissões atuais:', usuario.permissoes)
+    }
+  }, [usuario])
 
   if (carregando) {
     // Se o sistema está carregando, mostrar tela de carregamento
@@ -137,10 +152,12 @@ function App() {
 
   // Se não estiver autenticado, mostrar tela de login
   if (!usuario) {
+    console.log('🔓 Renderizando tela de login...')
     return <Login onLoginSucesso={handleLoginSucesso} /> // Renderiza o componente de Login
   }
 
   // Sistema autenticado
+  console.log('🔒 Renderizando sistema autenticado para:', usuario.nome)
   return (
     // NOVO: Envolver tudo com ThemeProvider e CssBaseline
     <ThemeProvider theme={theme}>
@@ -157,7 +174,7 @@ function App() {
         <main className="app-main">
           {' '}
           {/* Área principal do aplicativo */}
-          {/* NOVO: Adicionar página do Dashboard */}
+          {/* Dashboard - sempre acessível */}
           {paginaAtual === 'dashboard' && ( // Se a página atual é dashboard
             <ProtectedRoute>
               {' '}
@@ -165,10 +182,9 @@ function App() {
               <DashboardMUI /> {/*Renderiza o Dashboard com Material-UI*/}
             </ProtectedRoute>
           )}
-          {paginaAtual === 'solicitacao-viagem' && ( // Se a página atual é solicitação de viagem
-            <ProtectedRoute>
-              {' '}
-              {/*Rota protegida para usuários autenticados*/}
+          {/* Solicitação de Viagem - requer permissão */}
+          {paginaAtual === 'solicitacao-viagem' && (
+            <ProtectedRoute paginaId="solicitacao_viagem">
               <SolicitacaoViagem
                 onVoltar={() => {
                   setPaginaAtual('dashboard')
@@ -177,10 +193,9 @@ function App() {
               />
             </ProtectedRoute>
           )}
-          {paginaAtual === 'docs-empresa' && ( // Se a página atual é documentos da empresa
-            <ProtectedRoute>
-              {' '}
-              {/*Rota protegida para usuários autenticados*/}
+          {/* Documentos da Empresa - requer permissão */}
+          {paginaAtual === 'docs-empresa' && (
+            <ProtectedRoute paginaId="documentos_empresa">
               <DocumentosEmpresa
                 onVoltar={() => {
                   setPaginaAtual('dashboard')
@@ -189,10 +204,9 @@ function App() {
               />
             </ProtectedRoute>
           )}
-          {paginaAtual === 'download-massa' && ( // Se a página atual é download em massa
-            <ProtectedRoute>
-              {' '}
-              {/*Rota protegida para usuários autenticados*/}
+          {/* Download em Massa (Relatórios) - requer permissão */}
+          {paginaAtual === 'download-massa' && (
+            <ProtectedRoute paginaId="relatorios">
               <RelatorioDocumentos
                 onVoltar={() => {
                   setPaginaAtual('dashboard')
@@ -201,10 +215,9 @@ function App() {
               />
             </ProtectedRoute>
           )}
-          {paginaAtual === 'novo-funcionario' && ( // Se a página atual é novo funcionário
-            <ProtectedRoute>
-              {' '}
-              {/*Rota protegida para usuários autenticados*/}
+          {/* Novo Funcionário - requer permissão de cadastro */}
+          {paginaAtual === 'novo-funcionario' && (
+            <ProtectedRoute paginaId="cadastro_funcionarios">
               <CadastroFuncionario
                 funcionario={null}
                 onVoltar={() => {
@@ -214,10 +227,9 @@ function App() {
               />
             </ProtectedRoute>
           )}
-          {paginaAtual === 'funcionarios' && ( // Se a página atual é de funcionários
-            <ProtectedRoute>
-              {' '}
-              {/*Rota protegida para usuários autenticados*/}
+          {/* Funcionários - requer permissão de visualização */}
+          {paginaAtual === 'funcionarios' && (
+            <ProtectedRoute paginaId="lista_funcionarios">
               {telaAtual === 'lista' && ( // Se a tela atual é a lista de funcionários
                 <ListaFuncionarios // Renderiza a lista de funcionários
                   funcionarios={funcionarios || []} // Passa a lista de funcionários (ou array vazio se nulo)
@@ -237,29 +249,12 @@ function App() {
                   onVoltar={handleVoltar} // Função para voltar para a lista
                 />
               )}
-              {telaAtual === 'relatorio' && ( // Se a tela atual é de relatório de documentos
-                <RelatorioDocumentos
-                  onVoltar={handleVoltar} // Função para voltar para a lista
-                />
-              )}
-              {telaAtual === 'documentosEmpresa' && ( // Se a tela atual é de documentos da empresa
-                <DocumentosEmpresa
-                  onVoltar={handleVoltar} // Função para voltar para a lista
-                />
-              )}
-              {telaAtual === 'solicitacaoViagem' && ( // Se a tela atual é de solicitações de viagem
-                <SolicitacaoViagem
-                  onVoltar={handleVoltar} // Função para voltar para a lista
-                />
-              )}
             </ProtectedRoute>
           )}
-          {paginaAtual === 'usuarios' && ( // Se a página atual é de usuários (admin)
-            <ProtectedRoute requererAdmin={true}>
-              {' '}
-              {/*Rota protegida que requer permissão de admin*/}
-              <GerenciarUsuarios usuarioAtual={usuario} />{' '}
-              {/*Renderiza o componente de gerenciamento de usuários*/}
+          {/* Gerenciar Usuários - requer ser admin OU ter permissão específica */}
+          {paginaAtual === 'usuarios' && (
+            <ProtectedRoute paginaId="gerenciar_usuarios">
+              <GerenciarUsuarios usuarioAtual={usuario} />
             </ProtectedRoute>
           )}
         </main>

@@ -1,12 +1,14 @@
 /* src/styles/GerenciarUsuarios.css */
 
-.gerenciar-usuarios { /* Estilos para a seção de gerenciamento de usuários */
+.gerenciar-usuarios {
+  /* Estilos para a seção de gerenciamento de usuários */
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-.header-usuarios {  /* Estilos para o cabeçalho da seção */
+.header-usuarios {
+  /* Estilos para o cabeçalho da seção */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,20 +17,23 @@
   gap: 15px;
 }
 
-.titulo-secao { /* Estilos para o título da seção */
+.titulo-secao {
+  /* Estilos para o título da seção */
   display: flex;
   align-items: center;
   gap: 12px;
   color: #333;
 }
 
-.titulo-secao h2 {  /* Estilos para o texto do título */
+.titulo-secao h2 {
+  /* Estilos para o texto do título */
   margin: 0;
   font-size: 26px;
   font-weight: 700;
 }
 
-.btn-adicionar {  /* Estilos para o botão de adicionar usuário */
+.btn-adicionar {
+  /* Estilos para o botão de adicionar usuário */
   display: flex;
   align-items: center;
   gap: 8px;
@@ -43,12 +48,14 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.btn-adicionar:hover {  /* Efeito hover para o botão */
+.btn-adicionar:hover {
+  /* Efeito hover para o botão */
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.mensagem { /* Estilos para mensagens de sucesso/erro */
+.mensagem {
+  /* Estilos para mensagens de sucesso/erro */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -59,30 +66,36 @@
   animation: slideDown 0.3s ease-out;
 }
 
-@keyframes slideDown {  /* Animação de slide-down para mensagens */
-  from {  /* Começa levemente acima e transparente */
+@keyframes slideDown {
+  /* Animação de slide-down para mensagens */
+  from {
+    /* Começa levemente acima e transparente */
     opacity: 0;
     transform: translateY(-10px);
   }
-  to {  /* Termina na posição normal e totalmente opaco */
+  to {
+    /* Termina na posição normal e totalmente opaco */
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.mensagem-sucesso { /* Estilos para mensagem de sucesso */
+.mensagem-sucesso {
+  /* Estilos para mensagem de sucesso */
   background: #d4edda;
   color: #155724;
   border: 1px solid #c3e6cb;
 }
 
-.mensagem-erro {  /* Estilos para mensagem de erro */
+.mensagem-erro {
+  /* Estilos para mensagem de erro */
   background: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
 
-.form-usuario-card {  /* Estilos para o card do formulário de usuário */
+.form-usuario-card {
+  /* Estilos para o card do formulário de usuário */
   background: white;
   border-radius: 15px;
   padding: 25px;
@@ -91,31 +104,36 @@
   animation: slideDown 0.3s ease-out;
 }
 
-.form-usuario-card h3 { /* Estilos para o título do formulário */
+.form-usuario-card h3 {
+  /* Estilos para o título do formulário */
   margin: 0 0 20px 0;
   color: #333;
   font-size: 20px;
 }
 
-.form-usuario { /* Estilos para o formulário de usuário */
+.form-usuario {
+  /* Estilos para o formulário de usuário */
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.form-row { /* Estilos para linhas do formulário */
+.form-row {
+  /* Estilos para linhas do formulário */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
 }
 
-.form-group { /* Estilos para grupos de campos do formulário */
+.form-group {
+  /* Estilos para grupos de campos do formulário */
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.form-group label { /* Estilos para os rótulos dos campos */
+.form-group label {
+  /* Estilos para os rótulos dos campos */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -125,8 +143,9 @@
 }
 
 .form-group input,  /* Estilos para os campos de entrada */
-.form-group select {  /* e seleção */
-  padding: 12px 14px; 
+.form-group select {
+  /* e seleção */
+  padding: 12px 14px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 15px;
@@ -134,19 +153,22 @@
 }
 
 .form-group input:focus,  /* Estilos para inputs focados */
-.form-group select:focus {  /* e selects focados */
+.form-group select:focus {
+  /* e selects focados */
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.form-actions { /* Estilos para a seção de ações do formulário */
+.form-actions {
+  /* Estilos para a seção de ações do formulário */
   display: flex;
   gap: 12px;
   justify-content: flex-end;
 }
 
-.btn-salvar { /* Estilos para o botão de salvar */
+.btn-salvar {
+  /* Estilos para o botão de salvar */
   display: flex;
   align-items: center;
   gap: 8px;
@@ -160,19 +182,22 @@
   transition: all 0.2s ease;
 }
 
-.btn-salvar:hover { /* Efeito hover para o botão salvar */
+.btn-salvar:hover {
+  /* Efeito hover para o botão salvar */
   background: #218838;
   transform: translateY(-1px);
 }
 
-.usuarios-stats { /* Estilos para a seção de estatísticas de usuários */
+.usuarios-stats {
+  /* Estilos para a seção de estatísticas de usuários */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
   margin-bottom: 25px;
 }
 
-.stat-card {  /* Estilos para cada card de estatística */
+.stat-card {
+  /* Estilos para cada card de estatística */
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -183,16 +208,19 @@
   transition: all 0.3s ease;
 }
 
-.stat-card:hover {  /* Efeito hover para o card de estatística */
+.stat-card:hover {
+  /* Efeito hover para o card de estatística */
   transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.stat-card svg {  /* Estilos para o ícone SVG dentro do card */
+.stat-card svg {
+  /* Estilos para o ícone SVG dentro do card */
   color: #667eea;
 }
 
-.stat-numero {  /* Estilos para o número da estatística */
+.stat-numero {
+  /* Estilos para o número da estatística */
   display: block;
   font-size: 28px;
   font-weight: 700;
@@ -200,20 +228,23 @@
   line-height: 1;
 }
 
-.stat-label { /* Estilos para o rótulo da estatística */
+.stat-label {
+  /* Estilos para o rótulo da estatística */
   display: block;
   font-size: 13px;
   color: #666;
   margin-top: 4px;
 }
 
-.tabela-usuarios {  /* Estilos para a tabela de usuários */
+.tabela-usuarios {
+  /* Estilos para a tabela de usuários */
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.usuario-card { /* Estilos para cada card de usuário */
+.usuario-card {
+  /* Estilos para cada card de usuário */
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -226,11 +257,13 @@
   flex-wrap: wrap;
 }
 
-.usuario-card:hover { /* Efeito hover para o card de usuário */
+.usuario-card:hover {
+  /* Efeito hover para o card de usuário */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.usuario-info { /* Estilos para a seção de informações do usuário */
+.usuario-info {
+  /* Estilos para a seção de informações do usuário */
   display: flex;
   align-items: center;
   gap: 15px;
@@ -238,7 +271,8 @@
   min-width: 300px;
 }
 
-.usuario-avatar { /* Estilos para o avatar do usuário */
+.usuario-avatar {
+  /* Estilos para o avatar do usuário */
   width: 50px;
   height: 50px;
   border-radius: 12px;
@@ -250,11 +284,13 @@
   flex-shrink: 0;
 }
 
-.usuario-detalhes { /* Estilos para os detalhes do usuário */
+.usuario-detalhes {
+  /* Estilos para os detalhes do usuário */
   flex: 1;
 }
 
-.usuario-nome-linha { /* Estilos para a linha do nome do usuário */
+.usuario-nome-linha {
+  /* Estilos para a linha do nome do usuário */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -262,40 +298,47 @@
   flex-wrap: wrap;
 }
 
-.usuario-nome-linha h4 {  /* Estilos para o nome do usuário */
+.usuario-nome-linha h4 {
+  /* Estilos para o nome do usuário */
   margin: 0;
   font-size: 18px;
   color: #333;
 }
 
-.badge {  /* Estilos para badges de status */
+.badge {
+  /* Estilos para badges de status */
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
 }
 
-.badge-admin {  /* Estilos para badge de administrador */
+.badge-admin {
+  /* Estilos para badge de administrador */
   background: #ffeaa7;
   color: #d63031;
 }
 
-.badge-usuario {  /* Estilos para badge de usuário comum */
+.badge-usuario {
+  /* Estilos para badge de usuário comum */
   background: #dfe6e9;
   color: #2d3436;
 }
 
-.badge-ativo {  /* Estilos para badge de usuário ativo */
+.badge-ativo {
+  /* Estilos para badge de usuário ativo */
   background: #d4edda;
   color: #155724;
 }
 
-.badge-inativo {  /* Estilos para badge de usuário inativo */
+.badge-inativo {
+  /* Estilos para badge de usuário inativo */
   background: #f8d7da;
   color: #721c24;
 }
 
-.usuario-email {  /* Estilos para o email do usuário */
+.usuario-email {
+  /* Estilos para o email do usuário */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -304,14 +347,16 @@
   font-size: 14px;
 }
 
-.usuario-datas {  /* Estilos para a seção de datas do usuário */
+.usuario-datas {
+  /* Estilos para a seção de datas do usuário */
   display: flex;
   gap: 20px;
   margin-top: 8px;
   flex-wrap: wrap;
 }
 
-.usuario-datas span { /* Estilos para cada data */
+.usuario-datas span {
+  /* Estilos para cada data */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -319,14 +364,16 @@
   color: #999;
 }
 
-.usuario-acoes {  /* Estilos para a seção de ações do usuário */
+.usuario-acoes {
+  /* Estilos para a seção de ações do usuário */
   display: flex;
   gap: 10px;
   flex-shrink: 0;
 }
 
 .btn-status,  /* Estilos para os botões de status */
-.btn-excluir {  /* e excluir */
+.btn-excluir {
+  /* e excluir */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -339,79 +386,283 @@
   font-size: 14px;
 }
 
-.btn-ativar { /* Estilos para o botão de ativar usuário */
+.btn-ativar {
+  /* Estilos para o botão de ativar usuário */
   background: #28a745;
   color: white;
 }
 
-.btn-ativar:hover { /* Efeito hover para o botão de ativar */
+.btn-ativar:hover {
+  /* Efeito hover para o botão de ativar */
   background: #218838;
 }
 
-.btn-desativar {  /* Estilos para o botão de desativar usuário */
+.btn-desativar {
+  /* Estilos para o botão de desativar usuário */
   background: #ffc107;
   color: #333;
 }
 
-.btn-desativar:hover {  /* Efeito hover para o botão de desativar */
+.btn-desativar:hover {
+  /* Efeito hover para o botão de desativar */
   background: #e0a800;
 }
 
-.btn-excluir {  /* Estilos para o botão de excluir usuário */
+.btn-excluir {
+  /* Estilos para o botão de excluir usuário */
   background: #dc3545;
   color: white;
 }
 
-.btn-excluir:hover {  /* Efeito hover para o botão de excluir */
+.btn-excluir:hover {
+  /* Efeito hover para o botão de excluir */
   background: #c82333;
 }
 
-.carregando { /* Estilos para o estado de carregamento */
+.carregando {
+  /* Estilos para o estado de carregamento */
   text-align: center;
   padding: 40px;
   color: #666;
   font-size: 16px;
 }
 
-@media (max-width: 768px) { /* Estilos responsivos para telas menores */
-  .gerenciar-usuarios { /* Ajusta o padding da seção */
+@media (max-width: 768px) {
+  /* Estilos responsivos para telas menores */
+  .gerenciar-usuarios {
+    /* Ajusta o padding da seção */
     padding: 15px;
   }
 
-  .header-usuarios {  /* Ajusta o layout do cabeçalho */
+  .header-usuarios {
+    /* Ajusta o layout do cabeçalho */
     flex-direction: column;
     align-items: stretch;
   }
 
-  .btn-adicionar {  /* Ajusta o botão de adicionar */
+  .btn-adicionar {
+    /* Ajusta o botão de adicionar */
     width: 100%;
     justify-content: center;
   }
 
-  .form-row { /* Ajusta o layout das linhas do formulário */
+  .form-row {
+    /* Ajusta o layout das linhas do formulário */
     grid-template-columns: 1fr;
   }
 
-  .usuarios-stats { /* Ajusta o layout das estatísticas */
+  .usuarios-stats {
+    /* Ajusta o layout das estatísticas */
     grid-template-columns: 1fr;
   }
 
-  .usuario-card { /* Ajusta o layout dos cards de usuário */
+  .usuario-card {
+    /* Ajusta o layout dos cards de usuário */
     flex-direction: column;
     align-items: stretch;
   }
 
-  .usuario-info { /* Ajusta a seção de informações do usuário */
+  .usuario-info {
+    /* Ajusta a seção de informações do usuário */
     min-width: auto;
   }
 
-  .usuario-acoes {  /* Ajusta a seção de ações do usuário */
+  .usuario-acoes {
+    /* Ajusta a seção de ações do usuário */
     width: 100%;
   }
 
   .btn-status,  /* Ajusta os botões de status */
-  .btn-excluir {  /* e excluir */
+  .btn-excluir {
+    /* e excluir */
     flex: 1;
     justify-content: center;
   }
+}
+
+/* Adicione estes estilos NO FINAL do arquivo GerenciarUsuarios.css */
+/* ANTES do @media (max-width: 768px) */
+
+/* Botão de editar usuário */
+.btn-editar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.btn-editar:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-1px);
+}
+
+/* Ajuste no container de permissões do usuário */
+.usuario-permissoes {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.usuario-permissoes strong {
+  font-size: 13px;
+  color: #555;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.permissoes-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge-permissao {
+  display: inline-block;
+  padding: 3px 10px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge-permissao.badge-mais {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+/* Estilos para a seção de permissões no formulário */
+.permissoes-section {
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fafafa;
+}
+
+.permissoes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.permissoes-header label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #333;
+  font-size: 16px;
+}
+
+.permissoes-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-selecionar-todos,
+.btn-limpar-todos {
+  padding: 8px 14px;
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-selecionar-todos:hover:not(:disabled),
+.btn-limpar-todos:hover:not(:disabled) {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-selecionar-todos:disabled,
+.btn-limpar-todos:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.aviso-admin {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+}
+
+.aviso-admin p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.permissoes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.categoria-permissoes {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.categoria-titulo {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #667eea;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.permissao-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 6px;
+}
+
+.permissao-item:hover {
+  background: #f5f5f5;
+}
+
+.permissao-item.checked {
+  background: #e8eaf6;
+  border: 1px solid #667eea;
+}
+
+.permissao-item input[type='checkbox'] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+}
+
+.permissao-item span {
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
 }
