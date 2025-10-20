@@ -86,6 +86,9 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
     senha: '',
     tipo: 'usuario',
     permissoes: [], // Array de IDs das páginas que o usuário pode acessar
+    podeCriarViagens: false,
+    podeAprovarViagens: false,
+    podeExcluirViagens: false,
   })
 
   useEffect(() => {
@@ -166,6 +169,9 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
       senha: '', // Senha vazia por padrão (será preenchida apenas se o admin quiser redefinir)
       tipo: usuario.tipo,
       permissoes: usuario.permissoes || [],
+      podeCriarViagens: usuario.podeCriarViagens || false,
+      podeAprovarViagens: usuario.podeAprovarViagens || false,
+      podeExcluirViagens: usuario.podeExcluirViagens || false,
     })
     setMostrarForm(true) // Exibe o formulário
   }
@@ -180,6 +186,9 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
       senha: '',
       tipo: 'usuario',
       permissoes: [],
+      podeCriarViagens: false,
+      podeAprovarViagens: false,
+      podeExcluirViagens: false,
     }) // Limpa o formulário
     setMostrarForm(false) // Esconde o formulário
   }
@@ -223,6 +232,9 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
         email: novoUsuario.email,
         tipo: novoUsuario.tipo,
         permissoes: novoUsuario.permissoes,
+        podeCriarViagens: novoUsuario.podeCriarViagens,
+        podeAprovarViagens: novoUsuario.podeAprovarViagens,
+        podeExcluirViagens: novoUsuario.podeExcluirViagens,
       }
 
       // Apenas inclui a senha se ela foi preenchida (para redefinir)
@@ -253,6 +265,9 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
         senha: '',
         tipo: 'usuario',
         permissoes: [],
+        podeCriarViagens: false,
+        podeAprovarViagens: false,
+        podeExcluirViagens: false,
       }) // Limpar os campos do formulário
       setMostrarForm(false) // Fechar o formulário
       setModoEdicao(false) // Desativar o modo de edição
@@ -507,6 +522,141 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
                 </select>
               </div>
             </div>
+            {/* SEÇÃO DE PERMISSÕES DE VIAGEM */}
+            <div className="form-group">
+              {/* Seção de permissões de viagem */}
+              <label style={{ marginBottom: '12px', display: 'block' }}>
+                <Shield size={18} />
+                Permissões de Solicitação de Viagem
+              </label>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  padding: '15px',
+                  background: '#f8f9fa',
+                  borderRadius: '8px',
+                  border: '1px solid #e0e0e0',
+                }}
+              >
+                {/* Checkbox: Pode Criar */}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    padding: '8px 12px',
+                    background: novoUsuario.podeCriarViagens
+                      ? '#d1ecf1'
+                      : 'white',
+                    borderRadius: '6px',
+                    border: novoUsuario.podeCriarViagens
+                      ? '2px solid #17a2b8'
+                      : '2px solid #dee2e6',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={novoUsuario.podeCriarViagens}
+                    onChange={(e) =>
+                      setNovoUsuario({
+                        ...novoUsuario,
+                        podeCriarViagens: e.target.checked,
+                      })
+                    }
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  <PlaneTakeoff size={16} />
+                  <span style={{ fontWeight: 500, fontSize: '14px' }}>
+                    Pode Criar Solicitações
+                  </span>
+                </label>
+
+                {/* Checkbox: Pode Aprovar/Recusar */}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    padding: '8px 12px',
+                    background: novoUsuario.podeAprovarViagens
+                      ? '#d4edda'
+                      : 'white',
+                    borderRadius: '6px',
+                    border: novoUsuario.podeAprovarViagens
+                      ? '2px solid #28a745'
+                      : '2px solid #dee2e6',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={novoUsuario.podeAprovarViagens}
+                    onChange={(e) =>
+                      setNovoUsuario({
+                        ...novoUsuario,
+                        podeAprovarViagens: e.target.checked,
+                      })
+                    }
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  <CheckCircle size={16} />
+                  <span style={{ fontWeight: 500, fontSize: '14px' }}>
+                    Pode Aprovar/Recusar Solicitações
+                  </span>
+                </label>
+
+                {/* Checkbox: Pode Excluir */}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    padding: '8px 12px',
+                    background: novoUsuario.podeExcluirViagens
+                      ? '#f8d7da'
+                      : 'white',
+                    borderRadius: '6px',
+                    border: novoUsuario.podeExcluirViagens
+                      ? '2px solid #dc3545'
+                      : '2px solid #dee2e6',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={novoUsuario.podeExcluirViagens}
+                    onChange={(e) =>
+                      setNovoUsuario({
+                        ...novoUsuario,
+                        podeExcluirViagens: e.target.checked,
+                      })
+                    }
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  <Trash2 size={16} />
+                  <span style={{ fontWeight: 500, fontSize: '14px' }}>
+                    Pode Excluir Solicitações
+                  </span>
+                </label>
+              </div>
+              <small
+                style={{
+                  display: 'block',
+                  marginTop: '8px',
+                  color: '#6c757d',
+                  fontSize: '12px',
+                }}
+              >
+                Define o que este usuário pode fazer com Solicitações de Viagem
+              </small>
+            </div>
+            {/* FIM DA SEÇÃO DE PERMISSÕES DE VIAGEM */}
             {/* Seção de Permissões */}
             <div className="permissoes-section">
               {' '}
@@ -702,6 +852,76 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
                       <Mail size={14} />
                       {usuario.email}
                     </p>
+                    {/* SEÇÃO DE BADGES DE PERMISSÕES DE VIAGEM */}
+                    {(usuario.podeCriarViagens ||
+                      usuario.podeAprovarViagens ||
+                      usuario.podeExcluirViagens) && (
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '8px',
+                          marginTop: '8px',
+                          marginBottom: '8px',
+                          flexWrap: 'wrap',
+                        }}
+                      >
+                        {usuario.podeCriarViagens && (
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '4px 10px',
+                              background: '#d1ecf1',
+                              color: '#0c5460',
+                              borderRadius: '12px',
+                              fontSize: '11px',
+                              fontWeight: '600',
+                            }}
+                          >
+                            <PlaneTakeoff size={12} />
+                            Criar Viagens
+                          </span>
+                        )}
+                        {usuario.podeAprovarViagens && (
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '4px 10px',
+                              background: '#d4edda',
+                              color: '#155724',
+                              borderRadius: '12px',
+                              fontSize: '11px',
+                              fontWeight: '600',
+                            }}
+                          >
+                            <CheckCircle size={12} />
+                            Aprovar/Reprovar Viagens
+                          </span>
+                        )}
+                        {usuario.podeExcluirViagens && (
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '4px 10px',
+                              background: '#f8d7da',
+                              color: '#721c24',
+                              borderRadius: '12px',
+                              fontSize: '11px',
+                              fontWeight: '600',
+                            }}
+                          >
+                            <Trash2 size={12} />
+                            Excluir Viagens
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {/* FIM DA SEÇÃO DE BADGES */}
                     {/* Mostrar permissões do usuário */}
                     {usuario.tipo !== 'admin' &&
                       usuario.permissoes &&

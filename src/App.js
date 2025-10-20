@@ -190,6 +190,7 @@ function App() {
                   setPaginaAtual('dashboard')
                   setTelaAtual('lista')
                 }}
+                usuarioAtual={usuario} // Passar o usuário atual
               />
             </ProtectedRoute>
           )}

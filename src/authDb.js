@@ -1,53 +1,62 @@
 // src/authDb.js
 import Dexie from 'dexie'
 
-// Criar banco de dados de autenticaÃ§Ã£o
+// Criar banco de dados de autenticação
 export const authDb = new Dexie('SistemaCentrusAuth')
 
-// VersÃ£o 2 - Adicionar suporte a permissÃµes nos usuÃ¡rios
+// Versão 2 - Adicionar suporte a permissões de viagens
 authDb
   .version(2)
   .stores({
-    usuarios: '++id, email, nome, senha, tipo, ativo, dataCriacao', // MantÃ©m o mesmo schema
+    usuarios:
+      '++id, email, nome, senha, tipo, ativo, dataCriacao, ultimoAcesso, permissoes, podeCriarViagens, podeAprovarViagens, podeExcluirViagens', // Campos atualizados
     sessoes: '++id, usuarioId, token, dataExpiracao',
     permissoes: '++id, nome',
     usuarioPermissoes: '++id, usuarioId, permissaoId',
   })
   .upgrade(async (tx) => {
-    // MigraÃ§Ã£o: adicionar campo permissoes aos usuÃ¡rios existentes
+    // Migração: adicionar campos de permissões de viagem aos usuários existentes
     const usuarios = await tx.table('usuarios').toArray()
     for (const usuario of usuarios) {
       if (!usuario.permissoes) {
-        await tx.table('usuarios').update(usuario.id, { permissoes: [] })
+        await tx.table('usuarios').update(usuario.id, {
+          permissoes: [],
+          podeCriarViagens: false, // NOVO: Pode criar solicitações de viagem
+          podeAprovarViagens: false, // NOVO: Pode aprovar/recusar solicitações de viagem
+          podeExcluirViagens: false, // NOVO: Pode excluir solicitações de viagem
+        })
       }
     }
     console.log(
-      'Migraçãoo concluí­da: campo permissoes adicionado aos usuÃ¡rios'
+      'Migração concluída: campos de permissões de viagem adicionados aos usuários'
     )
   })
 
-// Classe para gerenciar usuÃ¡rios
+// Classe para gerenciar usuários
 class Usuario {
   constructor(dados) {
-    // Construtor para inicializar dados do usuÃ¡rio
-    this.id = dados.id // ID do usuÃ¡rio
-    this.nome = dados.nome // Nome do usuÃ¡rio
-    this.email = dados.email // Email do usuÃ¡rio
+    // Construtor para inicializar dados do usuário
+    this.id = dados.id // ID do usuário
+    this.nome = dados.nome // Nome do usuário
+    this.email = dados.email // Email do usuário
     this.senha = dados.senha // Senha (hash)
-    this.tipo = dados.tipo || 'usuario' // 'admin' ou 'usuario' // Tipo do usuÃ¡rio
-    this.ativo = dados.ativo !== undefined ? dados.ativo : true // UsuÃ¡rio ativo ou inativo
-    this.dataCriacao = dados.dataCriacao || new Date().toISOString() // Data de criaÃ§Ã£o
-    this.ultimoAcesso = dados.ultimoAcesso || null // Ãšltimo acesso
-    this.permissoes = dados.permissoes || [] // PermissÃµes do usuÃ¡rio
+    this.tipo = dados.tipo || 'usuario' // 'admin' ou 'usuario' // Tipo do usuário
+    this.ativo = dados.ativo !== undefined ? dados.ativo : true // Usuário ativo ou inativo
+    this.dataCriacao = dados.dataCriacao || new Date().toISOString() // Data de criação
+    this.ultimoAcesso = dados.ultimoAcesso || null // Último acesso
+    this.permissoes = dados.permissoes || [] // Permissões do usuário
+    this.podeCriarViagens = dados.podeCriarViagens || false // NOVO: Pode criar solicitações de viagem
+    this.podeAprovarViagens = dados.podeAprovarViagens || false // NOVO: Pode aprovar/recusar solicitações
+    this.podeExcluirViagens = dados.podeExcluirViagens || false // NOVO: Pode excluir solicitações
   }
 }
 
-// FunÃ§Ãµes auxiliares de criptografia simples (em produÃ§Ã£o use bcrypt no backend)
+// Funções auxiliares de criptografia simples (em produção use bcrypt no backend)
 const hashSenha = async (senha) => {
-  // FunÃ§Ã£o para hash da senha
+  // Função para hash da senha
   const encoder = new TextEncoder() // Codificador de texto
   const data = encoder.encode(senha) // Codificar senha
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data) // Gerar hash SHA-256 // SHA-256 Ã© um algoritmo de hash seguro
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data) // Gerar hash SHA-256 // SHA-256 é um algoritmo de hash seguro
   const hashArray = Array.from(new Uint8Array(hashBuffer)) // Converter buffer para array
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('') // Converter para string hexadecimal
 }
@@ -55,113 +64,120 @@ const hashSenha = async (senha) => {
 const verificarSenha = async (senha, hash) => {
   // Verificar se a senha corresponde ao hash
   const senhaHash = await hashSenha(senha) // Gerar hash da senha fornecida
-  return senhaHash === hash // Comparar com o hash armazenado // Hash Ã© uma representaÃ§Ã£o criptografada da senha
+  return senhaHash === hash // Comparar com o hash armazenado // Hash é uma representação criptografada da senha
 }
 
-// Gerar token de sessÃ£o // Token Ã© uma string Ãºnica usada para identificar a sessÃ£o do usuÃ¡rio
+// Gerar token de sessão // Token é uma string única usada para identificar a sessão do usuário
 const gerarToken = () => {
-  // Gerar token aleatÃ³rio
-  return Array.from(crypto.getRandomValues(new Uint8Array(32))) // Gerar 32 bytes aleatÃ³rios
+  // Gerar token aleatório
+  return Array.from(crypto.getRandomValues(new Uint8Array(32))) // Gerar 32 bytes aleatórios
     .map((b) => b.toString(16).padStart(2, '0')) // Converter para string hexadecimal
-    .join('') // Unir em uma Ãºnica string
+    .join('') // Unir em uma única string
 }
 
-// Inicializar banco com usuÃ¡rio admin padrÃ£o
+// Inicializar banco com usuário admin padrão
 export const inicializarAuth = async () => {
-  // FunÃ§Ã£o para inicializar o banco de dados de autenticaÃ§Ã£o
-  const usuariosCount = await authDb.usuarios.count() // Contar nÃºmero de usuÃ¡rios
+  // Função para inicializar o banco de dados de autenticação
+  const usuariosCount = await authDb.usuarios.count() // Contar número de usuários
 
   if (usuariosCount === 0) {
-    // Criar usuÃ¡rio administrador padrÃ£o
-    const senhaHash = await hashSenha('admin123') // Hash da senha padrÃ£o
+    // Criar usuário administrador padrão
+    const senhaHash = await hashSenha('admin123') // Hash da senha padrão
     await authDb.usuarios.add({
-      // Adicionar usuÃ¡rio admin
-      nome: 'Administrador', // Nome do usuÃ¡rio
-      email: 'admin@centrus.com', // Email do usuÃ¡rio
+      // Adicionar usuário admin
+      nome: 'Administrador', // Nome do usuário
+      email: 'admin@centrus.com', // Email do usuário
       senha: senhaHash, // Senha (hash)
-      tipo: 'admin', // Tipo do usuÃ¡rio
-      ativo: true, // UsuÃ¡rio ativo
-      dataCriacao: new Date().toISOString(), // Data de criaÃ§Ã£o
-      permissoes: [], // Admin nÃ£o precisa de permissÃµes especÃ­ficas
+      tipo: 'admin', // Tipo do usuário
+      ativo: true, // Usuário ativo
+      dataCriacao: new Date().toISOString(), // Data de criação
+      permissoes: [], // Admin não precisa de permissões específicas
+      podeCriarViagens: true, // NOVO: Admin pode criar
+      podeAprovarViagens: true, // NOVO: Admin pode aprovar
+      podeExcluirViagens: true, // NOVO: Admin pode excluir
     })
 
-    // Criar permissÃµes padrÃ£o
+    // Criar permissões padrão
     const permissoes = [
-      { nome: 'visualizar_funcionarios' }, // Chave para visualizar funcionÃ¡rios
-      { nome: 'criar_funcionarios' }, // Chave para criar funcionÃ¡rios
-      { nome: 'editar_funcionarios' }, // Chave para editar funcionÃ¡rios
-      { nome: 'excluir_funcionarios' }, // Chave para excluir funcionÃ¡rios
+      { nome: 'visualizar_funcionarios' }, // Chave para visualizar funcionários
+      { nome: 'criar_funcionarios' }, // Chave para criar funcionários
+      { nome: 'editar_funcionarios' }, // Chave para editar funcionários
+      { nome: 'excluir_funcionarios' }, // Chave para excluir funcionários
       { nome: 'gerenciar_documentos' }, // Chave para gerenciar documentos
       { nome: 'solicitar_viagens' }, // Chave para solicitar viagens
       { nome: 'aprovar_viagens' }, // Chave para aprovar viagens
-      { nome: 'gerenciar_usuarios' }, // Chave para gerenciar usuÃ¡rios
+      { nome: 'gerenciar_usuarios' }, // Chave para gerenciar usuários
     ]
 
-    await authDb.permissoes.bulkAdd(permissoes) // Adicionar permissÃµes ao banco
+    await authDb.permissoes.bulkAdd(permissoes) // Adicionar permissões ao banco
 
-    console.log('UsuÃ¡rio admin criado: admin@centrus.com / admin123') // Log de criaÃ§Ã£o do usuÃ¡rio admin
+    console.log('Usuário admin criado: admin@centrus.com / admin123') // Log de criação do usuário admin
   }
 }
 
-// ServiÃ§o de AutenticaÃ§Ã£o
+// Serviço de Autenticação
 export const AuthService = {
-  // Objeto para gerenciar autenticaÃ§Ã£o
+  // Objeto para gerenciar autenticação
   // Login
   login: async (email, senha) => {
-    // FunÃ§Ã£o de login
+    // Função de login
     try {
-      const usuario = await authDb.usuarios.where('email').equals(email).first() // Buscar usuÃ¡rio pelo email
+      const usuario = await authDb.usuarios.where('email').equals(email).first() // Buscar usuário pelo email
 
       if (!usuario) {
-        // Se usuÃ¡rio nÃ£o encontrado
-        throw new Error('UsuÃ¡rio nÃ£o encontrado') // LanÃ§ar erro de usuÃ¡rio nÃ£o encontrado
+        // Se usuário não encontrado
+        throw new Error('Usuário não encontrado') // Lançar erro de usuário não encontrado
       }
 
       if (!usuario.ativo) {
-        // Se usuÃ¡rio estÃ¡ inativo
-        throw new Error('UsuÃ¡rio inativo') // LanÃ§ar erro de usuÃ¡rio inativo
+        // Se usuário está inativo
+        throw new Error('Usuário inativo') // Lançar erro de usuário inativo
       }
 
-      const senhaValida = await verificarSenha(senha, usuario.senha) // Verificar se a senha estÃ¡ correta
+      const senhaValida = await verificarSenha(senha, usuario.senha) // Verificar se a senha está correta
 
       if (!senhaValida) {
-        // Se a senha nÃ£o Ã© vÃ¡lida
-        throw new Error('Senha incorreta') // LanÃ§ar erro de senha incorreta
+        // Se a senha não é válida
+        throw new Error('Senha incorreta') // Lançar erro de senha incorreta
       }
 
-      // Atualizar Ãºltimo acesso
+      // Atualizar último acesso
       await authDb.usuarios.update(usuario.id, {
-        // Atualizar campo de Ãºltimo acesso
+        // Atualizar campo de último acesso
         ultimoAcesso: new Date().toISOString(), // Data e hora atual
       })
 
-      // Criar sessÃ£o
-      const token = gerarToken() // Gerar token de sessÃ£o
-      const dataExpiracao = new Date() // Data de expiraÃ§Ã£o da sessÃ£o
+      // Criar sessão
+      const token = gerarToken() // Gerar token de sessão
+      const dataExpiracao = new Date() // Data de expiração da sessão
       dataExpiracao.setHours(dataExpiracao.getHours() + 8) // 8 horas
 
       await authDb.sessoes.add({
-        // Adicionar nova sessÃ£o ao banco
-        usuarioId: usuario.id, // ID do usuÃ¡rio
+        // Adicionar nova sessão ao banco
+        usuarioId: usuario.id, // ID do usuário
         token: token, // Token gerado
-        dataExpiracao: dataExpiracao.toISOString(), // Data de expiraÃ§Ã£o (ISO 8601) // ISO 8601 Ã© um formato padrÃ£o para representar datas e horas
+        dataExpiracao: dataExpiracao.toISOString(), // Data de expiração (ISO 8601) // ISO 8601 é um formato padrão para representar datas e horas
       })
 
       // Salvar no localStorage
       localStorage.setItem('authToken', token) // Salvar token no localStorage
-      localStorage.setItem('usuarioId', usuario.id) // Salvar ID do usuÃ¡rio no localStorage
+      localStorage.setItem('usuarioId', usuario.id) // Salvar ID do usuário no localStorage
 
       return {
-        // Retornar dados do usuÃ¡rio e token
+        // Retornar dados do usuário e token
         sucesso: true, // Indicar sucesso
         usuario: {
-          // Dados do usuÃ¡rio
-          id: usuario.id, // ID do usuÃ¡rio
-          nome: usuario.nome, // Nome do usuÃ¡rio
-          email: usuario.email, // Email do usuÃ¡rio
-          tipo: usuario.tipo, // Tipo do usuÃ¡rio
+          // Dados do usuário
+          id: usuario.id, // ID do usuário
+          nome: usuario.nome, // Nome do usuário
+          email: usuario.email, // Email do usuário
+          tipo: usuario.tipo, // Tipo do usuário
+          permissoes: usuario.permissoes || [], // Permissões do usuário
+          podeCriarViagens: usuario.podeCriarViagens || false, // NOVO
+          podeAprovarViagens: usuario.podeAprovarViagens || false, // NOVO
+          podeExcluirViagens: usuario.podeExcluirViagens || false, // NOVO
         },
-        token: token, // Token de sessÃ£o
+        token: token, // Token de sessão
       }
     } catch (error) {
       // Capturar erros
@@ -175,112 +191,118 @@ export const AuthService = {
 
   // Logout
   logout: async () => {
-    // FunÃ§Ã£o de logout
+    // Função de logout
     const token = localStorage.getItem('authToken') // Obter token do localStorage
     if (token) {
       // Se token existe
-      await authDb.sessoes.where('token').equals(token).delete() // Remover sessÃ£o do banco
+      await authDb.sessoes.where('token').equals(token).delete() // Remover sessão do banco
     }
     localStorage.removeItem('authToken') // Remover token do localStorage
-    localStorage.removeItem('usuarioId') // Remover ID do usuÃ¡rio do localStorage
+    localStorage.removeItem('usuarioId') // Remover ID do usuário do localStorage
   },
 
-  // Verificar se estÃ¡ autenticado
+  // Verificar se está autenticado
   estaAutenticado: async () => {
-    // FunÃ§Ã£o para verificar se o usuÃ¡rio estÃ¡ autenticado
+    // Função para verificar se o usuário está autenticado
     const token = localStorage.getItem('authToken') // Obter token do localStorage
-    const usuarioId = localStorage.getItem('usuarioId') // Obter ID do usuÃ¡rio do localStorage
+    const usuarioId = localStorage.getItem('usuarioId') // Obter ID do usuário do localStorage
 
     if (!token || !usuarioId) {
-      // Se token ou ID do usuÃ¡rio nÃ£o existem
-      return false // NÃ£o estÃ¡ autenticado
+      // Se token ou ID do usuário não existem
+      return false // Não está autenticado
     }
 
-    const sessao = await authDb.sessoes.where('token').equals(token).first() // Buscar sessÃ£o pelo token
+    const sessao = await authDb.sessoes.where('token').equals(token).first() // Buscar sessão pelo token
 
     if (!sessao) {
-      // Se sessÃ£o nÃ£o encontrada
-      return false // NÃ£o estÃ¡ autenticado
+      // Se sessão não encontrada
+      return false // Não está autenticado
     }
 
-    // Verificar se a sessÃ£o expirou
+    // Verificar se a sessão expirou
     if (new Date(sessao.dataExpiracao) < new Date()) {
-      // Se a data de expiraÃ§Ã£o Ã© menor que a data atual
-      await authDb.sessoes.delete(sessao.id) // Remover sessÃ£o do banco
+      // Se a data de expiração é menor que a data atual
+      await authDb.sessoes.delete(sessao.id) // Remover sessão do banco
       localStorage.removeItem('authToken') // Remover token do localStorage
-      localStorage.removeItem('usuarioId') // Remover ID do usuÃ¡rio do localStorage
-      return false // NÃ£o estÃ¡ autenticado
+      localStorage.removeItem('usuarioId') // Remover ID do usuário do localStorage
+      return false // Não está autenticado
     }
 
-    return true // EstÃ¡ autenticado
+    return true // Está autenticado
   },
 
-  // Obter usuÃ¡rio atual
+  // Obter usuário atual
   obterUsuarioAtual: async () => {
-    // FunÃ§Ã£o para obter dados do usuÃ¡rio atual
-    const usuarioId = parseInt(localStorage.getItem('usuarioId')) // Obter ID do usuÃ¡rio do localStorage
-    if (!usuarioId) return null // Se ID do usuÃ¡rio nÃ£o existe, retornar null
+    // Função para obter dados do usuário atual
+    const usuarioId = parseInt(localStorage.getItem('usuarioId')) // Obter ID do usuário do localStorage
+    if (!usuarioId) return null // Se ID do usuário não existe, retornar null
 
-    const usuario = await authDb.usuarios.get(usuarioId) // Buscar usuÃ¡rio pelo ID
-    if (!usuario) return null // Se usuÃ¡rio nÃ£o encontrado, retornar null
+    const usuario = await authDb.usuarios.get(usuarioId) // Buscar usuário pelo ID
+    if (!usuario) return null // Se usuário não encontrado, retornar null
 
     return {
-      // Retornar dados do usuÃ¡rio (sem a senha)
-      id: usuario.id, // ID do usuÃ¡rio
-      nome: usuario.nome, // Nome do usuÃ¡rio
-      email: usuario.email, // Email do usuÃ¡rio
-      tipo: usuario.tipo, // Tipo do usuÃ¡rio
-      permissoes: usuario.permissoes || [], // PermissÃµes do usuÃ¡rio
+      // Retornar dados do usuário (sem a senha)
+      id: usuario.id, // ID do usuário
+      nome: usuario.nome, // Nome do usuário
+      email: usuario.email, // Email do usuário
+      tipo: usuario.tipo, // Tipo do usuário
+      permissoes: usuario.permissoes || [], // Permissões do usuário
+      podeCriarViagens: usuario.podeCriarViagens || false, // NOVO
+      podeAprovarViagens: usuario.podeAprovarViagens || false, // NOVO
+      podeExcluirViagens: usuario.podeExcluirViagens || false, // NOVO
     }
   },
 
-  // Criar novo usuÃ¡rio (apenas admin)
+  // Criar novo usuário (apenas admin)
   criarUsuario: async (dados) => {
-    // FunÃ§Ã£o para criar novo usuÃ¡rio
+    // Função para criar novo usuário
     try {
-      // Verificar se o usuÃ¡rio atual Ã© admin
-      const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuÃ¡rio atual
+      // Verificar se o usuário atual é admin
+      const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuário atual
 
       if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
-        // Se nÃ£o Ã© admin
-        throw new Error('Apenas administradores podem criar usuÃ¡rios') // LanÃ§ar erro de permissÃ£o
+        // Se não é admin
+        throw new Error('Apenas administradores podem criar usuários') // Lançar erro de permissão
       }
 
       const usuarioExiste = await authDb.usuarios
         .where('email')
         .equals(dados.email)
-        .first() // Verificar se o email jÃ¡ estÃ¡ cadastrado
+        .first() // Verificar se o email já está cadastrado
       if (usuarioExiste) {
-        // Se email jÃ¡ existe
-        throw new Error('Email jÃ¡ cadastrado') // LanÃ§ar erro de email duplicado
+        // Se email já existe
+        throw new Error('Email já cadastrado') // Lançar erro de email duplicado
       }
 
       const senhaHash = await hashSenha(dados.senha) // Hash da senha fornecida
 
-      // Criar novo usuÃ¡rio
+      // Criar novo usuário
       const novoUsuario = {
-        // Objeto com dados do novo usuÃ¡rio
-        nome: dados.nome, // Nome do usuÃ¡rio
-        email: dados.email, // Email do usuÃ¡rio
+        // Objeto com dados do novo usuário
+        nome: dados.nome, // Nome do usuário
+        email: dados.email, // Email do usuário
         senha: senhaHash, // Senha (hash)
-        tipo: dados.tipo || 'usuario', // 'admin' ou 'usuario' // Tipo do usuÃ¡rio
-        ativo: true, // UsuÃ¡rio ativo por padrÃ£o
-        dataCriacao: new Date().toISOString(), // Data de criaÃ§Ã£o
+        tipo: dados.tipo || 'usuario', // 'admin' ou 'usuario' // Tipo do usuário
+        ativo: true, // Usuário ativo por padrão
+        dataCriacao: new Date().toISOString(), // Data de criação
         permissoes: Array.isArray(dados.permissoes) ? dados.permissoes : [], // Garantir que permissoes seja um array
+        podeCriarViagens: dados.podeCriarViagens || false, // NOVO
+        podeAprovarViagens: dados.podeAprovarViagens || false, // NOVO
+        podeExcluirViagens: dados.podeExcluirViagens || false, // NOVO
       }
 
-      const id = await authDb.usuarios.add(novoUsuario) // Adicionar novo usuÃ¡rio ao banco
+      const id = await authDb.usuarios.add(novoUsuario) // Adicionar novo usuário ao banco
 
-      console.log('UsuÃ¡rio criado com permissÃµes:', novoUsuario.permissoes) // Debug
+      console.log('Usuário criado com permissões:', novoUsuario.permissoes) // Debug
 
       return {
-        // Retornar sucesso e dados do novo usuÃ¡rio
+        // Retornar sucesso e dados do novo usuário
         sucesso: true, // Indicar sucesso
-        usuario: { id, ...novoUsuario, senha: undefined }, // Retornar dados do usuÃ¡rio sem a senha
+        usuario: { id, ...novoUsuario, senha: undefined }, // Retornar dados do usuário sem a senha
       }
     } catch (error) {
       // Capturar erros
-      console.error('Erro ao criar usuÃ¡rio:', error) // Debug
+      console.error('Erro ao criar usuário:', error) // Debug
       return {
         // Retornar erro
         sucesso: false, // Indicar falha
@@ -289,35 +311,38 @@ export const AuthService = {
     }
   },
 
-  // Listar usuÃ¡rios (apenas admin)
+  // Listar usuários (apenas admin)
   listarUsuarios: async () => {
-    // FunÃ§Ã£o para listar todos os usuÃ¡rios
-    const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuÃ¡rio atual
+    // Função para listar todos os usuários
+    const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuário atual
 
     if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
-      // Se nÃ£o Ã© admin
-      throw new Error('Apenas administradores podem listar usuÃ¡rios') // LanÃ§ar erro de permissÃ£o
+      // Se não é admin
+      throw new Error('Apenas administradores podem listar usuários') // Lançar erro de permissão
     }
 
-    const usuarios = await authDb.usuarios.toArray() // Buscar todos os usuÃ¡rios
+    const usuarios = await authDb.usuarios.toArray() // Buscar todos os usuários
 
     return usuarios.map((u) => {
       const usuarioFormatado = {
         // Retornar dados sem a senha
-        id: u.id, // ID do usuÃ¡rio
-        nome: u.nome, // Nome do usuÃ¡rio
-        email: u.email, // Email do usuÃ¡rio
-        tipo: u.tipo, // Tipo do usuÃ¡rio
+        id: u.id, // ID do usuário
+        nome: u.nome, // Nome do usuário
+        email: u.email, // Email do usuário
+        tipo: u.tipo, // Tipo do usuário
         ativo: u.ativo, // Status ativo/inativo
-        dataCriacao: u.dataCriacao, // Data de criaÃ§Ã£o
-        ultimoAcesso: u.ultimoAcesso, // Ãšltimo acesso
+        dataCriacao: u.dataCriacao, // Data de criação
+        ultimoAcesso: u.ultimoAcesso, // Último acesso
         permissoes: Array.isArray(u.permissoes) ? u.permissoes : [], // Garantir que permissoes seja um array
+        podeCriarViagens: u.podeCriarViagens || false, // NOVO
+        podeAprovarViagens: u.podeAprovarViagens || false, // NOVO
+        podeExcluirViagens: u.podeExcluirViagens || false, // NOVO
       }
 
       console.log(
-        'UsuÃ¡rio carregado:',
+        'Usuário carregado:',
         usuarioFormatado.nome,
-        'PermissÃµes:',
+        'Permissões:',
         usuarioFormatado.permissoes
       ) // Debug
 
@@ -325,41 +350,38 @@ export const AuthService = {
     })
   },
 
-  // Alterar status do usuÃ¡rio
+  // Alterar status do usuário
   alterarStatusUsuario: async (usuarioId, ativo) => {
-    // FunÃ§Ã£o para ativar/desativar usuÃ¡rio
-    const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuÃ¡rio atual
+    // Função para ativar/desativar usuário
+    const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuário atual
 
     if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
-      // Se nÃ£o Ã© admin
-      throw new Error('Apenas administradores podem alterar status') // LanÃ§ar erro de permissÃ£o
+      // Se não é admin
+      throw new Error('Apenas administradores podem alterar status') // Lançar erro de permissão
     }
 
-    await authDb.usuarios.update(usuarioId, { ativo }) // Atualizar campo 'ativo' do usuÃ¡rio
+    await authDb.usuarios.update(usuarioId, { ativo }) // Atualizar campo 'ativo' do usuário
     return { sucesso: true } // Retornar sucesso
   },
 
-  // Excluir usuÃ¡rio
+  // Excluir usuário
   excluirUsuario: async (usuarioId) => {
-    // FunÃ§Ã£o para excluir usuÃ¡rio
-    const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuÃ¡rio atual
+    // Função para excluir usuário
+    const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuário atual
 
     if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
-      // Se nÃ£o Ã© admin
-      throw new Error('Apenas administradores podem excluir usuÃ¡rios') // LanÃ§ar erro de permissÃ£o
+      // Se não é admin
+      throw new Error('Apenas administradores podem excluir usuários') // Lançar erro de permissão
     }
 
     if (usuarioId === usuarioAtual.id) {
-      // Prevenir auto-exclusÃ£o
-      throw new Error('VocÃª nÃ£o pode excluir sua prÃ³pria conta') // LanÃ§ar erro de auto-exclusÃ£o
+      // Prevenir auto-exclusão
+      throw new Error('Você não pode excluir sua própria conta') // Lançar erro de auto-exclusão
     }
 
-    await authDb.usuarios.delete(usuarioId) // Excluir usuÃ¡rio do banco
+    await authDb.usuarios.delete(usuarioId) // Excluir usuário do banco
     return { sucesso: true } // Retornar sucesso
   },
-
-  // Adicione esta função DENTRO do objeto AuthService
-  // DEPOIS da função excluirUsuario() e ANTES da função temPermissao()
 
   // Editar usuário (apenas admin)
   editarUsuario: async (usuarioId, dadosAtualizacao) => {
@@ -386,6 +408,9 @@ export const AuthService = {
         email: dadosAtualizacao.email, // Atualizar email
         tipo: dadosAtualizacao.tipo, // Atualizar tipo
         permissoes: dadosAtualizacao.permissoes, // Atualizar permissões
+        podeCriarViagens: dadosAtualizacao.podeCriarViagens || false, // NOVO
+        podeAprovarViagens: dadosAtualizacao.podeAprovarViagens || false, // NOVO
+        podeExcluirViagens: dadosAtualizacao.podeExcluirViagens || false, // NOVO
       }
 
       // Se uma nova senha foi fornecida, atualiza a senha
@@ -404,38 +429,38 @@ export const AuthService = {
     }
   },
 
-  // Verificar permissÃ£o
+  // Verificar permissão
   temPermissao: async (nomePermissao) => {
-    // FunÃ§Ã£o para verificar se o usuÃ¡rio tem uma permissÃ£o especÃ­fica
-    const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuÃ¡rio atual
+    // Função para verificar se o usuário tem uma permissão específica
+    const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuário atual
 
     if (!usuarioAtual) {
-      // Se nÃ£o estÃ¡ autenticado
-      return false // NÃ£o tem permissÃ£o
+      // Se não está autenticado
+      return false // Não tem permissão
     }
 
-    // Admin tem todas as permissÃµes
+    // Admin tem todas as permissões
     if (usuarioAtual.tipo === 'admin') {
-      // Se Ã© admin
-      return true // Tem todas as permissÃµes
+      // Se é admin
+      return true // Tem todas as permissões
     }
 
-    // Verificar permissÃµes especÃ­ficas do usuÃ¡rio
+    // Verificar permissões específicas do usuário
     const permissao = await authDb.permissoes
       .where('nome')
       .equals(nomePermissao)
-      .first() // Buscar permissÃ£o pelo nome
-    if (!permissao) return false // Se permissÃ£o nÃ£o existe, retornar false
+      .first() // Buscar permissão pelo nome
+    if (!permissao) return false // Se permissão não existe, retornar false
 
-    // Verificar se o usuÃ¡rio possui a permissÃ£o
+    // Verificar se o usuário possui a permissão
 
-    const usuarioPermissao = await authDb.usuarioPermissoes // Buscar relaÃ§Ã£o usuÃ¡rio-permissÃ£o
-      .where('[usuarioId+permissaoId]') //  Ãndice composto
-      .equals([usuarioAtual.id, permissao.id]) // Verificar se o usuÃ¡rio possui a permissÃ£o
-      .first() // Obter a primeira correspondÃªncia
+    const usuarioPermissao = await authDb.usuarioPermissoes // Buscar relação usuário-permissão
+      .where('[usuarioId+permissaoId]') //  Índice composto
+      .equals([usuarioAtual.id, permissao.id]) // Verificar se o usuário possui a permissão
+      .first() // Obter a primeira correspondência
 
-    return !!usuarioPermissao // Retornar true se possui a permissÃ£o, false caso contrÃ¡rio
+    return !!usuarioPermissao // Retornar true se possui a permissão, false caso contrário
   },
 }
 
-export { hashSenha, verificarSenha } // Exportar funÃ§Ãµes de hash e verificaÃ§Ã£o de senha
+export { hashSenha, verificarSenha } // Exportar funções de hash e verificação de senha
