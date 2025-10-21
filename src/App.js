@@ -17,6 +17,7 @@ import './App.css'
 // NOVO: Importações do Material-UI e DashboardMUI
 import DashboardMUI from './components/Dashboard'
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material'
+import BarraNotificacoes from './components/BarraNotificacoes'
 
 // NOVO: Criar tema Material-UI
 const theme = createTheme({
@@ -170,7 +171,7 @@ function App() {
           paginaAtual={paginaAtual}
           onMudarPagina={handleMudarPagina}
         />
-
+        <BarraNotificacoes />
         <main className="app-main">
           {' '}
           {/* Área principal do aplicativo */}

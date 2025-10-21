@@ -2,16 +2,19 @@ import Dexie from 'dexie' // Importar Dexie.js para gerenciamento de IndexedDB
 
 export const db = new Dexie('SistemaFuncionarios') // Nome do banco de dados
 
-db.version(6).stores({
+db.version(21).stores({
   // Incrementar a versão do banco de dados
-  funcionarios: '++id, nome, cpf, cargo, departamento',
+  funcionarios:
+    '++id, nome, cpf, cargo, departamento',
   documentos:
     '++id, funcionarioId, categoria, nomeArquivo, dataUpload, mes, ano, dataInicio, dataFim',
   documentosEmpresa:
     '++id, funcionarioId, categoriaEmpresa, nomeArquivo, dataUpload, mes, ano, fixado',
   solicitacoesViagem:
     '++id, solicitanteId, viajanteId, origem, destino, dataIda, horarioIdaInicio, horarioIdaFim, dataVolta, horarioVoltaInicio, horarioVoltaFim, justificativa, observacao, status, dataSolicitacao, motivoRecusa',
-})
+  notificacoes:
+    '++id, tipo, titulo, mensagem, lida, dataCreacao, dados, usuarioId',
+  })
 
 export const CATEGORIAS = {
   // Definir categorias de documentos
@@ -35,143 +38,101 @@ export const CATEGORIAS_EMPRESA = {
 }
 
 export const DEPARTAMENTOS = [
-  'PRESI',
-  'DIRAP',
-  'DIBEN',
-  'GECAP',
-  'GECON',
-  'GEINF',
-  'GECOR',
-  'GEOPE',
-  'GETEC',
-  'GEFIN',
-  'GEBEN',
-  'GERIS',
-  'SELOG',
-  'SEFOP',
-  'SECON',
-  'SEBEN',
-  'SECAB',
-  'SECRE',
-  'SETES',
-  'SEMEF',
-  'SESUP',
-  'SEFIN',
-  'SEDES',
-  'AUDIT',
-  'COJUR',
+  'PRESI','DIRAP','DIBEN','GECAP','GECON','GEINF','GECOR','GEOPE','GETEC',
+  'GEFIN','GEBEN','GERIS','SELOG','SEFOP','SECON','SEBEN','SECAB','SECRE',
+  'SETES','SEMEF','SESUP','SEFIN','SEDES','AUDIT','COJUR',
 ]
 
 export const CARGOS = [
-  'Advogada Jr. B',
-  'Advogada Sr. D',
-  'Advogado Pl. E',
-  'Advogado Sr. E',
-  'Analista Jr. A',
-  'Analista Jr. B',
-  'Analista Jr. C',
-  'Analista Jr. D',
-  'Analista Jr. E',
-  'Analista Jr. F',
-  'Analista Pl. A',
-  'Analista Pl. B',
-  'Analista Pl. C',
-  'Analista Pl. E',
-  'Analista Pl. F',
-  'Analista Sr. A',
-  'Analista Sr. B',
-  'Analista Sr. C',
-  'Analista Sr. D',
-  'Analista Sr. E',
-  'Analista Sr. F',
-  'Diretor',
-  'Estagiário',
-  'Gerente',
-  'Gerente Geral',
+  'Advogada Jr. B','Advogada Sr. D','Advogado Pl. E','Advogado Sr. E','Analista Jr. A',
+  'Analista Jr. B','Analista Jr. C','Analista Jr. D','Analista Jr. E','Analista Jr. F',
+  'Analista Pl. A','Analista Pl. B','Analista Pl. C','Analista Pl. E','Analista Pl. F',
+  'Analista Sr. A','Analista Sr. B','Analista Sr. C','Analista Sr. D','Analista Sr. E',
+  'Analista Sr. F','Diretor','Estagiário','Gerente',
 ]
 
 export const AEROPORTOS = [
   {
-    nome: 'Aeroporto Internacional de São Paulo-Guarulhos',
+    nome: 'Aeroporto de São Paulo - Guarulhos',
     iata: 'GRU',
     icao: 'SBGR',
   },
-  { nome: 'Aeroporto de São Paulo-Congonhas', iata: 'CGH', icao: 'SBSP' },
-  { nome: 'Aeroporto Internacional de Brasília', iata: 'BSB', icao: 'SBBR' },
+  { nome: 'Aeroporto de São Paulo - Congonhas', iata: 'CGH', icao: 'SBSP' },
+  { nome: 'Aeroporto de Brasília', iata: 'BSB', icao: 'SBBR' },
   {
-    nome: 'Aeroporto Internacional do Rio de Janeiro-Galeão',
+    nome: 'Aeroporto do Rio de Janeiro - Galeão',
     iata: 'GIG',
     icao: 'SBGL',
   },
   {
-    nome: 'Aeroporto Internacional de Campinas (Viracopos)',
+    nome: 'Aeroporto de Campinas - Viracopos',
     iata: 'VCP',
     icao: 'SBKP',
   },
   {
-    nome: 'Aeroporto Internacional de Belo Horizonte-Confins',
+    nome: 'Aeroporto de Belo Horizonte - Confins',
     iata: 'CNF',
     icao: 'SBCF',
   },
   {
-    nome: 'Aeroporto Internacional do Recife-Guararapes',
+    nome: 'Aeroporto do Recife - Guararapes',
     iata: 'REC',
     icao: 'SBRF',
   },
-  { nome: 'Aeroporto Internacional de Salvador', iata: 'SSA', icao: 'SBSV' },
+  { nome: 'Aeroporto de Salvador', iata: 'SSA', icao: 'SBSV' },
   {
-    nome: 'Aeroporto do Rio de Janeiro-Santos Dumont',
+    nome: 'Aeroporto do Rio de Janeiro - Santos Dumont',
     iata: 'SDU',
     icao: 'SBRJ',
   },
   {
-    nome: 'Aeroporto Internacional de Curitiba (Afonso Pena)',
+    nome: 'Aeroporto de Curitiba -Afonso Pena',
     iata: 'CWB',
     icao: 'SBCT',
   },
-  { nome: 'Aeroporto Internacional de Fortaleza', iata: 'FOR', icao: 'SBFZ' },
+  { nome: 'Aeroporto de Fortaleza', iata: 'FOR', icao: 'SBFZ' },
   {
-    nome: 'Aeroporto Internacional de Florianópolis',
+    nome: 'Aeroporto de Florianópolis',
     iata: 'FLN',
     icao: 'SBFL',
   },
   {
-    nome: 'Aeroporto Internacional de Belém (Val de Cans)',
+    nome: 'Aeroporto de Belém - Val de Cans',
     iata: 'BEL',
     icao: 'SBBE',
   },
   {
-    nome: 'Aeroporto Internacional de Goiânia (Santa Genoveva)',
+    nome: 'Aeroporto de Goiânia - Santa Genoveva',
     iata: 'GYN',
     icao: 'SBGO',
   },
   {
-    nome: 'Aeroporto Internacional de Porto Alegre',
+    nome: 'Aeroporto de Porto Alegre',
     iata: 'POA',
     icao: 'SBPA',
   },
   {
-    nome: 'Aeroporto Internacional de Vitória (Eurico de Aguiar Salles)',
+    nome: 'Aeroporto de Vitória - Eurico de Aguiar Salles',
     iata: 'VIX',
     icao: 'SBVT',
   },
   {
-    nome: 'Aeroporto Internacional de Manaus (Eduardo Gomes)',
+    nome: 'Aeroporto de Manaus - Eduardo Gomes',
     iata: 'MAO',
     icao: 'SBEG',
   },
   {
-    nome: 'Aeroporto Internacional de Cuiabá (Marechal Rondon)',
+    nome: 'Aeroporto de Cuiabá - Marechal Rondon',
     iata: 'CGB',
     icao: 'SBCY',
   },
   {
-    nome: 'Aeroporto Internacional de Maceió (Zumbi dos Palmares)',
+    nome: 'Aeroporto de Maceió - Zumbi dos Palmares',
     iata: 'MCZ',
     icao: 'SBMO',
   },
   {
-    nome: 'Aeroporto Internacional de Natal (Governador Aluízio Alves)',
+    nome: 'Aeroporto de Natal - Governador Aluízio Alves',
     iata: 'NAT',
     icao: 'SBNT',
   },
@@ -200,3 +161,172 @@ export const STATUS_VIAGEM = {
   APROVADA: 'Aprovada', // Chave para APROVADA
   RECUSADA: 'Recusada', // Chave para RECUSADA
 }
+
+// ==================== SERVIÇO DE NOTIFICAÇÕES ====================
+
+export const notificacaoService = {
+  /**
+   * Criar uma nova notificação
+   * @param {string} tipo - Tipo da notificação: 'viagem', 'documento', 'alerta', 'info'
+   * @param {string} titulo - Título da notificação
+   * @param {string} mensagem - Mensagem detalhada
+   * @param {object} dados - Dados adicionais (opcional)
+   * @param {number} usuarioId - ID do usuário que receberá a notificação (opcional)
+   */
+  async criar(tipo, titulo, mensagem, dados = {}, usuarioId = null) {
+    try {
+      const notificacao = {
+        tipo,
+        titulo,
+        mensagem,
+        lida: false,
+        dataCreacao: new Date().toISOString(),
+        dados,
+        usuarioId,
+      }
+
+      const id = await db.notificacoes.add(notificacao)
+      console.log('✅ Notificação criada:', { id, ...notificacao })
+      return { id, ...notificacao }
+    } catch (error) {
+      console.error('❌ Erro ao criar notificação:', error)
+      throw error
+    }
+  },
+
+  /**
+   * Buscar todas as notificações
+   */
+  async buscarTodas() {
+    try {
+      return await db.notificacoes.orderBy('dataCreacao').reverse().toArray()
+    } catch (error) {
+      console.error('❌ Erro ao buscar notificações:', error)
+      return []
+    }
+  },
+
+  /**
+   * Buscar notificações não lidas
+   */
+  async buscarNaoLidas() {
+    try {
+      return await db.notificacoes.where('lida').equals(false).toArray()
+    } catch (error) {
+      console.error('❌ Erro ao buscar notificações não lidas:', error)
+      return []
+    }
+  },
+
+  /**
+   * Contar notificações não lidas
+   */
+  async contarNaoLidas() {
+    try {
+      return await db.notificacoes.where('lida').equals(false).count()
+    } catch (error) {
+      console.error('❌ Erro ao contar notificações não lidas:', error)
+      return 0
+    }
+  },
+
+  /**
+   * Marcar notificação como lida
+   */
+  async marcarComoLida(id) {
+    try {
+      await db.notificacoes.update(id, { lida: true })
+      console.log('✅ Notificação marcada como lida:', id)
+    } catch (error) {
+      console.error('❌ Erro ao marcar notificação como lida:', error)
+    }
+  },
+
+  /**
+   * Marcar todas as notificações como lidas
+   */
+  async marcarTodasComoLidas() {
+    try {
+      const naoLidas = await this.buscarNaoLidas()
+      const promises = naoLidas.map((n) => this.marcarComoLida(n.id))
+      await Promise.all(promises)
+      console.log('✅ Todas as notificações marcadas como lidas')
+    } catch (error) {
+      console.error('❌ Erro ao marcar todas como lidas:', error)
+    }
+  },
+
+  /**
+   * Excluir notificação
+   */
+  async excluir(id) {
+    try {
+      await db.notificacoes.delete(id)
+      console.log('✅ Notificação excluída:', id)
+    } catch (error) {
+      console.error('❌ Erro ao excluir notificação:', error)
+    }
+  },
+
+  /**
+   * Excluir todas as notificações
+   */
+  async excluirTodas() {
+    try {
+      await db.notificacoes.clear()
+      console.log('✅ Todas as notificações excluídas')
+    } catch (error) {
+      console.error('❌ Erro ao excluir todas as notificações:', error)
+    }
+  },
+
+  // ========== NOTIFICAÇÕES ESPECÍFICAS DE VIAGEM ==========
+
+  /**
+   * Criar notificação de nova solicitação de viagem
+   */
+  async notificarNovaViagem(viagemId, nomeViajante, destino) {
+    return await this.criar(
+      'viagem',
+      '✈️ Nova Solicitação de Viagem',
+      `${nomeViajante} solicitou uma viagem para ${destino}`,
+      { viagemId, acao: 'nova_viagem' }
+    )
+  },
+
+  /**
+   * Criar notificação de viagem aprovada
+   */
+  async notificarViagemAprovada(viagemId, nomeViajante, destino) {
+    return await this.criar(
+      'viagem',
+      '✅ Viagem Aprovada',
+      `A viagem de ${nomeViajante} para ${destino} foi aprovada`,
+      { viagemId, acao: 'viagem_aprovada' }
+    )
+  },
+
+  /**
+   * Criar notificação de viagem recusada
+   */
+  async notificarViagemRecusada(viagemId, nomeViajante, destino, motivo) {
+    return await this.criar(
+      'viagem',
+      '❌ Viagem Recusada',
+      `A viagem de ${nomeViajante} para ${destino} foi recusada. Motivo: ${motivo}`,
+      { viagemId, acao: 'viagem_recusada', motivo }
+    )
+  },
+
+  /**
+   * Criar notificação de documento enviado
+   */
+  async notificarDocumentoEnviado(documentoId, nomeFuncionario, categoria) {
+    return await this.criar(
+      'documento',
+      '📄 Novo Documento',
+      `Documento ${categoria} enviado para ${nomeFuncionario}`,
+      { documentoId, acao: 'documento_enviado' }
+    )
+  },
+} 

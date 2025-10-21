@@ -1,5 +1,6 @@
 // src/components/Header.js
 import React, { useState, useEffect } from 'react'
+import Notificacoes from './Notificacoes'
 import {
   LayoutDashboard,
   Users,
