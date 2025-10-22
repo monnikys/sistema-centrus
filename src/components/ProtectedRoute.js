@@ -1,37 +1,36 @@
-// src/components/ProtectedRoute.js
 import React, { useEffect, useState } from 'react'
 import { AuthService } from '../authDb'
 import { Shield, AlertCircle } from 'lucide-react'
 import './styles/ProtectedRoute.css'
 
-const ProtectedRoute = ({
+const ProtectedRoute = ({ // Componente para proteger rotas baseado em permissões
   children,
   requererAdmin = false,
   paginaId = null,
 }) => {
-  // Componente para proteger rotas baseado em permissÃµes
-  const [autenticado, setAutenticado] = useState(null)
-  const [usuario, setUsuario] = useState(null)
-  const [verificando, setVerificando] = useState(true)
-  const [temPermissao, setTemPermissao] = useState(false)
+  
+  const [autenticado, setAutenticado] = useState(null) // Estado para indicar se o usuário está autenticado
+  const [usuario, setUsuario] = useState(null) // Estado para armazenar dados do usuário
+  const [verificando, setVerificando] = useState(true) // Estado para indicar se a verificação de autenticação está sendo feita
+  const [temPermissao, setTemPermissao] = useState(false) // Estado para indicar se o usuário tem permissão para acessar a rota
 
   useEffect(() => {
     verificarAutenticacao()
   }, [])
 
-  const verificarAutenticacao = async () => {
+  const verificarAutenticacao = async () => { // Função para verificar autenticação
     try {
-      const estaAuth = await AuthService.estaAutenticado()
+      const estaAuth = await AuthService.estaAutenticado() // Verificar se o usuário está autenticado
 
-      if (!estaAuth) {
-        setAutenticado(false)
-        setVerificando(false)
+      if (!estaAuth) { // Se não estiver autenticado
+        setAutenticado(false) // Definir autenticado como false
+        setVerificando(false) // Definir verificando como false
         return
       }
 
-      const usuarioAtual = await AuthService.obterUsuarioAtual()
+      const usuarioAtual = await AuthService.obterUsuarioAtual() // Obter dados do usuário atual
 
-      if (!usuarioAtual) {
+      if (!usuarioAtual) { // Se o usuário atual não for encontrado
         setAutenticado(false)
         setVerificando(false)
         return
@@ -39,7 +38,7 @@ const ProtectedRoute = ({
 
       setUsuario(usuarioAtual)
 
-      // Se requer admin, verificar se o usuÃ¡rio Ã© admin
+      // Se requer admin, verificar se o usuário é admin
       if (requererAdmin && usuarioAtual.tipo !== 'admin') {
         setAutenticado(false)
         setTemPermissao(false)
@@ -47,14 +46,14 @@ const ProtectedRoute = ({
         return
       }
 
-      // Se tem paginaId, verificar permissÃ£o especÃ­fica
+      // Se tem paginaId, verificar permissão especifica
       if (paginaId && usuarioAtual.tipo !== 'admin') {
-        const permissoesUsuario = usuarioAtual.permissoes || []
-        const possuiPermissao = permissoesUsuario.includes(paginaId)
+        const permissoesUsuario = usuarioAtual.permissoes || [] // Obter permissões do usuário
+        const possuiPermissao = permissoesUsuario.includes(paginaId) // Verificar se o usuário possui a permissão
 
-        if (!possuiPermissao) {
+        if (!possuiPermissao) { // Se o usuário não possui permissão
           console.log(
-            'âŒ Acesso negado:',
+            'Acesso negado:',
             usuarioAtual.nome,
             'tentou acessar',
             paginaId
@@ -66,7 +65,7 @@ const ProtectedRoute = ({
         }
 
         console.log(
-          'âœ… Acesso permitido:',
+          'Acesso permitido:',
           usuarioAtual.nome,
           'acessou',
           paginaId
@@ -77,31 +76,31 @@ const ProtectedRoute = ({
       setTemPermissao(true)
       setVerificando(false)
     } catch (error) {
-      console.error('Erro ao verificar autenticaÃ§Ã£o:', error)
+      console.error('Erro ao verificar autenticação:', error)
       setAutenticado(false)
       setVerificando(false)
     }
   }
 
-  if (verificando) {
+  if (verificando) { // Se estiver verificando
     return (
-      <div className="verificando-auth">
-        <div className="spinner-grande"></div>
-        <p>Verificando permissÃµes...</p>
+      <div className="verificando-auth"> {/* Div para indicar que está verificando autenticação */}
+        <div className="spinner-grande"></div> {/* Spinner grande */}
+        <p>Verificando permissõess...</p>
       </div>
     )
   }
 
-  if (!autenticado) {
+  if (!autenticado) { // Se não estiver autenticado
     return (
-      <div className="acesso-negado">
-        <div className="acesso-negado-card">
+      <div className="acesso-negado"> {/* Div para indicar acesso negado */}
+        <div className="acesso-negado-card"> {/* Div para o card de acesso negado */}
           <AlertCircle size={64} color="#ffc107" />
-          <h2>AutenticaÃ§Ã£o NecessÃ¡ria</h2>
-          <p>VocÃª precisa fazer login para acessar esta pÃ¡gina.</p>
+          <h2>Autenticação Necessária</h2>
+          <p>VocÃª precisa fazer login para acessar esta página.</p>
           <button
             onClick={() => window.location.reload()}
-            className="btn-voltar"
+            className="btn-voltar" // Botão para voltar ao login
           >
             Voltar para Login
           </button>
@@ -110,24 +109,24 @@ const ProtectedRoute = ({
     )
   }
 
-  if (autenticado && !temPermissao) {
+  if (autenticado && !temPermissao) { // Se estiver autenticado e não tem permissão
     return (
-      <div className="acesso-negado">
-        <div className="acesso-negado-card">
+      <div className="acesso-negado"> {/* Div para indicar acesso negado */}
+        <div className="acesso-negado-card"> {/* Div para o card de acesso negado */}
           <Shield size={64} color="#dc3545" />
           <h2>Acesso Negado</h2>
           {requererAdmin ? (
             <>
-              <p>Esta Ã¡rea Ã© exclusiva para administradores.</p>
-              <p className="usuario-info">
-                VocÃª estÃ¡ logado como: <strong>{usuario?.nome}</strong> (
+              <p>Esta area tem permissão exclusiva para administradores.</p>
+              <p className="usuario-info"> {/* Div para informações do usuário */}
+                Você está logado como: <strong>{usuario?.nome}</strong> (
                 {usuario?.tipo})
               </p>
             </>
           ) : (
             <>
-              <p>VocÃª nÃ£o tem permissÃ£o para acessar esta pÃ¡gina.</p>
-              <p className="usuario-info">
+              <p> Você não permissão para acessar esta página.</p>
+              <p className="usuario-info"> {/* Div para informações do usuário */}
                 Entre em contato com um administrador para solicitar acesso.
               </p>
             </>
@@ -143,4 +142,4 @@ const ProtectedRoute = ({
   return <>{children}</>
 }
 
-export default ProtectedRoute
+export default ProtectedRoute;

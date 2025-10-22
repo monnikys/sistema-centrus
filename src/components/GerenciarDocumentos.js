@@ -410,4 +410,4 @@ function GerenciarDocumentos({ funcionario, onVoltar }) {  // Componente que ger
   );
 }
 
-export default GerenciarDocumentos;  // Exporta o componente
+export default GerenciarDocumentos;

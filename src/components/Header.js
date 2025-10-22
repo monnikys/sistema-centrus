@@ -80,7 +80,7 @@ function Header({ usuario, onLogout, paginaAtual, onMudarPagina }) {
     // Função para filtrar as páginas com base nas permissões do usuário
     console.log('🔍 Iniciando carregamento de páginas permitidas...')
 
-    if (!usuario) {
+    if (!usuario) { // Se usuário não estiver logado
       console.log('❌ Nenhum usuário logado')
       setPaginasPermitidas([])
       return
@@ -266,4 +266,4 @@ function Header({ usuario, onLogout, paginaAtual, onMudarPagina }) {
   )
 }
 
-export default Header
+export default Header;

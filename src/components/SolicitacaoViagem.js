@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, STATUS_VIAGEM, AEROPORTOS, notificacaoService } from '../db'
-import InfoAuditoria from './InfoAuditoria' // 👈 IMPORTAÇÃO DO COMPONENTE DE AUDITORIA
+import InfoAuditoria from './InfoAuditoria'
 import {
   ArrowLeft,
   PlaneTakeoff,
@@ -27,43 +27,43 @@ import 'dayjs/locale/pt-br'
 
 dayjs.locale('pt-br')
 
-function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
-  const [mostrarFormulario, setMostrarFormulario] = useState(false)
-  const [viajanteId, setViajanteId] = useState('')
-  const [origem, setOrigem] = useState('')
-  const [destino, setDestino] = useState('')
-  const [dataIda, setDataIda] = useState(null)
-  const [faixaHorarioIda, setFaixaHorarioIda] = useState([480, 720])
-  const [dataVolta, setDataVolta] = useState(null)
-  const [faixaHorarioVolta, setFaixaHorarioVolta] = useState([1080, 1200])
-  const [justificativa, setJustificativa] = useState('')
-  const [observacao, setObservacao] = useState('')
-  const [filtroStatus, setFiltroStatus] = useState('todos')
+function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar para a tela de solicitações de viagem
+  const [mostrarFormulario, setMostrarFormulario] = useState(false) // Estado para indicar se o formulário de solicitação de viagem deve ser mostrado
+  const [viajanteId, setViajanteId] = useState('') // Estado para armazenar o ID do viajante
+  const [origem, setOrigem] = useState('')  // Estado para armazenar a origem
+  const [destino, setDestino] = useState('')  // Estado para armazenar o destino
+  const [dataIda, setDataIda] = useState(null)  // Estado para armazenar a data de ida
+  const [faixaHorarioIda, setFaixaHorarioIda] = useState([480, 720])  // Estado para armazenar a faixa horária de ida
+  const [dataVolta, setDataVolta] = useState(null)  // Estado para armazenar a data de volta
+  const [faixaHorarioVolta, setFaixaHorarioVolta] = useState([1080, 1200])  // Estado para armazenar a faixa horária de volta
+  const [justificativa, setJustificativa] = useState('')  // Estado para armazenar a justificativa
+  const [observacao, setObservacao] = useState('')  // Estado para armazenar a observação
+  const [filtroStatus, setFiltroStatus] = useState('todos')  // Estado para armazenar o filtro de status
 
-  const [mostrarModalRecusa, setMostrarModalRecusa] = useState(false)
-  const [solicitacaoParaRecusar, setSolicitacaoParaRecusar] = useState(null)
-  const [motivoRecusa, setMotivoRecusa] = useState('')
+  const [mostrarModalRecusa, setMostrarModalRecusa] = useState(false)  // Estado para indicar se o modal de recusa deve ser mostrado
+  const [solicitacaoParaRecusar, setSolicitacaoParaRecusar] = useState(null)  // Estado para armazenar a solicitação a ser recusada
+  const [motivoRecusa, setMotivoRecusa] = useState('')  // Estado para armazenar o motivo da recusa
 
-  const minDistance = 60
+  const minDistance = 60  // Distância mínima entre os pontos do slider
 
-  const funcionarios = useLiveQuery(() => db.funcionarios.toArray(), [])
-  const todasSolicitacoes = useLiveQuery(
+  const funcionarios = useLiveQuery(() => db.funcionarios.toArray(), [])  // Consulta todos os funcionários
+  const todasSolicitacoes = useLiveQuery( // Consulta todas as solicitações de viagem
     () => db.solicitacoesViagem.toArray(),
     []
   )
 
-  const solicitacoesFiltradas =
+  const solicitacoesFiltradas = // Filtra as solicitações de viagem pelo status
     todasSolicitacoes
-      ?.filter((sol) => {
-        if (filtroStatus === 'todos') return true
-        return sol.status === filtroStatus
+      ?.filter((sol) => { // Filtra as solicitações de viagem
+        if (filtroStatus === 'todos') return true // Mostra todas as solicitações
+        return sol.status === filtroStatus  // Mostra apenas as solicitações com o status selecionado
       })
       .sort(
-        (a, b) => new Date(b.dataSolicitacao) - new Date(a.dataSolicitacao)
+        (a, b) => new Date(b.dataSolicitacao) - new Date(a.dataSolicitacao) // Ordena as solicitações por data de solicitação
       ) || []
 
-  const limparFormulario = () => {
-    setViajanteId('')
+  const limparFormulario = () => { // Limpa o formulário de solicitação de viagem
+    setViajanteId('') 
     setOrigem('')
     setDestino('')
     setDataIda(null)
@@ -74,45 +74,45 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     setObservacao('')
   }
 
-  const minutosParaHorario = (minutos) => {
-    const horas = Math.floor(minutos / 60)
-    const mins = minutos % 60
-    return `${String(horas).padStart(2, '0')}:${String(mins).padStart(2, '0')}`
+  const minutosParaHorario = (minutos) => { // Converte minutos em horário
+    const horas = Math.floor(minutos / 60)  // Horas
+    const mins = minutos % 60 // Minutos
+    return `${String(horas).padStart(2, '0')}:${String(mins).padStart(2, '0')}` // Retorna a string formatada
   }
 
-  const handleChangeHorarioIda = (event, newValue, activeThumb) => {
-    if (!Array.isArray(newValue)) return
+  const handleChangeHorarioIda = (event, newValue, activeThumb) => {  // Função para alterar a faixa horária de ida
+    if (!Array.isArray(newValue)) return // Verifica se newValue é um array
 
-    if (activeThumb === 0) {
-      setFaixaHorarioIda([
-        Math.min(newValue[0], faixaHorarioIda[1] - minDistance),
+    if (activeThumb === 0) { // Verifica se o thumb ativo é o primeiro
+      setFaixaHorarioIda([ // Define a faixa horária de ida
+        Math.min(newValue[0], faixaHorarioIda[1] - minDistance), // Define o primeiro ponto da faixa horária de ida
         faixaHorarioIda[1],
       ])
-    } else {
-      setFaixaHorarioIda([
+    } else { // Verifica se o thumb ativo é o segundo
+      setFaixaHorarioIda([ // Define a faixa horária de ida
         faixaHorarioIda[0],
-        Math.max(newValue[1], faixaHorarioIda[0] + minDistance),
+        Math.max(newValue[1], faixaHorarioIda[0] + minDistance), // Define o segundo ponto da faixa horária de ida
       ])
     }
   }
 
-  const handleChangeHorarioVolta = (event, newValue, activeThumb) => {
-    if (!Array.isArray(newValue)) return
+  const handleChangeHorarioVolta = (event, newValue, activeThumb) => { // Função para alterar a faixa horária de volta
+    if (!Array.isArray(newValue)) return // Verifica se newValue é um array
 
-    if (activeThumb === 0) {
-      setFaixaHorarioVolta([
-        Math.min(newValue[0], faixaHorarioVolta[1] - minDistance),
+    if (activeThumb === 0) { // Verifica se o thumb ativo é o primeiro
+      setFaixaHorarioVolta([  // Define a faixa horária de volta
+        Math.min(newValue[0], faixaHorarioVolta[1] - minDistance), // Define o primeiro ponto da faixa horária de volta
         faixaHorarioVolta[1],
       ])
-    } else {
-      setFaixaHorarioVolta([
+    } else {  // Verifica se o thumb ativo é o segundo
+      setFaixaHorarioVolta([  // Define a faixa horária de volta
         faixaHorarioVolta[0],
-        Math.max(newValue[1], faixaHorarioVolta[0] + minDistance),
+        Math.max(newValue[1], faixaHorarioVolta[0] + minDistance),  // Define o segundo ponto da faixa horária de volta
       ])
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => { // Função para criar uma nova solicitação de viagem
     e.preventDefault()
     try {
       console.log('🔍 Usuário Atual ao criar:', usuarioAtual) // DEBUG
@@ -133,23 +133,22 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
         observacao,
         status: 'PENDENTE',
         dataSolicitacao: new Date().toISOString(),
-        // 👤 AUDITORIA: Salvar quem criou
         criadoPorId: usuarioAtual?.id || null,
         criadoPorNome: usuarioAtual?.nome || null,
       })
 
-      console.log('✅ Viagem criada com ID:', viagemId) // DEBUG
+      console.log('✅ Viagem criada com ID:', viagemId)
 
       // 🎉 CRIAR NOTIFICAÇÃO AUTOMÁTICA
-      const viajante = funcionarios?.find(f => f.id === parseInt(viajanteId))
-      if (viajante) {
-        await notificacaoService.notificarNovaViagem(
+      const viajante = funcionarios?.find(f => f.id === parseInt(viajanteId)) // Encontra o viajante pelo ID
+      if (viajante) { // Verifica se o viajante foi encontrado
+        await notificacaoService.notificarNovaViagem( // Cria a notificação de nova solicitação de viagem
           viagemId,
           viajante.nome,
           destino,
-          { id: usuarioAtual?.id, nome: usuarioAtual?.nome }
+          { id: usuarioAtual?.id, nome: usuarioAtual?.nome } // Usuário que criou a solicitação
         )
-        console.log('✅ Notificação criada') // DEBUG
+        console.log('✅ Notificação criada')
       }
 
       alert('Solicitação de viagem criada com sucesso!')
@@ -161,13 +160,13 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     }
   }
 
-  const handleExcluir = async (id) => {
-    if (!usuarioAtual?.podeExcluirViagens) {
+  const handleExcluir = async (id) => { // Função para excluir uma solicitação de viagem
+    if (!usuarioAtual?.podeExcluirViagens) { // Verifica se o usuário atual tem permissão para excluir
       alert('Você não tem permissão para excluir solicitações de viagem!')
       return
     }
-    if (window.confirm('Deseja excluir esta solicitação de viagem?')) {
-      try {
+    if (window.confirm('Deseja excluir esta solicitação de viagem?')) { // Confirmação
+      try { // Tenta excluir
         await db.solicitacoesViagem.delete(id)
         alert('Solicitação excluída com sucesso!')
       } catch (error) {
@@ -176,46 +175,46 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     }
   }
 
-  const handleAlterarStatus = async (id, novoStatus) => {
-    if (!usuarioAtual?.podeAprovarViagens) {
+  const handleAlterarStatus = async (id, novoStatus) => { // Função para alterar o status de uma solicitação de viagem
+    if (!usuarioAtual?.podeAprovarViagens) { // Verifica se o usuário atual tem permissão para aprovar
       alert(
         'Você não tem permissão para aprovar/recusar solicitações de viagem!'
       )
       return
     }
-    if (novoStatus === 'RECUSADA') {
+    if (novoStatus === 'RECUSADA') { // Verifica se o novo status é RECUSADA
       setSolicitacaoParaRecusar(id)
       setMostrarModalRecusa(true)
       return
     }
 
     try {
-      console.log('🔍 Usuário Atual ao aprovar:', usuarioAtual) // DEBUG
+      console.log('🔍 Usuário Atual ao aprovar:', usuarioAtual) 
 
       // 👤 AUDITORIA: Salvar quem aprovou
-      const updateData = { status: novoStatus }
+      const updateData = { status: novoStatus } // Define o novo status
       
-      if (novoStatus === 'APROVADA') {
-        updateData.aprovadoPorId = usuarioAtual?.id || null
-        updateData.aprovadoPorNome = usuarioAtual?.nome || null
-        updateData.dataAprovacao = new Date().toISOString()
+      if (novoStatus === 'APROVADA') { // Verifica se o novo status é APROVADA
+        updateData.aprovadoPorId = usuarioAtual?.id || null // Define quem aprovou
+        updateData.aprovadoPorNome = usuarioAtual?.nome || null 
+        updateData.dataAprovacao = new Date().toISOString() // Define a data de aprovação
       }
       
-      await db.solicitacoesViagem.update(id, updateData)
-      console.log('✅ Status atualizado:', updateData) // DEBUG
+      await db.solicitacoesViagem.update(id, updateData) // Atualiza o status
+      console.log('✅ Status atualizado:', updateData)
 
       // 🎉 CRIAR NOTIFICAÇÃO DE APROVAÇÃO
-      if (novoStatus === 'APROVADA') {
-        const viagem = await db.solicitacoesViagem.get(id)
-        const viajante = funcionarios?.find(f => f.id === viagem.viajanteId)
-        if (viajante) {
-          await notificacaoService.notificarViagemAprovada(
+      if (novoStatus === 'APROVADA') { // Verifica se o novo status é APROVADA
+        const viagem = await db.solicitacoesViagem.get(id)  // Busca a solicitação
+        const viajante = funcionarios?.find(f => f.id === viagem.viajanteId)  // Busca o viajante
+        if (viajante) { // Verifica se o viajante foi encontrado
+          await notificacaoService.notificarViagemAprovada( // Cria a notificação
             id,
             viajante.nome,
             viagem.destino,
             { id: usuarioAtual?.id, nome: usuarioAtual?.nome }
           )
-          console.log('✅ Notificação de aprovação criada') // DEBUG
+          console.log('✅ Notificação de aprovação criada') 
         }
       }
 
@@ -226,17 +225,17 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     }
   }
 
-  const handleConfirmarRecusa = async () => {
-    if (!motivoRecusa.trim()) {
+  const handleConfirmarRecusa = async () => { // Função para confirmar a recusa de uma solicitação de viagem
+    if (!motivoRecusa.trim()) { // Verifica se o motivo da recusa foi informado
       alert('Por favor, informe o motivo da recusa.')
       return
     }
 
-    try {
-      console.log('🔍 Usuário Atual ao recusar:', usuarioAtual) // DEBUG
+    try { 
+      console.log('🔍 Usuário Atual ao recusar:', usuarioAtual)
 
       // 👤 AUDITORIA: Salvar quem recusou
-      await db.solicitacoesViagem.update(solicitacaoParaRecusar, {
+      await db.solicitacoesViagem.update(solicitacaoParaRecusar, { // Atualiza o status
         status: 'RECUSADA',
         motivoRecusa: motivoRecusa,
         recusadoPorId: usuarioAtual?.id || null,
@@ -244,20 +243,20 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
         dataRecusa: new Date().toISOString(),
       })
 
-      console.log('✅ Viagem recusada') // DEBUG
+      console.log('✅ Viagem recusada')
 
       // 🎉 CRIAR NOTIFICAÇÃO DE RECUSA
-      const viagem = await db.solicitacoesViagem.get(solicitacaoParaRecusar)
-      const viajante = funcionarios?.find(f => f.id === viagem.viajanteId)
-      if (viajante) {
-        await notificacaoService.notificarViagemRecusada(
+      const viagem = await db.solicitacoesViagem.get(solicitacaoParaRecusar) // Busca a solicitação
+      const viajante = funcionarios?.find(f => f.id === viagem.viajanteId) // Busca o viajante
+      if (viajante) { // Verifica se o viajante foi encontrado
+        await notificacaoService.notificarViagemRecusada( // Cria a notificação
           solicitacaoParaRecusar,
           viajante.nome,
           viagem.destino,
           motivoRecusa,
           { id: usuarioAtual?.id, nome: usuarioAtual?.nome }
         )
-        console.log('✅ Notificação de recusa criada') // DEBUG
+        console.log('✅ Notificação de recusa criada')
       }
 
       alert('Solicitação recusada com sucesso!')
@@ -270,28 +269,28 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     }
   }
 
-  const handleFecharModalRecusa = () => {
+  const handleFecharModalRecusa = () => { // Função para fechar o modal de recusa
     setMostrarModalRecusa(false)
     setSolicitacaoParaRecusar(null)
     setMotivoRecusa('')
   }
 
-  const getNomeFuncionario = (id) => {
-    const func = funcionarios?.find((f) => f.id === id)
-    return func ? func.nome : 'N/A'
+  const getNomeFuncionario = (id) => {  // Retorna nome do funcionário
+    const func = funcionarios?.find((f) => f.id === id) // Encontra
+    return func ? func.nome : 'N/A' // Retorna
   }
 
-  const getDepartamentoFuncionario = (id) => {
-    const func = funcionarios?.find((f) => f.id === id)
-    return func ? func.departamento : 'N/A'
+  const getDepartamentoFuncionario = (id) => {  // Retorna departamento do funcionário
+    const func = funcionarios?.find((f) => f.id === id) // Encontra
+    return func ? func.departamento : 'N/A' // Retorna
   }
 
-  const formatarData = (dataString) => {
-    return new Date(dataString + 'T00:00:00').toLocaleDateString('pt-BR')
+  const formatarData = (dataString) => {  // Formata data em pt-BR
+    return new Date(dataString + 'T00:00:00').toLocaleDateString('pt-BR')  // Converte para pt-BR
   }
 
-  const formatarDataHora = (dataISO) => {
-    return new Date(dataISO).toLocaleDateString('pt-BR', {
+  const formatarDataHora = (dataISO) => {  // Formata data em pt-BR
+    return new Date(dataISO).toLocaleDateString('pt-BR', {  // Converte para pt-BR
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -300,12 +299,12 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     })
   }
 
-  const formatarHorario = (horario) => {
-    if (!horario) return 'N/A'
+  const formatarHorario = (horario) => {  // Formata horário
+    if (!horario) return 'N/A'  // Retorna N/A
     return horario
   }
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status) => {   // Retorna Ícone conforme status
     switch (status) {
       case 'APROVADA':
         return <CheckCircle size={20} />
@@ -316,7 +315,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     }
   }
 
-  const getStatusClass = (status) => {
+  const getStatusClass = (status) => {   // Retorna classe conforme status
     switch (status) {
       case 'APROVADA':
         return 'status-aprovada'
@@ -331,15 +330,15 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
   console.log('🔍 DEBUG - Usuário Atual Recebido:', usuarioAtual)
 
   return (
-    <div className="solicitacao-viagem-container">
-      <div className="documentos-header">
-        <button onClick={onVoltar} className="btn-voltar">
+    <div className="solicitacao-viagem-container"> {/* Container principal */}
+      <div className="documentos-header"> {/* Header */}
+        <button onClick={onVoltar} className="btn-voltar"> {/* Botão de voltar */}
           <ArrowLeft size={20} />
           Voltar
         </button>
         <div>
           <h2>Solicitação de Viagem</h2>
-          <p className="subtitulo">
+          <p className="subtitulo"> {/* Subtítulo */}
             Gerencie as solicitações de viagem dos funcionários
           </p>
         </div>
@@ -347,20 +346,20 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
 
       {/* Modal de Recusa */}
       {mostrarModalRecusa && (
-        <div className="modal-overlay" onClick={handleFecharModalRecusa}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay" onClick={handleFecharModalRecusa}> {/* Overlay */}
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}> {/* Contéudo do modal */}
+            <div className="modal-header">  {/* Cabecalho do modal */}
               <h3>Motivo da Recusa</h3>
               <button
                 onClick={handleFecharModalRecusa}
-                className="btn-fechar-modal"
+                className="btn-fechar-modal" // Botão de fechar
               >
                 <X size={20} />
               </button>
             </div>
 
-            <div className="modal-body">
-              <div className="form-group">
+            <div className="modal-body"> {/* Corpo do modal */}
+              <div className="form-group"> {/* Campo de motivo de recusa */}
                 <label>
                   <FileText size={18} />
                   Por que esta solicitação está sendo recusada? *
@@ -383,16 +382,16 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               </div>
             </div>
 
-            <div className="modal-footer">
+            <div className="modal-footer"> {/* Rodapé do modal */}
               <button
                 onClick={handleFecharModalRecusa}
-                className="btn-cancelar"
+                className="btn-cancelar" // Botão de cancelar
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmarRecusa}
-                className="btn-confirmar"
+                className="btn-confirmar" // Botão de confirmar
                 style={{ background: '#dc3545' }}
               >
                 <XCircle size={18} />
@@ -405,22 +404,22 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
 
       {!mostrarFormulario ? (
         <>
-          <div className="acoes-viagem-header">
+          <div className="acoes-viagem-header"> {/* Header de ações */}
             {usuarioAtual?.podeCriarViagens && (
               <button
                 onClick={() => setMostrarFormulario(true)}
-                className="btn-nova-solicitacao"
+                className="btn-nova-solicitacao" // Botão de nova solicitação
               >
                 <Plus size={20} />
                 Nova Solicitação
               </button>
             )}
-            <div className="filtro-status-viagem">
+            <div className="filtro-status-viagem"> {/* Filtro de status */}
               <label>Filtrar por Status:</label>
               <select
                 value={filtroStatus}
                 onChange={(e) => setFiltroStatus(e.target.value)}
-                className="select-filtro"
+                className="select-filtro" // Estilos do select
               >
                 <option value="todos">Todos</option>
                 <option value="PENDENTE">Pendentes</option>
@@ -430,9 +429,9 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
             </div>
           </div>
 
-          <div className="lista-solicitacoes">
+          <div className="lista-solicitacoes"> {/* Lista de solicitações */}
             {solicitacoesFiltradas.length === 0 ? (
-              <div className="sem-documentos">
+              <div className="sem-documentos"> {/* Sem solicitações */}
                 <PlaneTakeoff size={48} />
                 <p>
                   {filtroStatus === 'todos'
@@ -443,15 +442,15 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                 </p>
               </div>
             ) : (
-              <div className="solicitacoes-grid">
+              <div className="solicitacoes-grid"> {/* Grid de solicitações */}
                 {solicitacoesFiltradas.map((sol) => (
                   <div
                     key={sol.id}
-                    className={`card-solicitacao ${getStatusClass(
+                    className={`card-solicitacao ${getStatusClass( // Classe conforme status
                       sol.status
                     )}`}
                   >
-                    <div className="card-header-solicitacao">
+                    <div className="card-header-solicitacao"> {/* Cabecalho do card de solicitação */}
                       <div className="viajante-info">
                         <User size={20} />
                         <div>
@@ -462,7 +461,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                         </div>
                       </div>
                       <div
-                        className={`badge-status ${getStatusClass(
+                        className={`badge-status ${getStatusClass( // Classe conforme status
                           sol.status
                         )}`}
                       >
@@ -470,56 +469,56 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                         {STATUS_VIAGEM[sol.status]}
                       </div>
                     </div>
-                    <div className="rota-viagem">
-                      <div className="local-viagem">
+                    <div className="rota-viagem"> {/* Rota da solicitação */}
+                      <div className="local-viagem"> {/* Local de partida */}
                         <MapPin size={16} />
                         <div>
-                          <span className="label-local">Origem</span>
-                          <span className="nome-local">
+                          <span className="label-local">Origem</span> {/* Label "Origem" */}
+                          <span className="nome-local"> {/* Nome do local de partida */}
                             {sol.origem}
                           </span>
                         </div>
                       </div>
-                      <div className="seta-rota">→</div>
-                      <div className="local-viagem">
+                      <div className="seta-rota">→</div> {/* Seta de rota */}
+                      <div className="local-viagem"> {/* Local de chegada */}
                         <MapPin size={16} />
                         <div>
-                          <span className="label-local">Destino</span>
-                          <span className="nome-local">
+                          <span className="label-local">Destino</span> {/* Label "Destino" */}
+                          <span className="nome-local"> {/* Nome do local de chegada */}
                             {sol.destino}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="datas-viagem">
-                      <div className="data-info">
+                    <div className="datas-viagem">  {/* Datas da solicitação */}
+                      <div className="data-info"> {/* Data de ida e volta */}
                         <Calendar size={16} />
                         <div>
-                          <span className="label-data">Ida</span>
-                          <span className="valor-data">
+                          <span className="label-data">Ida</span> {/* Label "Ida" */}
+                          <span className="valor-data"> {/* Valor da data de ida */}
                             {formatarData(sol.dataIda)}
                           </span>
-                          <span className="horario-badge">
+                          <span className="horario-badge"> {/* Horário de ida e volta */}
                             {formatarHorario(sol.horarioIdaInicio)} -{' '}
                             {formatarHorario(sol.horarioIdaFim)}
                           </span>
                         </div>
                       </div>
-                      <div className="data-info">
+                      <div className="data-info"> {/* Data de volta */}
                         <Calendar size={16} />
                         <div>
-                          <span className="label-data">Volta</span>
-                          <span className="valor-data">
+                          <span className="label-data">Volta</span> {/* Label "Volta" */}
+                          <span className="valor-data"> {/* Valor da data de volta */}
                             {formatarData(sol.dataVolta)}
                           </span>
-                          <span className="horario-badge">
+                          <span className="horario-badge"> {/* Horário de ida e volta */}
                             {formatarHorario(sol.horarioVoltaInicio)} -{' '}
                             {formatarHorario(sol.horarioVoltaFim)}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="justificativa-box">
+                    <div className="justificativa-box"> {/* Justificação da solicitação */}
                       <FileText size={16} />
                       <div>
                         <strong>Justificativa:</strong>
@@ -527,13 +526,13 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                       </div>
                     </div>
                     {sol.observacao && (
-                      <div className="observacao-box">
+                      <div className="observacao-box"> {/* Observação da solicitação */}
                         <strong>Observação:</strong>
                         <p>{sol.observacao}</p>
                       </div>
                     )}
                     {sol.status === 'RECUSADA' && sol.motivoRecusa && (
-                      <div className="motivo-recusa-box">
+                      <div className="motivo-recusa-box"> {/* Motivo de recusa da solicitação */}
                         <XCircle size={16} />
                         <div>
                           <strong>Motivo da Recusa:</strong>
@@ -553,8 +552,8 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                       compacto={false}
                     />
                     
-                    <div className="card-footer-solicitacao">
-                      <span className="data-solicitacao">
+                    <div className="card-footer-solicitacao"> {/* Rodapé da solicitação */}
+                      <span className="data-solicitacao"> {/* Data de solicitação */}
                         Solicitado em: {formatarDataHora(
                           sol.dataSolicitacao
                         )}
@@ -567,7 +566,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                                 onClick={() =>
                                   handleAlterarStatus(sol.id, 'APROVADA')
                                 }
-                                className="btn-acao-status btn-aprovar"
+                                className="btn-acao-status btn-aprovar" // Botão de aprovação
                                 title="Aprovar"
                               >
                                 <CheckCircle size={16} />
@@ -576,7 +575,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                                 onClick={() =>
                                   handleAlterarStatus(sol.id, 'RECUSADA')
                                 }
-                                className="btn-acao-status btn-recusar"
+                                className="btn-acao-status btn-recusar" // Botão de recusa
                                 title="Recusar"
                               >
                                 <XCircle size={16} />
@@ -586,7 +585,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                         {usuarioAtual?.podeExcluirViagens && (
                           <button
                             onClick={() => handleExcluir(sol.id)}
-                            className="btn-acao-status btn-excluir-sol"
+                            className="btn-acao-status btn-excluir-sol" // Botão de exclusão
                             title="Excluir"
                           >
                             <Trash2 size={16} />
@@ -601,12 +600,12 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
           </div>
         </>
       ) : (
-        <div className="formulario-viagem">
-          <div className="form-header">
+        <div className="formulario-viagem"> {/* Formulário de solicitação de viagem */}
+          <div className="form-header"> {/* Cabecalho do formulário */}
             <h3>Nova Solicitação de Viagem</h3>
           </div>
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
+            <div className="form-group"> {/* Campo para selecionar o funcionário viajante */}
               <label>
                 <User size={18} />
                 Viajante *
@@ -614,7 +613,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               <select
                 value={viajanteId}
                 onChange={(e) => setViajanteId(e.target.value)}
-                className="select-filtro"
+                className="select-filtro" // Estilo do select
                 required
               >
                 <option value="">Selecione o funcionário viajante</option>
@@ -626,8 +625,8 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               </select>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
+            <div className="form-row"> {/* Linha de campos */}
+              <div className="form-group"> {/* Campo para selecionar a origem */}
                 <label>
                   <MapPin size={18} />
                   Origem *
@@ -645,7 +644,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                   ))}
                 </select>
               </div>
-              <div className="form-group">
+              <div className="form-group"> {/* Campo para selecionar o destino */}
                 <label>
                   <MapPin size={18} />
                   Destino *
@@ -665,8 +664,8 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
+            <div className="form-row"> {/* Linha de campos */}
+              <div className="form-group"> {/* Campo para selecionar a data de ida */}
                 <label>
                   <Calendar size={18} />
                   Data de Ida *
@@ -702,7 +701,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                   />
                 </LocalizationProvider>
               </div>
-              <div className="form-group">
+              <div className="form-group"> {/* Campo para selecionar o horário de ida */}
                 <label>
                   <Clock size={18} />
                   Horário de Ida *
@@ -836,8 +835,8 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
+            <div className="form-row">  {/* Campo para selecionar a data de volta e o horário de volta */}
+              <div className="form-group">  {/* Campo para selecionar a data de volta */}
                 <label>
                   <Calendar size={18} />
                   Data de Volta *
@@ -875,7 +874,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                   />
                 </LocalizationProvider>
               </div>
-              <div className="form-group">
+              <div className="form-group">  {/* Campo para selecionar o horário de volta */}
                 <label>
                   <Clock size={18} />
                   Horário de Volta *
@@ -1009,7 +1008,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-group">  {/* Campo para selecionar o motivo da viagem */}
               <label>
                 <FileText size={18} />
                 Justificativa *
@@ -1023,7 +1022,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group">  {/* Campo para adicionar uma observação */}
               <label>
                 <FileText size={18} />
                 Observação (opcional)
@@ -1036,7 +1035,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               />
             </div>
 
-            <div className="form-actions">
+            <div className="form-actions">  {/* Botoes de confirmar e cancelar */}
               <button
                 type="button"
                 onClick={() => {
@@ -1047,7 +1046,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
               >
                 Cancelar
               </button>
-              <button type="submit" className="btn-confirmar">
+              <button type="submit" className="btn-confirmar"> {/* Botão para criar a solicitação de viagem */}
                 <PlaneTakeoff size={18} />
                 Criar Solicitação
               </button>
@@ -1059,4 +1058,4 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
   )
 }
 
-export default SolicitacaoViagem
+export default SolicitacaoViagem;

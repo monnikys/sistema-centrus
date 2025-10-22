@@ -175,4 +175,4 @@ function CadastroFuncionario({ funcionario, onVoltar }) {
   )
 }
 
-export default CadastroFuncionario // Exporta o componente para uso em outras partes do sistema
+export default CadastroFuncionario;

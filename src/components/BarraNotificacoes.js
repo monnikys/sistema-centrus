@@ -1,20 +1,18 @@
-// components/BarraNotificacoes.js
-// Barra fixa no topo apenas com o botão de notificações
 import React from 'react'
 import Notificacoes from './Notificacoes'
 
-function BarraNotificacoes() {
+function BarraNotificacoes() { // Componente BarraNotificacoes
   return (
-    <div className="barra-notificacoes-topo">
-      <div className="barra-notificacoes-content">
+    <div className="barra-notificacoes-topo"> {/* Barra fixa no topo */}
+      <div className="barra-notificacoes-content"> {/* Contéudo da barra */}
         {/* Espaço vazio à esquerda */}
         <div></div>
         
         {/* Notificações à direita */}
-        <Notificacoes />
+        <Notificacoes /> {/* Componente de notificações */}
       </div>
     </div>
   )
 }
 
-export default BarraNotificacoes
+export default BarraNotificacoes;

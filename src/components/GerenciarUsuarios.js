@@ -1015,4 +1015,4 @@ const GerenciarUsuarios = ({ usuarioAtual }) => {
   )
 }
 
-export default GerenciarUsuarios // Exporta o componente
+export default GerenciarUsuarios;

@@ -1,70 +1,69 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import { LogIn, User, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { AuthService } from '../authDb';
 import './styles/Login.css'; 
 
-const Login = ({ onLoginSucesso }) => {
-  const [email, setEmail] = useState('');
+const Login = ({ onLoginSucesso }) => { // Adicionado o parâmetro onLoginSucesso
+  const [email, setEmail] = useState(''); 
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => { // Adicionado o parâmetro e
     e.preventDefault();
     setErro('');
     setCarregando(true);
 
-    if (!email || !senha) {
+    if (!email || !senha) { // Verifica se os campos de email e senha foram preenchidos
       setErro('Por favor, preencha todos os campos');
       setCarregando(false);
       return;
     }
 
-    try {
-      const resultado = await AuthService.login(email, senha);
+    try { // Tenta fazer o login
+      const resultado = await AuthService.login(email, senha); // Chama a função de login
 
-      if (resultado.sucesso) {
+      if (resultado.sucesso) { // Se o login foi bem-sucedido
         onLoginSucesso(resultado.usuario);
-      } else {
+      } else { // Se o login falhou
         setErro(resultado.erro);
       }
-    } catch (error) {
+    } catch (error) { // Caso ocorra algum erro
       setErro('Erro ao fazer login. Tente novamente.');
-    } finally {
+    } finally { // Sempre executado
       setCarregando(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-background">
-        <div className="login-shapes">
-          <div className="shape shape-1"></div>
-          <div className="shape shape-2"></div>
-          <div className="shape shape-3"></div>
+    <div className="login-container"> {/* Container principal */}
+      <div className="login-background"> {/* Fundo */}
+        <div className="login-shapes"> {/* Formas de fundo */}
+          <div className="shape shape-1"></div> {/* Forma 1 */}
+          <div className="shape shape-2"></div> {/* Forma 2 */}
+          <div className="shape shape-3"></div> {/* Forma 3 */}
         </div>
       </div>
 
-      <div className="login-card">
-        <div className="login-header">
-          <div className="login-logo">
+      <div className="login-card"> {/* Cartão de login */}
+        <div className="login-header"> {/* Cabecalho do cartão */}
+          <div className="login-logo"> {/* Logo do cartão */}
             <LogIn size={40} />
           </div>
           <h1>Sistema Centrus</h1>
           <p>Gerenciamento de Documentos</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form"> {/* Formulário de login */}
           {erro && (
-            <div className="login-erro">
+            <div className="login-erro"> {/* Mensagem de erro */}
               <AlertCircle size={18} />
               <span>{erro}</span>
             </div>
           )}
 
-          <div className="form-group">
+          <div className="form-group"> {/* Campo de email */}
             <label htmlFor="email">
               <User size={18} />
               Email
@@ -80,12 +79,12 @@ const Login = ({ onLoginSucesso }) => {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group"> {/* Campo de senha */}
             <label htmlFor="senha">
               <Lock size={18} />
               Senha
             </label>
-            <div className="senha-input-container">
+            <div className="senha-input-container"> {/* Container para o campo de senha e o botão de visibilidade */}
               <input
                 id="senha"
                 type={mostrarSenha ? 'text' : 'password'}
@@ -97,7 +96,7 @@ const Login = ({ onLoginSucesso }) => {
               />
               <button
                 type="button"
-                className="toggle-senha"
+                className="toggle-senha" // Botão para alternar a visibilidade da senha
                 onClick={() => setMostrarSenha(!mostrarSenha)}
                 tabIndex="-1"
               >
@@ -108,12 +107,12 @@ const Login = ({ onLoginSucesso }) => {
 
           <button 
             type="submit" 
-            className="btn-login"
+            className="btn-login" // Botão de login
             disabled={carregando}
           >
             {carregando ? (
               <>
-                <span className="spinner"></span>
+                <span className="spinner"></span> {/* Indicador de carregamento */}
                 Entrando...
               </>
             ) : (
@@ -125,7 +124,7 @@ const Login = ({ onLoginSucesso }) => {
           </button>
         </form>
 
-        <div className="login-footer">
+        <div className="login-footer"> {/* Rodapé do cartão */}
           <p>
             <strong>Credenciais padrão:</strong><br />
             Email: admin@centrus.com<br />

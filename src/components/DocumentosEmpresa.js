@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks'; // Biblioteca para consultas em tempo real
-import { db, CATEGORIAS_EMPRESA, DOCUMENTOS_EXEMPLO } from '../db'; // Banco de dados
-import { ArrowLeft, Upload, FileText, Trash2, Eye, Download, Calendar, User, Briefcase, Filter, Star } from 'lucide-react'; // Icones
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db, CATEGORIAS_EMPRESA, DOCUMENTOS_EXEMPLO } from '../db';
+import { ArrowLeft, Upload, FileText, Trash2, Eye, Download, Calendar, User, Briefcase, Filter, Star } from 'lucide-react'; 
 
 function DocumentosEmpresa({ onVoltar }) {  // Componente para gerenciar documentos da empresa
   const [categoriaAtual, setCategoriaAtual] = useState('INCLUSAO_CONVENIO');  // Categoria selecionada
@@ -447,4 +447,4 @@ function DocumentosEmpresa({ onVoltar }) {  // Componente para gerenciar documen
   );
 }
 
-export default DocumentosEmpresa;  // Exporta o componente para uso em outras partes do sistema
+export default DocumentosEmpresa;
