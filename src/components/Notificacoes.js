@@ -148,6 +148,19 @@ const Notificacoes = () => {
                   <div className="notif-conteudo">
                     <div className="notif-titulo">{notif.titulo}</div>
                     <div className="notif-mensagem">{notif.mensagem}</div>
+                    
+                    {/* MOSTRAR USUÁRIO RESPONSÁVEL */}
+                    {notif.usuarioResponsavelNome && (
+                      <div className="notif-usuario-responsavel">
+                        <span className="notif-usuario-avatar">
+                          {notif.usuarioResponsavelNome.charAt(0).toUpperCase()}
+                        </span>
+                        <span className="notif-usuario-nome">
+                          por {notif.usuarioResponsavelNome}
+                        </span>
+                      </div>
+                    )}
+                    
                     <div className="notif-data">
                       {formatarData(notif.dataCreacao)}
                     </div>

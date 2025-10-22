@@ -138,7 +138,8 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
         await notificacaoService.notificarNovaViagem(
           viagemId,
           viajante.nome,
-          destino
+          destino,
+          { id: usuarioAtual?.id, nome: usuarioAtual?.nome } // Usuário que criou
         )
       }
 
@@ -189,7 +190,8 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
           await notificacaoService.notificarViagemAprovada(
             id,
             viajante.nome,
-            viagem.destino
+            viagem.destino,
+            { id: usuarioAtual?.id, nome: usuarioAtual?.nome } // Usuário que aprovou
           )
         }
       }
@@ -220,7 +222,8 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
           solicitacaoParaRecusar,
           viajante.nome,
           viagem.destino,
-          motivoRecusa
+          motivoRecusa,
+          { id: usuarioAtual?.id, nome: usuarioAtual?.nome } // Usuário que recusou
         )
       }
 
