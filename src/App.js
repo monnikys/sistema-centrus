@@ -18,6 +18,7 @@ import './App.css'
 import DashboardMUI from './components/Dashboard'
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material'
 import BarraNotificacoes from './components/BarraNotificacoes'
+<BarraNotificacoes />
 
 // NOVO: Criar tema Material-UI
 const theme = createTheme({

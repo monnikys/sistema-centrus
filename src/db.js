@@ -2,21 +2,18 @@ import Dexie from 'dexie' // Importar Dexie.js para gerenciamento de IndexedDB
 
 export const db = new Dexie('SistemaFuncionarios') // Nome do banco de dados
 
-db.version(22).stores({
-  // Incrementar a versão do banco de dados para 22
+db.version(23).stores({
   funcionarios: '++id, nome, cpf, cargo, departamento',
   documentos:
-    '++id, funcionarioId, categoria, nomeArquivo, dataUpload, mes, ano, dataInicio, dataFim',
+    '++id, funcionarioId, categoria, nomeArquivo, dataUpload, mes, ano, dataInicio, dataFim, criadoPorId, criadoPorNome, atualizadoPorId, atualizadoPorNome',
   documentosEmpresa:
-    '++id, funcionarioId, categoriaEmpresa, nomeArquivo, dataUpload, mes, ano, fixado',
+    '++id, funcionarioId, categoriaEmpresa, nomeArquivo, dataUpload, mes, ano, fixado, criadoPorId, criadoPorNome, atualizadoPorId, atualizadoPorNome',
   solicitacoesViagem:
-    '++id, solicitanteId, viajanteId, origem, destino, dataIda, horarioIdaInicio, horarioIdaFim, dataVolta, horarioVoltaInicio, horarioVoltaFim, justificativa, observacao, status, dataSolicitacao, motivoRecusa',
-  // NOVA TABELA DE NOTIFICAÇÕES COM USUÁRIO RESPONSÁVEL
+    '++id, solicitanteId, viajanteId, origem, destino, dataIda, horarioIdaInicio, horarioIdaFim, dataVolta, horarioVoltaInicio, horarioVoltaFim, justificativa, observacao, status, dataSolicitacao, motivoRecusa, criadoPorId, criadoPorNome, aprovadoPorId, aprovadoPorNome, recusadoPorId, recusadoPorNome, dataAprovacao, dataRecusa',
   notificacoes: '++id, tipo, titulo, mensagem, lida, dataCreacao, dados, usuarioId, usuarioResponsavelId, usuarioResponsavelNome',
 })
 
 export const CATEGORIAS = {
-  // Definir categorias de documentos
   ABONO_ASSIDUIDADE: 'Abono de Assiduidade',
   ATESTADO_MEDICO: 'Atestado Médico',
   ATESTADO_COMPARECIMENTO: 'Atestado de Comparecimento',
@@ -378,3 +375,5 @@ export const notificacaoService = {
     )
   },
 }
+
+export default db

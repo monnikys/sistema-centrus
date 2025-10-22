@@ -1,5 +1,5 @@
 // components/BarraNotificacoes.js
-// Barra simples no topo apenas com o botão de notificações
+// Barra fixa no topo apenas com o botão de notificações
 import React from 'react'
 import Notificacoes from './Notificacoes'
 

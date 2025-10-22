@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, STATUS_VIAGEM, AEROPORTOS, notificacaoService } from '../db'
+import InfoAuditoria from './InfoAuditoria' // 👈 IMPORTAÇÃO DO COMPONENTE DE AUDITORIA
 import {
   ArrowLeft,
   PlaneTakeoff,
@@ -114,7 +115,9 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      // Criar a solicitação de viagem
+      console.log('🔍 Usuário Atual ao criar:', usuarioAtual) // DEBUG
+
+      // Criar a solicitação de viagem COM USUÁRIO RESPONSÁVEL
       const viagemId = await db.solicitacoesViagem.add({
         solicitanteId: 1,
         viajanteId: parseInt(viajanteId),
@@ -130,7 +133,12 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
         observacao,
         status: 'PENDENTE',
         dataSolicitacao: new Date().toISOString(),
+        // 👤 AUDITORIA: Salvar quem criou
+        criadoPorId: usuarioAtual?.id || null,
+        criadoPorNome: usuarioAtual?.nome || null,
       })
+
+      console.log('✅ Viagem criada com ID:', viagemId) // DEBUG
 
       // 🎉 CRIAR NOTIFICAÇÃO AUTOMÁTICA
       const viajante = funcionarios?.find(f => f.id === parseInt(viajanteId))
@@ -139,14 +147,16 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
           viagemId,
           viajante.nome,
           destino,
-          { id: usuarioAtual?.id, nome: usuarioAtual?.nome } // Usuário que criou
+          { id: usuarioAtual?.id, nome: usuarioAtual?.nome }
         )
+        console.log('✅ Notificação criada') // DEBUG
       }
 
       alert('Solicitação de viagem criada com sucesso!')
       limparFormulario()
       setMostrarFormulario(false)
     } catch (error) {
+      console.error('❌ Erro ao criar solicitação:', error)
       alert('Erro ao criar solicitação: ' + error.message)
     }
   }
@@ -180,7 +190,19 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     }
 
     try {
-      await db.solicitacoesViagem.update(id, { status: novoStatus })
+      console.log('🔍 Usuário Atual ao aprovar:', usuarioAtual) // DEBUG
+
+      // 👤 AUDITORIA: Salvar quem aprovou
+      const updateData = { status: novoStatus }
+      
+      if (novoStatus === 'APROVADA') {
+        updateData.aprovadoPorId = usuarioAtual?.id || null
+        updateData.aprovadoPorNome = usuarioAtual?.nome || null
+        updateData.dataAprovacao = new Date().toISOString()
+      }
+      
+      await db.solicitacoesViagem.update(id, updateData)
+      console.log('✅ Status atualizado:', updateData) // DEBUG
 
       // 🎉 CRIAR NOTIFICAÇÃO DE APROVAÇÃO
       if (novoStatus === 'APROVADA') {
@@ -191,13 +213,15 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
             id,
             viajante.nome,
             viagem.destino,
-            { id: usuarioAtual?.id, nome: usuarioAtual?.nome } // Usuário que aprovou
+            { id: usuarioAtual?.id, nome: usuarioAtual?.nome }
           )
+          console.log('✅ Notificação de aprovação criada') // DEBUG
         }
       }
 
       alert('Status atualizado com sucesso!')
     } catch (error) {
+      console.error('❌ Erro ao atualizar status:', error)
       alert('Erro ao atualizar status: ' + error.message)
     }
   }
@@ -209,10 +233,18 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
     }
 
     try {
+      console.log('🔍 Usuário Atual ao recusar:', usuarioAtual) // DEBUG
+
+      // 👤 AUDITORIA: Salvar quem recusou
       await db.solicitacoesViagem.update(solicitacaoParaRecusar, {
         status: 'RECUSADA',
         motivoRecusa: motivoRecusa,
+        recusadoPorId: usuarioAtual?.id || null,
+        recusadoPorNome: usuarioAtual?.nome || null,
+        dataRecusa: new Date().toISOString(),
       })
+
+      console.log('✅ Viagem recusada') // DEBUG
 
       // 🎉 CRIAR NOTIFICAÇÃO DE RECUSA
       const viagem = await db.solicitacoesViagem.get(solicitacaoParaRecusar)
@@ -223,8 +255,9 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
           viajante.nome,
           viagem.destino,
           motivoRecusa,
-          { id: usuarioAtual?.id, nome: usuarioAtual?.nome } // Usuário que recusou
+          { id: usuarioAtual?.id, nome: usuarioAtual?.nome }
         )
+        console.log('✅ Notificação de recusa criada') // DEBUG
       }
 
       alert('Solicitação recusada com sucesso!')
@@ -232,6 +265,7 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
       setSolicitacaoParaRecusar(null)
       setMotivoRecusa('')
     } catch (error) {
+      console.error('❌ Erro ao recusar solicitação:', error)
       alert('Erro ao recusar solicitação: ' + error.message)
     }
   }
@@ -292,6 +326,9 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
         return 'status-pendente'
     }
   }
+
+  // DEBUG: Ver o usuário atual
+  console.log('🔍 DEBUG - Usuário Atual Recebido:', usuarioAtual)
 
   return (
     <div className="solicitacao-viagem-container">
@@ -504,6 +541,18 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) {
                         </div>
                       </div>
                     )}
+                    
+                    {/* 👤 COMPONENTE DE AUDITORIA - VERSÃO COMPLETA */}
+                    <InfoAuditoria
+                      criadoPorNome={sol.criadoPorNome}
+                      dataCriacao={sol.dataSolicitacao}
+                      aprovadoPorNome={sol.aprovadoPorNome}
+                      dataAprovacao={sol.dataAprovacao}
+                      recusadoPorNome={sol.recusadoPorNome}
+                      dataRecusa={sol.dataRecusa}
+                      compacto={false}
+                    />
+                    
                     <div className="card-footer-solicitacao">
                       <span className="data-solicitacao">
                         Solicitado em: {formatarDataHora(
