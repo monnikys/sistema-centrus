@@ -1,18 +1,19 @@
-// src/authDb.js
 import Dexie from 'dexie'
 
 // Criar banco de dados de autenticação
 export const authDb = new Dexie('SistemaCentrusAuth')
 
-// Versão 2 - Adicionar suporte a permissões de viagens
 authDb
   .version(2)
   .stores({
     usuarios:
       '++id, email, nome, senha, tipo, ativo, dataCriacao, ultimoAcesso, permissoes, podeCriarViagens, podeAprovarViagens, podeExcluirViagens', // Campos atualizados
-    sessoes: '++id, usuarioId, token, dataExpiracao',
-    permissoes: '++id, nome',
-    usuarioPermissoes: '++id, usuarioId, permissaoId',
+    sessoes: 
+      '++id, usuarioId, token, dataExpiracao',
+    permissoes: 
+      '++id, nome',
+    usuarioPermissoes:
+       '++id, usuarioId, permissaoId',
   })
   .upgrade(async (tx) => {
     // Migração: adicionar campos de permissões de viagem aos usuários existentes

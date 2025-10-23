@@ -10,7 +10,8 @@ db.version(23).stores({
     '++id, funcionarioId, categoriaEmpresa, nomeArquivo, dataUpload, mes, ano, fixado, criadoPorId, criadoPorNome, atualizadoPorId, atualizadoPorNome',
   solicitacoesViagem:
     '++id, solicitanteId, viajanteId, origem, destino, dataIda, horarioIdaInicio, horarioIdaFim, dataVolta, horarioVoltaInicio, horarioVoltaFim, justificativa, observacao, status, dataSolicitacao, motivoRecusa, criadoPorId, criadoPorNome, aprovadoPorId, aprovadoPorNome, recusadoPorId, recusadoPorNome, dataAprovacao, dataRecusa',
-  notificacoes: '++id, tipo, titulo, mensagem, lida, dataCreacao, dados, usuarioId, usuarioResponsavelId, usuarioResponsavelNome',
+  notificacoes:
+    '++id, tipo, titulo, mensagem, lida, dataCreacao, dados, usuarioId, usuarioResponsavelId, usuarioResponsavelNome',
 })
 
 export const CATEGORIAS = {
