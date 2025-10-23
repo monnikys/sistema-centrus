@@ -16,6 +16,7 @@ import {
   XCircle,
   AlertCircle,
   X,
+  Plane, // Ícone de avião para o divisor
 } from 'lucide-react'
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
@@ -601,19 +602,29 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
         </>
       ) : (
         <div className="formulario-viagem"> {/* Formulário de solicitação de viagem */}
-          <div className="form-header"> {/* Cabecalho do formulário */}
-            <h3>Nova Solicitação de Viagem</h3>
+          {/* Header do formulário com ícone */}
+          <div className="form-header-viagem"> {/* Cabeçalho do formulário */}
+            <div className="form-header-icone"> {/* Ícone grande */}
+              <PlaneTakeoff size={32} /> {/* Ícone de avião */}
+            </div>
+            <div>
+              <h3>Nova Solicitação de Viagem</h3>
+              <p>Preencha os dados da viagem corporativa</p> {/* Subtítulo */}
+            </div>
           </div>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group"> {/* Campo para selecionar o funcionário viajante */}
-              <label>
+          <form onSubmit={handleSubmit} className="form-viagem-melhorado"> {/* Formulário com novos estilos */}
+            {/* SEÇÃO: VIAJANTE */}
+            <div className="form-secao"> {/* Seção do viajante */}
+              <div className="secao-header"> {/* Header da seção */}
                 <User size={18} />
-                Viajante *
-              </label>
+                <h4>Viajante</h4> {/* Título da seção */}
+              </div>
+              <div className="form-group-viagem"> {/* Campo para selecionar o funcionário viajante */}
+                <label>Funcionário Viajante *</label>
               <select
                 value={viajanteId}
                 onChange={(e) => setViajanteId(e.target.value)}
-                className="select-filtro" // Estilo do select
+                className="select-viagem" // Estilo do select
                 required
               >
                 <option value="">Selecione o funcionário viajante</option>
@@ -623,10 +634,17 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                   </option>
                 ))}
               </select>
+              </div>
             </div>
 
-            <div className="form-row"> {/* Linha de campos */}
-              <div className="form-group"> {/* Campo para selecionar a origem */}
+            {/* SEÇÃO: ROTA DA VIAGEM */}
+            <div className="form-secao"> {/* Seção da rota */}
+              <div className="secao-header"> {/* Header da seção */}
+                <MapPin size={18} />
+                <h4>Rota da Viagem</h4> {/* Título da seção */}
+              </div>
+              <div className="form-row-viagem"> {/* Linha de campos origem/destino */}
+                <div className="form-group-viagem"> {/* Campo para selecionar a origem */}
                 <label>
                   <MapPin size={18} />
                   Origem *
@@ -644,7 +662,10 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                   ))}
                 </select>
               </div>
-              <div className="form-group"> {/* Campo para selecionar o destino */}
+                <div className="form-divider-vertical"> {/* Divisor com ícone de avião */}
+                  <Plane size={20} /> {/* Ícone de avião */}
+                </div>
+                <div className="form-group-viagem"> {/* Campo para selecionar o destino */}
                 <label>
                   <MapPin size={18} />
                   Destino *
@@ -661,11 +682,19 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                     </option>
                   ))}
                 </select>
+                </div>
               </div>
             </div>
 
-            <div className="form-row"> {/* Linha de campos */}
-              <div className="form-group"> {/* Campo para selecionar a data de ida */}
+            {/* SEÇÃO: IDA E VOLTA (LAYOUT SIMÉTRICO) */}
+            <div className="form-secao-dupla"> {/* Grid com 2 colunas */}
+              {/* COLUNA: IDA */}
+              <div className="form-secao-metade secao-ida"> {/* Seção da ida */}
+                <div className="secao-header"> {/* Header da seção ida */}
+                  <PlaneTakeoff size={18} />
+                  <h4>Ida</h4> {/* Título da seção */}
+                </div>
+                <div className="form-group-viagem"> {/* Campo para selecionar a data de ida */}
                 <label>
                   <Calendar size={18} />
                   Data de Ida *
@@ -701,81 +730,23 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                   />
                 </LocalizationProvider>
               </div>
-              <div className="form-group"> {/* Campo para selecionar o horário de ida */}
-                <label>
-                  <Clock size={18} />
-                  Horário de Ida *
-                </label>
-                <div
-                  style={{
-                    padding: '25px 20px',
-                    backgroundColor: '#fff',
-                    borderRadius: '8px',
-                    border: '1px solid #ced4da',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '25px',
-                    }}
-                  >
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                      <div
-                        style={{
-                          fontSize: '0.7rem',
-                          color: '#6c757d',
-                          marginBottom: '5px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                        }}
-                      >
-                        Início
+                <div className="form-group-viagem"> {/* Campo para selecionar o horário de ida */}
+                  <label>
+                    <Clock size={16} />
+                    Horário de Ida *
+                  </label>
+                  <div className="horario-container"> {/* Container do horário */}
+                    <div className="horario-display"> {/* Display dos horários */}
+                      <div className="horario-item"> {/* Item de horário - Início */}
+                        <span className="horario-label">INÍCIO</span> {/* Label */}
+                        <span className="horario-valor">{minutosParaHorario(faixaHorarioIda[0])}</span> {/* Valor */}
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: 'bold',
-                          color: '#667eea',
-                        }}
-                      >
-                        {minutosParaHorario(faixaHorarioIda[0])}
+                      <div className="horario-separador">→</div> {/* Separador */}
+                      <div className="horario-item"> {/* Item de horário - Fim */}
+                        <span className="horario-label">FIM</span> {/* Label */}
+                        <span className="horario-valor">{minutosParaHorario(faixaHorarioIda[1])}</span> {/* Valor */}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        fontSize: '1.2rem',
-                        color: '#adb5bd',
-                        padding: '0 20px',
-                      }}
-                    >
-                      →
-                    </div>
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                      <div
-                        style={{
-                          fontSize: '0.7rem',
-                          color: '#6c757d',
-                          marginBottom: '5px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                        }}
-                      >
-                        Fim
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: 'bold',
-                          color: '#667eea',
-                        }}
-                      >
-                        {minutosParaHorario(faixaHorarioIda[1])}
-                      </div>
-                    </div>
-                  </div>
                   <Box sx={{ px: 1 }}>
                     <Slider
                       getAriaLabel={() => 'Faixa de horário de ida'}
@@ -821,26 +792,24 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                       }}
                     />
                   </Box>
-                  <div
-                    style={{
-                      marginTop: '15px',
-                      fontSize: '0.75rem',
-                      color: '#adb5bd',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Distância mínima: 2 horas
+                    <div className="horario-info"> {/* Informação sobre distância mínima */}
+                      Distância mínima: 2 horas
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="form-row">  {/* Campo para selecionar a data de volta e o horário de volta */}
-              <div className="form-group">  {/* Campo para selecionar a data de volta */}
-                <label>
-                  <Calendar size={18} />
-                  Data de Volta *
-                </label>
+              {/* COLUNA: VOLTA */}
+              <div className="form-secao-metade secao-volta"> {/* Seção da volta */}
+                <div className="secao-header"> {/* Header da seção volta */}
+                  <Plane size={18} style={{ transform: 'rotate(180deg)' }} /> {/* Ícone de avião invertido */}
+                  <h4>Volta</h4> {/* Título da seção */}
+                </div>
+                <div className="form-group-viagem">  {/* Campo para selecionar a data de volta */}
+                  <label>
+                    <Calendar size={16} />
+                    Data de Volta *
+                  </label>
                 <LocalizationProvider
                   dateAdapter={AdapterDayjs}
                   adapterLocale="pt-br"
@@ -873,82 +842,24 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                     }}
                   />
                 </LocalizationProvider>
-              </div>
-              <div className="form-group">  {/* Campo para selecionar o horário de volta */}
-                <label>
-                  <Clock size={18} />
-                  Horário de Volta *
-                </label>
-                <div
-                  style={{
-                    padding: '25px 20px',
-                    backgroundColor: '#fff',
-                    borderRadius: '8px',
-                    border: '1px solid #ced4da',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '25px',
-                    }}
-                  >
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                      <div
-                        style={{
-                          fontSize: '0.7rem',
-                          color: '#6c757d',
-                          marginBottom: '5px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                        }}
-                      >
-                        Início
+                </div>
+                <div className="form-group-viagem">  {/* Campo para selecionar o horário de volta */}
+                  <label>
+                    <Clock size={16} />
+                    Horário de Volta *
+                  </label>
+                  <div className="horario-container"> {/* Container do horário */}
+                    <div className="horario-display"> {/* Display dos horários */}
+                      <div className="horario-item"> {/* Item de horário - Início */}
+                        <span className="horario-label">INÍCIO</span> {/* Label */}
+                        <span className="horario-valor">{minutosParaHorario(faixaHorarioVolta[0])}</span> {/* Valor */}
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: 'bold',
-                          color: '#667eea',
-                        }}
-                      >
-                        {minutosParaHorario(faixaHorarioVolta[0])}
+                      <div className="horario-separador">→</div> {/* Separador */}
+                      <div className="horario-item"> {/* Item de horário - Fim */}
+                        <span className="horario-label">FIM</span> {/* Label */}
+                        <span className="horario-valor">{minutosParaHorario(faixaHorarioVolta[1])}</span> {/* Valor */}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        fontSize: '1.2rem',
-                        color: '#adb5bd',
-                        padding: '0 20px',
-                      }}
-                    >
-                      →
-                    </div>
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                      <div
-                        style={{
-                          fontSize: '0.7rem',
-                          color: '#6c757d',
-                          marginBottom: '5px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                        }}
-                      >
-                        Fim
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: 'bold',
-                          color: '#667eea',
-                        }}
-                      >
-                        {minutosParaHorario(faixaHorarioVolta[1])}
-                      </div>
-                    </div>
-                  </div>
                   <Box sx={{ px: 1 }}>
                     <Slider
                       getAriaLabel={() => 'Faixa de horário de volta'}
@@ -994,26 +905,24 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                       }}
                     />
                   </Box>
-                  <div
-                    style={{
-                      marginTop: '15px',
-                      fontSize: '0.75rem',
-                      color: '#adb5bd',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Distância mínima: 2 horas
+                    <div className="horario-info"> {/* Informação sobre distância mínima */}
+                      Distância mínima: 2 horas
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="form-group">  {/* Campo para selecionar o motivo da viagem */}
-              <label>
+            {/* SEÇÃO: INFORMAÇÕES ADICIONAIS */}
+            <div className="form-secao"> {/* Seção de informações adicionais */}
+              <div className="secao-header"> {/* Header da seção */}
                 <FileText size={18} />
-                Justificativa *
-              </label>
-              <textarea
+                <h4>Informações Adicionais</h4> {/* Título da seção */}
+              </div>
+              <div className="form-group-viagem">  {/* Campo para selecionar o motivo da viagem */}
+                <label>Justificativa *</label>
+                <textarea
+                  className="textarea-viagem" //* Estilo da textarea */
                 value={justificativa}
                 onChange={(e) => setJustificativa(e.target.value)}
                 placeholder="Descreva o motivo da viagem..."
@@ -1022,12 +931,10 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
               />
             </div>
 
-            <div className="form-group">  {/* Campo para adicionar uma observação */}
-              <label>
-                <FileText size={18} />
-                Observação (opcional)
-              </label>
+            <div className="form-group-viagem">  {/* Campo para adicionar uma observação */}
+              <label>Observação (opcional)</label>
               <textarea
+                className="textarea-viagem" //* Estilo da textarea */
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
                 placeholder="Ex: Assento, companhia aérea, número do voo ou outras informações relevantes."
@@ -1035,23 +942,27 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
               />
             </div>
 
-            <div className="form-actions">  {/* Botoes de confirmar e cancelar */}
+          </div>
+
+            <div className="form-acoes-viagem">  {/* Botoes de confirmar e cancelar */}
               <button
                 type="button"
                 onClick={() => {
                   setMostrarFormulario(false)
                   limparFormulario()
                 }}
-                className="btn-cancelar"
+                className="btn-cancelar-viagem"
               >
-                Cancelar
+                
+              <X size={18} />
+              Cancelar
               </button>
-              <button type="submit" className="btn-confirmar"> {/* Botão para criar a solicitação de viagem */}
+              <button type="submit" className="btn-confirmar-viagem"> {/* Botão para criar a solicitação de viagem */}
                 <PlaneTakeoff size={18} />
                 Criar Solicitação
               </button>
-            </div>
-          </form>
+          </div>
+        </form>
         </div>
       )}
     </div>

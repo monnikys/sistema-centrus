@@ -4018,3 +4018,256 @@ body {  /* Estilos globais do corpo */
     justify-content: center;
   }
 }
+/* ==================== LISTA DE FUNCIONÁRIOS - LAYOUT CARDS ==================== */
+
+.lista-funcionarios {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.lista-header {
+  margin-bottom: 2rem;
+}
+
+.titulo-secao {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.titulo-secao h2 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.contador {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.busca-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.busca-icon {
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.input-busca {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.input-busca::placeholder {
+  color: #adb5bd;
+}
+
+.lista-vazia {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.lista-vazia p {
+  margin: 0;
+}
+
+.tabela-funcionarios {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.funcionario-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.2s;
+}
+
+.funcionario-card:hover {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.funcionario-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.funcionario-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.funcionario-dados {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.funcionario-dados h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.funcionario-detalhes {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #6c757d;
+  flex-wrap: wrap;
+}
+
+.funcionario-detalhes span {
+  white-space: nowrap;
+}
+
+.funcionario-acoes {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-acao {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-acao:hover {
+  transform: translateY(-1px);
+}
+
+.btn-documentos {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.btn-documentos:hover {
+  background: #bbdefb;
+}
+
+.btn-editar {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.btn-editar:hover {
+  background: #ffe0b2;
+}
+
+.btn-excluir {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.btn-excluir:hover {
+  background: #ffcdd2;
+}
+
+/* Responsividade para cards */
+@media (max-width: 768px) {
+  .lista-funcionarios {
+    padding: 1.5rem;
+  }
+
+  .funcionario-card {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .funcionario-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .funcionario-dados {
+    align-items: center;
+  }
+
+  .funcionario-detalhes {
+    justify-content: center;
+  }
+
+  .funcionario-acoes {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn-acao {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .lista-funcionarios {
+    padding: 1rem;
+  }
+
+  .titulo-secao {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .funcionario-card {
+    padding: 1rem;
+  }
+
+  .btn-acao span {
+    /* Mantém o texto nos botões no mobile */
+  }
+}
