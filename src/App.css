@@ -4698,3 +4698,25 @@ body {  /* Estilos globais do corpo */
     width: 100%;
   }
 }
+
+/* ===== CSS PARA O BOTÃO DE ANEXOS ===== */
+
+  .btn-anexos {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #e3f2fd;
+    color: #1976d2;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-anexos:hover {
+    background: #bbdefb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
+  }
