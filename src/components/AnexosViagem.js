@@ -1,3 +1,4 @@
+// src/components/AnexosViagem.js
 import React, { useState, useEffect } from 'react'
 import {
   Upload,
@@ -343,4 +344,4 @@ function AnexosViagem({ viagem, onFechar }) {
   )
 }
 
-export default AnexosViagem;
+export default AnexosViagem

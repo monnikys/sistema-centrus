@@ -20,6 +20,7 @@ import {
   Settings,
   Edit,
   Key,
+  Paperclip, // ⬅️ NOVO ÍCONE
 } from 'lucide-react'
 import { AuthService } from '../authDb'
 import './styles/GerenciarUsuarios.css'
@@ -62,6 +63,14 @@ const PAGINAS_DISPONIVEIS = [
     icone: PlaneTakeoff,
     categoria: 'Viagens',
   },
+  // ⬇️ NOVA PERMISSÃO ADICIONADA!
+  {
+    id: 'anexos_viagem',
+    nome: 'Anexos de Viagem',
+    icone: Paperclip,
+    categoria: 'Viagens',
+  },
+  // ⬆️ NOVA PERMISSÃO ADICIONADA!
   {
     id: 'gerenciar_usuarios',
     nome: 'Gerenciar Usuários',

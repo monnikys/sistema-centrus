@@ -4698,25 +4698,202 @@ body {  /* Estilos globais do corpo */
     width: 100%;
   }
 }
+/* ==================== LISTA DE VIAGENS COM ANEXOS ==================== */
+/* ADICIONAR ESTE CSS AO FINAL DO App.css */
 
-/* ===== CSS PARA O BOTÃO DE ANEXOS ===== */
+.lista-viagens-container {
+  padding: 1.5rem;
+}
+
+.viagens-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
+
+.viagem-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.viagem-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.viagem-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.viagem-rota h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.viagem-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.status-aprovada {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-pendente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-recusada {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.viagem-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.viagem-detalhe {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.viagem-detalhe svg {
+  flex-shrink: 0;
+  color: #667eea;
+}
+
+.viagem-detalhe strong {
+  color: #2c3e50;
+}
+
+.viagem-justificativa {
+  background: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+}
+
+.viagem-justificativa strong {
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.viagem-justificativa p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.viagem-acoes {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn-anexos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.btn-anexos:hover {
+  background: #bbdefb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
+}
+
+.btn-anexos svg {
+  flex-shrink: 0;
+}
+
+.badge-contador {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #f44336;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.lista-vazia {
+  text-align: center;
+  padding: 3rem;
+  color: #6c757d;
+}
+
+.lista-vazia p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .viagens-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .viagem-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .viagem-rota h3 {
+    font-size: 1.1rem;
+  }
+
+  .viagem-acoes {
+    justify-content: stretch;
+  }
 
   .btn-anexos {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #e3f2fd;
-    color: #1976d2;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
+    width: 100%;
+    justify-content: center;
   }
+}
 
-  .btn-anexos:hover {
-    background: #bbdefb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
-  }
+/* FIM DO CSS DA LISTA DE VIAGENS */

@@ -1,6 +1,6 @@
-import Dexie from 'dexie' // Importar Dexie.js para gerenciamento de IndexedDB
+import Dexie from 'dexie'
 
-export const db = new Dexie('SistemaFuncionarios') // Nome do banco de dados
+export const db = new Dexie('SistemaFuncionarios')
 
 db.version(24).stores({
   funcionarios: '++id, nome, cpf, cargo, departamento',
@@ -12,6 +12,8 @@ db.version(24).stores({
     '++id, solicitanteId, viajanteId, origem, destino, dataIda, horarioIdaInicio, horarioIdaFim, dataVolta, horarioVoltaInicio, horarioVoltaFim, justificativa, observacao, status, dataSolicitacao, motivoRecusa, criadoPorId, criadoPorNome, aprovadoPorId, aprovadoPorNome, recusadoPorId, recusadoPorNome, dataAprovacao, dataRecusa',
   notificacoes:
     '++id, tipo, titulo, mensagem, lida, dataCreacao, dados, usuarioId, usuarioResponsavelId, usuarioResponsavelNome',
+  anexosViagem:
+    '++id, viagemId, nome, tipo, tamanho, conteudo, dataUpload, uploadPorId, uploadPor',
 })
 
 export const CATEGORIAS = {
