@@ -1,4 +1,3 @@
-// src/authDb.js
 import Dexie from 'dexie'
 
 // Criar banco de dados de autenticação

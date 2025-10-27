@@ -1,4 +1,3 @@
-// src/components/GerenciarUsuarios.js
 import React, { useState, useEffect } from 'react'
 import {
   Users,

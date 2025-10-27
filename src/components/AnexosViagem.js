@@ -1,4 +1,3 @@
-// src/components/AnexosViagem.js
 import React, { useState, useEffect } from 'react'
 import {
   Upload,
@@ -71,7 +70,7 @@ function AnexosViagem({ viagem, onFechar }) {
     }
 
     // Verificar se viagem está aprovada
-    if (viagem.status !== 'aprovada') {
+    if (viagem.status !== 'APROVADA') {
       mostrarMensagem(
         'erro',
         'Só é possível anexar arquivos em viagens aprovadas'
@@ -236,7 +235,7 @@ function AnexosViagem({ viagem, onFechar }) {
           <div className="status-badge-anexos">
             Status: <strong>{viagem.status}</strong>
           </div>
-          {viagem.status !== 'aprovada' && (
+          {viagem.status !== 'APROVADA' && (
             <div className="alerta-status">
               <AlertCircle size={18} />
               <span>
@@ -247,7 +246,7 @@ function AnexosViagem({ viagem, onFechar }) {
         </div>
 
         {/* Área de Upload */}
-        {podeAnexar && viagem.status === 'aprovada' && (
+        {podeAnexar && viagem.status === 'APROVADA' && (
           <div className="area-upload">
             <div className="upload-box">
               <Upload size={32} />

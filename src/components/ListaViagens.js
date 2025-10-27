@@ -1,4 +1,3 @@
-// src/components/ListaViagens.js
 import React, { useState, useEffect } from 'react'
 import { Paperclip, Calendar, MapPin, User, Clock } from 'lucide-react'
 import { db } from '../db'
@@ -37,6 +36,7 @@ function ListaViagens({ viagens, onAtualizar }) {
 
   // Função para abrir modal de anexos
   const abrirAnexos = (viagem) => {
+    console.log('🔍 Abrindo anexos para viagem:', viagem) // DEBUG
     setViagemSelecionada(viagem)
     setMostrarAnexos(true)
   }
@@ -64,27 +64,50 @@ function ListaViagens({ viagens, onAtualizar }) {
 
   // Verificar se pode ver anexos
   const podeVerAnexos = (viagem) => {
-    if (!usuarioAtual) return false
+    if (!usuarioAtual) {
+      console.log('❌ Sem usuário atual') // DEBUG
+      return false
+    }
+    
+    console.log('🔍 Verificando permissões:', { // DEBUG
+      usuario: usuarioAtual.nome,
+      tipo: usuarioAtual.tipo,
+      permissoes: usuarioAtual.permissoes,
+      viagemId: viagem.id
+    })
     
     // Admin pode ver sempre
-    if (usuarioAtual.tipo === 'admin') return true
+    if (usuarioAtual.tipo === 'admin') {
+      console.log('✅ Admin tem acesso total') // DEBUG
+      return true
+    }
     
     // Tem permissão de anexos
-    if ((usuarioAtual.permissoes || []).includes('anexos_viagem')) return true
+    if ((usuarioAtual.permissoes || []).includes('anexos_viagem')) {
+      console.log('✅ Tem permissão anexos_viagem') // DEBUG
+      return true
+    }
     
     // É o solicitante ou viajante
-    if (viagem.solicitanteId === usuarioAtual.id || 
-        viagem.viajanteId === usuarioAtual.id) return true
+    if (viagem.criadoPorId === usuarioAtual.id || 
+        viagem.viajanteId === usuarioAtual.id) {
+      console.log('✅ É criador ou viajante') // DEBUG
+      return true
+    }
     
+    console.log('❌ Sem permissão') // DEBUG
     return false
   }
 
   // Obter classe de status
   const getStatusClass = (status) => {
-    switch (status) {
-      case 'aprovada':
+    // Normalizar para maiúsculo para comparação
+    const statusUpper = (status || '').toUpperCase()
+    
+    switch (statusUpper) {
+      case 'APROVADA':
         return 'status-aprovada'
-      case 'recusada':
+      case 'RECUSADA':
         return 'status-recusada'
       default:
         return 'status-pendente'
@@ -102,72 +125,90 @@ function ListaViagens({ viagens, onAtualizar }) {
   return (
     <div className="lista-viagens-container">
       <div className="viagens-grid">
-        {viagens.map((viagem) => (
-          <div key={viagem.id} className="viagem-card">
-            {/* Header do Card */}
-            <div className="viagem-header">
-              <div className="viagem-rota">
-                <h3>
-                  {viagem.origem} → {viagem.destino}
-                </h3>
-              </div>
-              <span className={`viagem-status ${getStatusClass(viagem.status)}`}>
-                {viagem.status}
-              </span>
-            </div>
-
-            {/* Informações da Viagem */}
-            <div className="viagem-info">
-              <div className="viagem-detalhe">
-                <User size={16} />
-                <span>
-                  <strong>Viajante:</strong> {viagem.viajante}
-                </span>
-              </div>
-
-              <div className="viagem-detalhe">
-                <Calendar size={16} />
-                <span>
-                  <strong>Ida:</strong> {formatarData(viagem.dataIda)}
-                </span>
-              </div>
-
-              <div className="viagem-detalhe">
-                <Calendar size={16} />
-                <span>
-                  <strong>Volta:</strong> {formatarData(viagem.dataVolta)}
-                </span>
-              </div>
-
-              {viagem.justificativa && (
-                <div className="viagem-justificativa">
-                  <strong>Justificativa:</strong>
-                  <p>{viagem.justificativa}</p>
+        {viagens.map((viagem) => {
+          // ⬇️ VERIFICAÇÃO DE DEBUG
+          const statusNormalizado = (viagem.status || '').toUpperCase()
+          const estaAprovada = statusNormalizado === 'APROVADA'
+          const podeVer = podeVerAnexos(viagem)
+          
+          console.log('🔍 Card viagem:', {
+            id: viagem.id,
+            status: viagem.status,
+            statusNormalizado,
+            estaAprovada,
+            podeVer,
+            mostraraoBotao: estaAprovada && podeVer
+          })
+          // ⬆️ VERIFICAÇÃO DE DEBUG
+          
+          return (
+            <div key={viagem.id} className="viagem-card">
+              {/* Header do Card */}
+              <div className="viagem-header">
+                <div className="viagem-rota">
+                  <h3>
+                    {viagem.origem} → {viagem.destino}
+                  </h3>
                 </div>
-              )}
-            </div>
+                <span className={`viagem-status ${getStatusClass(viagem.status)}`}>
+                  {viagem.status}
+                </span>
+              </div>
 
-            {/* Ações */}
-            <div className="viagem-acoes">
-              {/* Botão de Anexos - só aparece se viagem for aprovada E usuário pode ver */}
-              {viagem.status === 'aprovada' && podeVerAnexos(viagem) && (
-                <button
-                  onClick={() => abrirAnexos(viagem)}
-                  className="btn-anexos"
-                  title="Gerenciar Anexos"
-                >
-                  <Paperclip size={18} />
-                  <span>Anexos</span>
-                  {contadoresAnexos[viagem.id] > 0 && (
-                    <span className="badge-contador">
-                      {contadoresAnexos[viagem.id]}
-                    </span>
-                  )}
-                </button>
-              )}
+              {/* Informações da Viagem */}
+              <div className="viagem-info">
+                <div className="viagem-detalhe">
+                  <User size={16} />
+                  <span>
+                    <strong>Viajante:</strong> {viagem.viajante}
+                  </span>
+                </div>
+
+                <div className="viagem-detalhe">
+                  <Calendar size={16} />
+                  <span>
+                    <strong>Ida:</strong> {formatarData(viagem.dataIda)}
+                  </span>
+                </div>
+
+                <div className="viagem-detalhe">
+                  <Calendar size={16} />
+                  <span>
+                    <strong>Volta:</strong> {formatarData(viagem.dataVolta)}
+                  </span>
+                </div>
+
+                {viagem.justificativa && (
+                  <div className="viagem-justificativa">
+                    <strong>Justificativa:</strong>
+                    <p>{viagem.justificativa}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Ações */}
+              <div className="viagem-acoes">
+                {/* ⬇️ CORREÇÃO: Verificar status em MAIÚSCULO */}
+                {statusNormalizado === 'APROVADA' && podeVer && (
+                  <button
+                    onClick={() => abrirAnexos(viagem)}
+                    className="btn-anexos"
+                    title="Gerenciar Anexos"
+                  >
+                    <Paperclip size={18} />
+                    <span>Anexos</span>
+                    {contadoresAnexos[viagem.id] > 0 && (
+                      <span className="badge-contador">
+                        {contadoresAnexos[viagem.id]}
+                      </span>
+                    )}
+                  </button>
+                )}
+                {/* ⬆️ CORREÇÃO APLICADA */}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Modal de Anexos */}

@@ -1,6 +1,6 @@
-import Dexie from 'dexie'
+import Dexie from 'dexie' 
 
-export const db = new Dexie('SistemaFuncionarios')
+export const db = new Dexie('SistemaFuncionarios') // Nome do banco de dados
 
 db.version(24).stores({
   funcionarios: '++id, nome, cpf, cargo, departamento',

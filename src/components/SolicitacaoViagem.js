@@ -17,6 +17,7 @@ import {
   AlertCircle,
   X,
   Plane, // Ícone de avião para o divisor
+  Paperclip, // Ícone de anexos
 } from 'lucide-react'
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
@@ -25,6 +26,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
+import AnexosViagem from './AnexosViagem'
 
 dayjs.locale('pt-br')
 
@@ -44,6 +46,8 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
   const [mostrarModalRecusa, setMostrarModalRecusa] = useState(false)  // Estado para indicar se o modal de recusa deve ser mostrado
   const [solicitacaoParaRecusar, setSolicitacaoParaRecusar] = useState(null)  // Estado para armazenar a solicitação a ser recusada
   const [motivoRecusa, setMotivoRecusa] = useState('')  // Estado para armazenar o motivo da recusa
+  const [mostrarAnexos, setMostrarAnexos] = useState(false)
+  const [viagemSelecionada, setViagemSelecionada] = useState(null)
 
   const minDistance = 60  // Distância mínima entre os pontos do slider
 
@@ -62,6 +66,54 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
       .sort(
         (a, b) => new Date(b.dataSolicitacao) - new Date(a.dataSolicitacao) // Ordena as solicitações por data de solicitação
       ) || []
+
+  // Funções para controlar modal de anexos
+  const abrirAnexos = (viagem) => {
+    console.log('🔍 Abrindo anexos para viagem:', viagem)
+    setViagemSelecionada(viagem)
+    setMostrarAnexos(true)
+  }
+
+  const fecharAnexos = () => {
+    setMostrarAnexos(false)
+    setViagemSelecionada(null)
+  }
+
+  const podeVerAnexos = (viagem) => {
+    if (!usuarioAtual) {
+      console.log('❌ Sem usuário atual')
+      return false
+    }
+    
+    console.log('🔍 Verificando permissões anexos:', {
+      usuario: usuarioAtual.nome,
+      tipo: usuarioAtual.tipo,
+      permissoes: usuarioAtual.permissoes
+    })
+    
+    // Admin pode sempre
+    if (usuarioAtual.tipo === 'admin') {
+      console.log('✅ Admin - acesso total')
+      return true
+    }
+    
+    // Tem permissão específica
+    if ((usuarioAtual.permissoes || []).includes('anexos_viagem')) {
+      console.log('✅ Tem permissão anexos_viagem')
+      return true
+    }
+    
+    // É o criador ou viajante
+    if (viagem.criadoPorId === usuarioAtual.id || 
+        viagem.viajanteId === usuarioAtual.id) {
+      console.log('✅ É criador ou viajante')
+      return true
+    }
+    
+    console.log('❌ Sem permissão para anexos')
+    return false
+  }
+
 
   const limparFormulario = () => { // Limpa o formulário de solicitação de viagem
     setViajanteId('') 
@@ -583,6 +635,17 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                               </button>
                             </>
                           )}
+                        {/* Botão de Anexos */}
+                        {sol.status === 'APROVADA' && podeVerAnexos(sol) && (
+                          <button
+                            onClick={() => abrirAnexos(sol)}
+                            className="btn-acao-status btn-anexos"
+                            title="Gerenciar Anexos"
+                          >
+                            <Paperclip size={16} />
+                            <span>Anexos</span>
+                          </button>
+                        )}
                         {usuarioAtual?.podeExcluirViagens && (
                           <button
                             onClick={() => handleExcluir(sol.id)}
@@ -792,24 +855,31 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                       }}
                     />
                   </Box>
-                    <div className="horario-info"> {/* Informação sobre distância mínima */}
-                      Distância mínima: 2 horas
-                    </div>
+                  <div
+                    style={{
+                      marginTop: '15px',
+                      fontSize: '0.75rem',
+                      color: '#adb5bd',
+                      textAlign: 'center',
+                    }}
+                  >
+                    Distância mínima: 2 horas
                   </div>
                 </div>
+              </div>
               </div>
 
               {/* COLUNA: VOLTA */}
               <div className="form-secao-metade secao-volta"> {/* Seção da volta */}
                 <div className="secao-header"> {/* Header da seção volta */}
-                  <Plane size={18} style={{ transform: 'rotate(180deg)' }} /> {/* Ícone de avião invertido */}
+                  <Plane size={18} />
                   <h4>Volta</h4> {/* Título da seção */}
                 </div>
-                <div className="form-group-viagem">  {/* Campo para selecionar a data de volta */}
-                  <label>
-                    <Calendar size={16} />
-                    Data de Volta *
-                  </label>
+              <div className="form-group">  {/* Campo para selecionar a data de volta */}
+                <label>
+                  <Calendar size={18} />
+                  Data de Volta *
+                </label>
                 <LocalizationProvider
                   dateAdapter={AdapterDayjs}
                   adapterLocale="pt-br"
@@ -842,24 +912,82 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                     }}
                   />
                 </LocalizationProvider>
-                </div>
-                <div className="form-group-viagem">  {/* Campo para selecionar o horário de volta */}
-                  <label>
-                    <Clock size={16} />
-                    Horário de Volta *
-                  </label>
-                  <div className="horario-container"> {/* Container do horário */}
-                    <div className="horario-display"> {/* Display dos horários */}
-                      <div className="horario-item"> {/* Item de horário - Início */}
-                        <span className="horario-label">INÍCIO</span> {/* Label */}
-                        <span className="horario-valor">{minutosParaHorario(faixaHorarioVolta[0])}</span> {/* Valor */}
+              </div>
+              <div className="form-group">  {/* Campo para selecionar o horário de volta */}
+                <label>
+                  <Clock size={18} />
+                  Horário de Volta *
+                </label>
+                <div
+                  style={{
+                    padding: '25px 20px',
+                    backgroundColor: '#fff',
+                    borderRadius: '8px',
+                    border: '1px solid #ced4da',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '25px',
+                    }}
+                  >
+                    <div style={{ textAlign: 'center', flex: 1 }}>
+                      <div
+                        style={{
+                          fontSize: '0.7rem',
+                          color: '#6c757d',
+                          marginBottom: '5px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                        }}
+                      >
+                        Início
                       </div>
-                      <div className="horario-separador">→</div> {/* Separador */}
-                      <div className="horario-item"> {/* Item de horário - Fim */}
-                        <span className="horario-label">FIM</span> {/* Label */}
-                        <span className="horario-valor">{minutosParaHorario(faixaHorarioVolta[1])}</span> {/* Valor */}
+                      <div
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: 'bold',
+                          color: '#667eea',
+                        }}
+                      >
+                        {minutosParaHorario(faixaHorarioVolta[0])}
                       </div>
                     </div>
+                    <div
+                      style={{
+                        fontSize: '1.2rem',
+                        color: '#adb5bd',
+                        padding: '0 20px',
+                      }}
+                    >
+                      →
+                    </div>
+                    <div style={{ textAlign: 'center', flex: 1 }}>
+                      <div
+                        style={{
+                          fontSize: '0.7rem',
+                          color: '#6c757d',
+                          marginBottom: '5px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                        }}
+                      >
+                        Fim
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: 'bold',
+                          color: '#667eea',
+                        }}
+                      >
+                        {minutosParaHorario(faixaHorarioVolta[1])}
+                      </div>
+                    </div>
+                  </div>
                   <Box sx={{ px: 1 }}>
                     <Slider
                       getAriaLabel={() => 'Faixa de horário de volta'}
@@ -905,24 +1033,25 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
                       }}
                     />
                   </Box>
-                    <div className="horario-info"> {/* Informação sobre distância mínima */}
-                      Distância mínima: 2 horas
-                    </div>
+                  <div
+                    style={{
+                      marginTop: '15px',
+                      fontSize: '0.75rem',
+                      color: '#adb5bd',
+                      textAlign: 'center',
+                    }}
+                  >
+                    Distância mínima: 2 horas
                   </div>
                 </div>
               </div>
+              </div>
             </div>
 
-            {/* SEÇÃO: INFORMAÇÕES ADICIONAIS */}
-            <div className="form-secao"> {/* Seção de informações adicionais */}
-              <div className="secao-header"> {/* Header da seção */}
-                <FileText size={18} />
-                <h4>Informações Adicionais</h4> {/* Título da seção */}
-              </div>
-              <div className="form-group-viagem">  {/* Campo para selecionar o motivo da viagem */}
+            <div className="form-group">  {/* Campo para selecionar o motivo da viagem */}
                 <label>Justificativa *</label>
                 <textarea
-                  className="textarea-viagem" //* Estilo da textarea */
+                className="textarea-viagem" // Estilo da textarea
                 value={justificativa}
                 onChange={(e) => setJustificativa(e.target.value)}
                 placeholder="Descreva o motivo da viagem..."
@@ -931,10 +1060,12 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
               />
             </div>
 
-            <div className="form-group-viagem">  {/* Campo para adicionar uma observação */}
-              <label>Observação (opcional)</label>
+            <div className="form-group">  {/* Campo para adicionar uma observação */}
+              <label>
+                <FileText size={18} />
+                Observação (opcional)
+              </label>
               <textarea
-                className="textarea-viagem" //* Estilo da textarea */
                 value={observacao}
                 onChange={(e) => setObservacao(e.target.value)}
                 placeholder="Ex: Assento, companhia aérea, número do voo ou outras informações relevantes."
@@ -942,28 +1073,32 @@ function SolicitacaoViagem({ onVoltar, usuarioAtual }) { // Função para voltar
               />
             </div>
 
-          </div>
-
-            <div className="form-acoes-viagem">  {/* Botoes de confirmar e cancelar */}
+            <div className="form-actions">  {/* Botoes de confirmar e cancelar */}
               <button
                 type="button"
                 onClick={() => {
                   setMostrarFormulario(false)
                   limparFormulario()
                 }}
-                className="btn-cancelar-viagem"
+                className="btn-cancelar"
               >
-                
-              <X size={18} />
-              Cancelar
+                Cancelar
               </button>
-              <button type="submit" className="btn-confirmar-viagem"> {/* Botão para criar a solicitação de viagem */}
+              <button type="submit" className="btn-confirmar"> {/* Botão para criar a solicitação de viagem */}
                 <PlaneTakeoff size={18} />
                 Criar Solicitação
               </button>
-          </div>
-        </form>
+            </div>
+          </form>
         </div>
+      )}
+
+      {/* Modal de Anexos */}
+      {mostrarAnexos && viagemSelecionada && (
+        <AnexosViagem
+          viagem={viagemSelecionada}
+          onFechar={fecharAnexos}
+        />
       )}
     </div>
   )
