@@ -1,3 +1,4 @@
+// src/components/AnexosViagem.js
 import React, { useState, useEffect } from 'react'
 import {
   Upload,
@@ -8,8 +9,9 @@ import {
   CheckCircle,
   AlertCircle,
   Paperclip,
+  User,
 } from 'lucide-react'
-import { db } from '../db'
+import { db, notificacaoService } from '../db'
 import { AuthService } from '../authDb'
 
 function AnexosViagem({ viagem, onFechar }) {
@@ -107,6 +109,24 @@ function AnexosViagem({ viagem, onFechar }) {
         })
 
         console.log(`✅ Arquivo ${file.name} anexado com ID: ${anexoId}`)
+
+        // 🔔 Criar notificação para usuários com permissão de anexos
+        try {
+          // Buscar dados do viajante
+          const funcionario = await db.funcionarios.get(viagem.viajanteId)
+          const nomeViajante = funcionario?.nome || 'Viajante'
+          
+          await notificacaoService.notificarAnexoAdicionado(
+            viagem.id,
+            file.name,
+            nomeViajante,
+            viagem.destino,
+            usuarioAtual.nome
+          )
+        } catch (notifError) {
+          console.error('⚠️ Erro ao criar notificação:', notifError)
+          // Não bloqueia o upload se a notificação falhar
+        }
       }
 
       // Recarregar lista de arquivos
@@ -294,7 +314,8 @@ function AnexosViagem({ viagem, onFechar }) {
                       <span>{formatarData(arquivo.dataUpload)}</span>
                     </div>
                     <div className="arquivo-autor">
-                      Enviado por: {arquivo.uploadPor}
+                      <User size={14} />
+                      <span>{arquivo.uploadPor}</span>
                     </div>
                   </div>
                   <div className="arquivo-acoes">

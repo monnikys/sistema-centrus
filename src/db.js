@@ -1,4 +1,4 @@
-import Dexie from 'dexie' 
+import Dexie from 'dexie' // Importar Dexie.js para gerenciamento de IndexedDB
 
 export const db = new Dexie('SistemaFuncionarios') // Nome do banco de dados
 
@@ -339,6 +339,43 @@ export const notificacaoService = {
       null,
       usuarioResponsavel
     )
+  },
+
+  /**
+   * Criar notificação de anexo adicionado a viagem
+   * Notifica apenas usuários com permissão 'anexos_viagem'
+   */
+  async notificarAnexoAdicionado(viagemId, nomeArquivo, nomeViajante, destino, uploadPor) {
+    try {
+      // Buscar usuários do authDb que têm permissão de anexos
+      const { AuthService } = await import('./authDb')
+      const todosUsuarios = await AuthService.listarUsuarios()
+      
+      // Filtrar apenas usuários com permissão 'anexos_viagem'
+      const usuariosComPermissao = todosUsuarios.filter(usuario => 
+        usuario.tipo === 'admin' || 
+        (usuario.permissoes || []).includes('anexos_viagem')
+      )
+
+      console.log(`📎 Notificando ${usuariosComPermissao.length} usuários sobre novo anexo`)
+
+      // Criar notificação para cada usuário com permissão
+      const notificacoes = usuariosComPermissao.map(usuario =>
+        this.criar(
+          'anexo',
+          '📎 Novo Anexo em Viagem',
+          `${uploadPor} anexou "${nomeArquivo}" na viagem de ${nomeViajante} para ${destino}`,
+          { viagemId, nomeArquivo, acao: 'anexo_adicionado' },
+          usuario.id,
+          uploadPor
+        )
+      )
+
+      await Promise.all(notificacoes)
+      console.log('✅ Notificações de anexo criadas com sucesso')
+    } catch (error) {
+      console.error('❌ Erro ao notificar anexo:', error)
+    }
   },
 }
 
