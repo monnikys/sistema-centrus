@@ -83,6 +83,9 @@ function AnexosViagem({ viagem, onFechar }) {
     setEnviando(true)
 
     try {
+      let arquivosAnexados = 0
+      let ultimoArquivo = null
+
       for (const file of files) {
         // Validar tamanho (máximo 10MB)
         if (file.size > 10 * 1024 * 1024) {
@@ -109,23 +112,30 @@ function AnexosViagem({ viagem, onFechar }) {
         })
 
         console.log(`✅ Arquivo ${file.name} anexado com ID: ${anexoId}`)
+        arquivosAnexados++
+        ultimoArquivo = file.name
+      }
 
-        // 🔔 Criar notificação para usuários com permissão de anexos
+      // 🔔 Criar notificação UMA ÚNICA VEZ (fora do loop)
+      if (arquivosAnexados > 0) {
         try {
-          // Buscar dados do viajante
           const funcionario = await db.funcionarios.get(viagem.viajanteId)
           const nomeViajante = funcionario?.nome || 'Viajante'
           
+          const textoArquivo = arquivosAnexados === 1 
+            ? `"${ultimoArquivo}"`
+            : `${arquivosAnexados} arquivos`
+          
           await notificacaoService.notificarAnexoAdicionado(
             viagem.id,
-            file.name,
+            textoArquivo,
             nomeViajante,
             viagem.destino,
-            usuarioAtual.nome
+            usuarioAtual.nome,
+            usuarioAtual.id  // ← Essencial para excluir o próprio usuário
           )
         } catch (notifError) {
           console.error('⚠️ Erro ao criar notificação:', notifError)
-          // Não bloqueia o upload se a notificação falhar
         }
       }
 

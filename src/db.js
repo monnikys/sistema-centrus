@@ -343,28 +343,48 @@ export const notificacaoService = {
 
   /**
    * Criar notificação de anexo adicionado a viagem
-   * Notifica apenas usuários com permissão 'anexos_viagem'
+   * Notifica apenas usuários com permissão 'anexos_viagem' 
+   * EXCETO o próprio usuário que fez o upload
    */
-  async notificarAnexoAdicionado(viagemId, nomeArquivo, nomeViajante, destino, uploadPor) {
+  async notificarAnexoAdicionado(viagemId, nomeArquivo, nomeViajante, destino, uploadPor, uploadPorId) {
     try {
-      // Buscar usuários do authDb que têm permissão de anexos
+      if (!uploadPorId) {
+        console.error('❌ uploadPorId é obrigatório para notificação de anexo')
+        return
+      }
+
+      // Buscar usuários com permissão
       const { AuthService } = await import('./authDb')
       const todosUsuarios = await AuthService.listarUsuarios()
       
-      // Filtrar apenas usuários com permissão 'anexos_viagem'
-      const usuariosComPermissao = todosUsuarios.filter(usuario => 
-        usuario.tipo === 'admin' || 
-        (usuario.permissoes || []).includes('anexos_viagem')
-      )
+      const uploadPorIdNum = parseInt(uploadPorId)
+      
+      // Filtrar: tem permissão E não é o próprio usuário
+      const usuariosParaNotificar = todosUsuarios.filter(usuario => {
+        const usuarioIdNum = parseInt(usuario.id)
+        
+        // 1. Excluir o próprio usuário que fez upload
+        if (usuarioIdNum === uploadPorIdNum) {
+          return false
+        }
+        
+        // 2. Admin sempre recebe
+        if (usuario.tipo === 'admin') {
+          return true
+        }
+        
+        // 3. Tem permissão anexos_viagem
+        return (usuario.permissoes || []).includes('anexos_viagem')
+      })
 
-      console.log(`📎 Notificando ${usuariosComPermissao.length} usuários sobre novo anexo`)
+      console.log(`📎 Notificando ${usuariosParaNotificar.length} usuário(s) sobre novo anexo`)
 
-      // Criar notificação para cada usuário com permissão
-      const notificacoes = usuariosComPermissao.map(usuario =>
+      // Criar UMA notificação para cada usuário filtrado
+      const notificacoes = usuariosParaNotificar.map(usuario =>
         this.criar(
           'anexo',
           '📎 Novo Anexo em Viagem',
-          `${uploadPor} anexou "${nomeArquivo}" na viagem de ${nomeViajante} para ${destino}`,
+          `${uploadPor} anexou ${nomeArquivo} na viagem de ${nomeViajante} para ${destino}`,
           { viagemId, nomeArquivo, acao: 'anexo_adicionado' },
           usuario.id,
           uploadPor
@@ -372,7 +392,7 @@ export const notificacaoService = {
       )
 
       await Promise.all(notificacoes)
-      console.log('✅ Notificações de anexo criadas com sucesso')
+      console.log('✅ Notificações criadas com sucesso')
     } catch (error) {
       console.error('❌ Erro ao notificar anexo:', error)
     }
