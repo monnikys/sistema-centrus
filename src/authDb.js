@@ -317,6 +317,84 @@ export const AuthService = {
     }
   },
 
+  // ========== ✅ FUNÇÃO EDITARUSUARIO ADICIONADA! ==========
+  /**
+   * Editar um usuário existente (apenas admin)
+   * Esta é a função que estava faltando!
+   */
+  editarUsuario: async (usuarioId, dadosAtualizacao) => {
+    try {
+      console.log('🔄 Editando usuário:', usuarioId, dadosAtualizacao)
+
+      // Verificar se o usuário atual é admin
+      const usuarioAtual = await AuthService.obterUsuarioAtual()
+      if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
+        throw new Error('Apenas administradores podem editar usuários')
+      }
+
+      // Buscar o usuário que será editado
+      const usuario = await authDb.usuarios.get(usuarioId)
+      
+      if (!usuario) {
+        return { 
+          sucesso: false, 
+          erro: 'Usuário não encontrado' 
+        }
+      }
+
+      // Verificar se o email está sendo alterado e se já existe
+      if (dadosAtualizacao.email && dadosAtualizacao.email !== usuario.email) {
+        const emailExiste = await authDb.usuarios
+          .where('email')
+          .equalsIgnoreCase(dadosAtualizacao.email)
+          .first()
+        
+        if (emailExiste && emailExiste.id !== usuarioId) {
+          return { 
+            sucesso: false, 
+            erro: 'Este email já está em uso por outro usuário' 
+          }
+        }
+      }
+
+      // Preparar dados para atualização
+      const dadosParaAtualizar = {
+        nome: dadosAtualizacao.nome || usuario.nome,
+        email: dadosAtualizacao.email || usuario.email,
+        tipo: dadosAtualizacao.tipo || usuario.tipo,
+        permissoes: Array.isArray(dadosAtualizacao.permissoes) 
+          ? dadosAtualizacao.permissoes 
+          : usuario.permissoes || [],
+        podeCriarViagens: dadosAtualizacao.podeCriarViagens ?? usuario.podeCriarViagens ?? false,
+        podeAprovarViagens: dadosAtualizacao.podeAprovarViagens ?? usuario.podeAprovarViagens ?? false,
+        podeExcluirViagens: dadosAtualizacao.podeExcluirViagens ?? usuario.podeExcluirViagens ?? false,
+      }
+
+      // Se a senha foi fornecida, criptografar e atualizar
+      if (dadosAtualizacao.senha && dadosAtualizacao.senha.trim() !== '') {
+        dadosParaAtualizar.senha = await hashSenha(dadosAtualizacao.senha)
+        console.log('🔐 Senha atualizada')
+      }
+
+      // Atualizar o usuário no banco
+      await authDb.usuarios.update(usuarioId, dadosParaAtualizar)
+
+      console.log('✅ Usuário atualizado com sucesso')
+      
+      return { 
+        sucesso: true, 
+        usuario: { id: usuarioId, ...dadosParaAtualizar, senha: undefined } 
+      }
+    } catch (error) {
+      console.error('❌ Erro ao editar usuário:', error)
+      return { 
+        sucesso: false, 
+        erro: 'Erro ao atualizar usuário: ' + error.message 
+      }
+    }
+  },
+  // ========== FIM DA FUNÇÃO EDITARUSUARIO ==========
+
   // Registrar novo usuário (auto-registro)
   registrar: async (dados) => {
     try {
@@ -381,7 +459,7 @@ export const AuthService = {
     }))
   },
 
-  // Atualizar usuário (apenas admin)
+  // Atualizar usuário (apenas admin) - MANTIDO PARA COMPATIBILIDADE
   atualizarUsuario: async (id, dados) => {
     const usuarioAtual = await AuthService.obterUsuarioAtual()
 
@@ -410,6 +488,26 @@ export const AuthService = {
     return {
       sucesso: true,
       mensagem: 'Usuário atualizado com sucesso',
+    }
+  },
+
+  // Alterar status do usuário (ativar/desativar)
+  alterarStatusUsuario: async (usuarioId, novoStatus) => {
+    const usuarioAtual = await AuthService.obterUsuarioAtual()
+
+    if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
+      throw new Error('Apenas administradores podem alterar status de usuários')
+    }
+
+    if (usuarioAtual.id === usuarioId) {
+      throw new Error('Você não pode desativar sua própria conta')
+    }
+
+    await authDb.usuarios.update(usuarioId, { ativo: novoStatus })
+
+    return {
+      sucesso: true,
+      mensagem: `Usuário ${novoStatus ? 'ativado' : 'desativado'} com sucesso`,
     }
   },
 

@@ -92,7 +92,7 @@ function ListaFuncionarios({ funcionarios, onEditar, onGerenciarDocumentos }) {
     return (
       func.nome?.toLowerCase().includes(termoBusca) ||
       func.cpf?.includes(termoBusca) ||
-      func.matricula?.includes(termoBusca) ||
+      func.departamento?.toLowerCase().includes(termoBusca) ||
       func.cargo?.toLowerCase().includes(termoBusca)
     )
   })
@@ -113,7 +113,7 @@ function ListaFuncionarios({ funcionarios, onEditar, onGerenciarDocumentos }) {
           <Search size={20} className="busca-icon" />
           <input
             type="text"
-            placeholder="Buscar por nome, CPF, matrícula ou cargo..."
+            placeholder="Buscar por nome, CPF, departamento ou cargo..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className="input-busca"
@@ -138,7 +138,7 @@ function ListaFuncionarios({ funcionarios, onEditar, onGerenciarDocumentos }) {
                   <h3>{func.nome}</h3>
                   <div className="funcionario-detalhes">
                     <span>CPF: {func.cpf}</span>
-                    <span>Matrícula: {func.matricula}</span>
+                    <span>Departamento: {func.departamento}</span>
                     {func.cargo && <span>Cargo: {func.cargo}</span>}
                   </div>
                 </div>
